@@ -30,18 +30,6 @@ public class WeatherForecastController : ControllerBase
     [Authorize(Roles = "Admin")]
     public IEnumerable<WeatherForecast> Get()
     {
-        var UserID = User.IsInRole("Student");    
-        Console.WriteLine(UserID);
-        var UserID2 = User.IsInRole("Task.Read");    
-        Console.WriteLine(UserID2);
-        
-        Console.WriteLine("");
-        var claims = User.Claims;
-        foreach (var v in claims)
-        {
-            Console.WriteLine(v);
-        }
-
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
