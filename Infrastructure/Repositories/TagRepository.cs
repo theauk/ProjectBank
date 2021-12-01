@@ -9,7 +9,7 @@ namespace Infrastructure
             _context = context;
         }
 
-        public async async Task<(Response, TagDTO)> CreateAsync(TagCreateDTO tag)
+        public async Task<(Response, TagDTO)> CreateAsync(TagCreateDTO tag)
         {
             throw new NotImplementedException();
         }

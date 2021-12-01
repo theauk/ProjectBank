@@ -9,7 +9,7 @@ namespace Infrastructure
             _context = context;
         }
 
-        public async async Task<(Response, UniversityDTO)> CreateAsync(UniversityCreateDTO university)
+        public async Task<(Response, UniversityDTO)> CreateAsync(UniversityCreateDTO university)
         {
             throw new NotImplementedException();
         }
