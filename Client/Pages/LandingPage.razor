@@ -1,0 +1,50 @@
+﻿@page "/index"
+
+<PageTitle>Landing Page</PageTitle>
+
+<h1>Projects</h1>
+
+@if (projects.Count == 0)
+{
+    <p>Loading projects...</p>
+}
+else
+{
+    @foreach (Project p in projects)
+    {
+        <div style="width: 50%">
+            <a href="index/@p.Id">
+                <p>@p.Id: @p.Name</p>
+                <p style="text-align: right">@String.Join(' ', p.Tags)</p>
+            </a>
+        </div>
+    }
+}
+
+<p>Get Tags onto the left side.</p>
+
+@code {
+    private List<Project> projects = new List<Project>
+    {
+        new Project
+        {
+            Id = 1,
+            Name = "Invent Polio",
+            Tags = new List<string>
+            {
+                "Science",
+                "Genetics",
+            },
+        },
+        new Project
+        {
+            Id = 2,
+            Name = "Cure Polio",
+            Tags = new List<string>
+            {
+                "Science",
+                "Ethics",
+            },
+        },
+    };
+}
