@@ -13,13 +13,42 @@ namespace Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<University>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+            });
 
-            });            
+            modelBuilder.Entity<User>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<Project>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<Tag>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+
+                e.HasIndex(e => e.Value)
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<TagGroup>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+            });
         }
 
         public static void Seed(ProjectBankContext context)
         {
+            // Create data set
+
+
             
+            // ----------------
+            context.SaveChanges();
         }
     }
 }

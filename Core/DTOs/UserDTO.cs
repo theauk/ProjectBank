@@ -6,7 +6,6 @@ namespace Core
         
         [Required]
         public string? Name {get; init;}
-
     }
 
     public record UserCreateDTO 
