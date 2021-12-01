@@ -9,27 +9,27 @@ namespace Infrastructure
             _context = context;
         }
 
-        public Task<(Response, UniversityDTO)> CreateAsync(UniversityCreateDTO university)
+        public async async Task<(Response, UniversityDTO)> CreateAsync(UniversityCreateDTO university)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Response> DeleteAsync(int universityId)
+        public async Task<Response> DeleteAsync(int universityId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<(Response, IReadOnlyCollection<UniversityDTO>)> ReadAllAsync()
+        public async Task<(Response, IReadOnlyCollection<UniversityDTO>)> ReadAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<(Response, UniversityDTO)> ReadAsync(int tagId)
+        public async Task<(Response, UniversityDTO)> ReadAsync(int tagId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Response> UpdateAsync(int universityId, UniversityUpdateDTO university)
+        public async Task<Response> UpdateAsync(int universityId, UniversityUpdateDTO university)
         {
             throw new NotImplementedException();
         }
