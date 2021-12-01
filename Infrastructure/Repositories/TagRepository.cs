@@ -2,29 +2,29 @@ namespace Infrastructure
 {
     public class TagRepository : ITagRepository
     {
-        private readonly ProjectBankContext _context;
+        private readonly IProjectBankContext _context;
 
-        public TagRepository(ProjectBankContext context)
+        public TagRepository(IProjectBankContext context)
         {
             _context = context;
         }
 
-        public Task<(Response, TagDTO)> CreateAsync(TagCreateDTO tag)
+        public async Task<(Response, TagDTO)> CreateAsync(TagCreateDTO tag)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Response> DeleteAsync(int tagId)
+        public async Task<Response> DeleteAsync(int tagId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<(Response, IReadOnlyCollection<TagDTO>)> ReadAllAsync()
+        public async Task<(Response, IReadOnlyCollection<TagDTO>)> ReadAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<(Response, TagDTO)> ReadAsync(int tagId)
+        public async Task<(Response, TagDTO)> ReadAsync(int tagId)
         {
             throw new NotImplementedException();
         }

@@ -2,24 +2,24 @@ namespace Infrastructure
 {
     public class UserRepository : IUserRepository
     {
-        private readonly ProjectBankContext _context;
+        private readonly IProjectBankContext _context;
 
-        public UserRepository(ProjectBankContext context)
+        public UserRepository(IProjectBankContext context)
         {
             _context = context;
         }
 
-        public Task<(Response, UserDTO)> CreateAsync(UserCreateDTO user)
+        public async Task<(Response, UserDTO)> CreateAsync(UserCreateDTO user)
         {
             throw new NotImplementedException();
         }
 
-        public Task<(Response, IReadOnlyCollection<UserDTO>)> ReadAllAsync()
+        public async Task<(Response, IReadOnlyCollection<UserDTO>)> ReadAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<(Response, UserDTO)> ReadAsync(int userId)
+        public async Task<(Response, UserDTO)> ReadAsync(int userId)
         {
             throw new NotImplementedException();
         }

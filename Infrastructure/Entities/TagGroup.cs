@@ -9,8 +9,10 @@ namespace Infrastructure
         
         public ISet<Tag>? Tags { get; set; }
 
+        [Required]
         public bool SupervisorCanAddTag { get; set;}
 
+        [Required]
         public bool RequiredInProject { get; set;}
 
         public int TagLimit { get; set;} 

@@ -2,34 +2,34 @@ namespace Infrastructure
 {
     public class ProjectRepository : IProjectRepository
     {
-        private readonly ProjectBankContext _context;
+        private readonly IProjectBankContext _context;
 
-        public ProjectRepository(ProjectBankContext context)
+        public ProjectRepository(IProjectBankContext context)
         {
             _context = context;
         }
 
-        public Task<(Response, ProjectDTO)> CreateAsync(ProjectCreateDTO project)
+        public async Task<(Response, ProjectDTO)> CreateAsync(ProjectCreateDTO project)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Response> DeleteAsync(int projectId)
+        public async Task<Response> DeleteAsync(int projectId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadAllAsync()
+        public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<(Response, ProjectDTO)> ReadAsync(int projectId)
+        public async Task<(Response, ProjectDTO)> ReadAsync(int projectId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)
+        public async Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)
         {
             throw new NotImplementedException();
         }

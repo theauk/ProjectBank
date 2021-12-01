@@ -1,22 +1,54 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Infrastructure
 {
-    public class ProjectBankContext : DbContext
+    public class ProjectBankContext : DbContext, IProjectBankContext
     {
-        public DbSet<User> Users { get; set; }
-        public DbSet<Project> Projects { get; set; }
-        public DbSet<TagGroup> TagGroups { get; set; }
-        public DbSet<Tag> Tags { get; set; }
+        public DbSet<University> Universities => Set<University>();
+        public DbSet<User> Users => Set<User>();
+        public DbSet<Project> Projects => Set<Project>();
+        public DbSet<TagGroup> TagGroups => Set<TagGroup>();
+        public DbSet<Tag> Tags => Set<Tag>();
 
-        public ProjectBankContext(DbContextOptions<ProjectBankContext> options) : base(options)
-        {
-
-        }
+        public ProjectBankContext(DbContextOptions<ProjectBankContext> options) : base(options) {}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<University>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+            });
 
+            modelBuilder.Entity<User>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<Project>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<Tag>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+
+                e.HasIndex(e => e.Value)
+                .IsUnique();
+            });
+
+            modelBuilder.Entity<TagGroup>(e => {
+                e.HasIndex(e => e.Id)
+                .IsUnique();
+            });
+        }
+
+        public static void Seed(ProjectBankContext context)
+        {
+            // Create data set
+
+
+            
+            // ----------------
+            context.SaveChanges();
         }
     }
 }

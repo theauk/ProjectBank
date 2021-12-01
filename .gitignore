@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,csharp,rider,dotnetcore
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,visualstudiocode,csharp,rider,dotnetcore
+# Created by https://www.toptal.com/developers/gitignore/api/rider,visualstudio,visualstudiocode,csharp,dotnetcore
+# Edit at https://www.toptal.com/developers/gitignore?templates=rider,visualstudio,visualstudiocode,csharp,dotnetcore
 
 ### Csharp ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -14,6 +14,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+.vscode
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -665,4 +666,4 @@ fabric.properties
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,csharp,rider,dotnetcore
+# End of https://www.toptal.com/developers/gitignore/api/rider,visualstudio,visualstudiocode,csharp,dotnetcore
