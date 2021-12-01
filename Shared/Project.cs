@@ -13,7 +13,7 @@ namespace ProjectBank.Shared
         public string Name { get; set; }
         public IEnumerable<string> Tags { get; set; }
 
-        public static IEnumerable<Project> Projects
+        public static IEnumerable<Project> SampleProjects
         {
             get => new List<Project>()
             {
@@ -42,7 +42,7 @@ namespace ProjectBank.Shared
 
         public static Project GetProject(int id)
         {
-            return Projects.Where(p => p.Id == id).First();
+            return SampleProjects.Where(p => p.Id == id).First();
         }
 
         public string TagString()
