@@ -2,9 +2,9 @@ namespace Infrastructure
 {
     public class TagRepository : ITagRepository
     {
-        private readonly ProjectBankContext _context;
+        private readonly IProjectBankContext _context;
 
-        public TagRepository(ProjectBankContext context)
+        public TagRepository(IProjectBankContext context)
         {
             _context = context;
         }

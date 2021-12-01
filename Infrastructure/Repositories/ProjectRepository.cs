@@ -2,9 +2,9 @@ namespace Infrastructure
 {
     public class ProjectRepository : IProjectRepository
     {
-        private readonly ProjectBankContext _context;
+        private readonly IProjectBankContext _context;
 
-        public ProjectRepository(ProjectBankContext context)
+        public ProjectRepository(IProjectBankContext context)
         {
             _context = context;
         }

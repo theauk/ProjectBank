@@ -2,9 +2,9 @@ namespace Infrastructure
 {
     public class UniversityRepository : IUniversityRepository
     {
-        private readonly ProjectBankContext _context;
+        private readonly IProjectBankContext _context;
 
-        public UniversityRepository(ProjectBankContext context)
+        public UniversityRepository(IProjectBankContext context)
         {
             _context = context;
         }
