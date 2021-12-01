@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectBank.Shared
 {
+    // TODO: Delete me.
     public class TagGroup
     {
         public int Id { get; set; }
