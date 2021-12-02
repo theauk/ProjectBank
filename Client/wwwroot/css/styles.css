@@ -1,0 +1,54 @@
+﻿.ProjectContainer {
+    margin-right: 15%;
+}
+
+.ProjectList {
+    float: right;
+    width: 71%;
+    height: 85%;
+    background-color: red;
+    border: 2px solid lightgrey;
+    border-radius: 8px;
+    padding: 1.2%;
+}
+
+.ProjectEntry {
+    width: 100%;
+    background-color: #CCCCCC;
+    border-radius: 18px;
+    padding: 1;
+    padding-right: 3%;
+    padding-left: 3%;
+}
+
+.FilterContainer {
+    float: left;
+    position: absolute;
+    width: 18.5%;
+    bottom: 50px;
+    top: 75px;
+    background-color: blue;
+    border: 2px solid lightgrey;
+    border-radius: 8px;
+    padding: 1.2%;
+}
+
+.TagFilter {
+    border: solid 2px lightgrey;
+    border-radius: 8px;
+    height: 92%;
+    padding: 1.8%;
+    background-color:darkblue;
+}
+
+.TagField {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    background-color: aquamarine;
+    border: solid 2px lightgrey;
+    border-radius: 10px;
+}
+
+.TagFieldTitle {
+    font-size: 30px;
+}
