@@ -1,33 +1,59 @@
 ﻿@page "/index"
 
 <style>
-    .proj {
-        width: 50%;
-        background-color: #CCCCCC;
-    }
     .ProjectContainer {
+        margin-right: 15%;
     }
     .ProjectList {
         float: right;
-        width: 68%;
-        height: 80%;
+        width: 71%;
+        height: 85%;
         background-color: red;
+        border: 2px solid lightgrey;
+        border-radius: 8px;
+        padding: 1.2%;
+    }
+    .ProjectEntry {
+        width: 100%;
+        background-color: #CCCCCC;
+        border-radius: 18px;
+        padding: 1;
+        padding-right: 3%;
+        padding-left: 3%;
+    }
+    .FilterContainer {
+        float: left;
+        position: absolute;
+        width: 18.5%;
+        bottom: 50px;
+        top: 75px;
+        background-color: blue;
+        border: 2px solid lightgrey;
+        border-radius: 8px;
+        padding: 1.2%;
     }
     .TagFilter {
-        float: left;
-        width: 30%;
-        height: 80%;
-        background-color: blue;
+        border: solid 2px lightgrey;
+        border-radius: 8px;
+        height: 92%;
+        padding: 1.8%;
+    }
+    .TagField {
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-radius: 10px;
+    }
+    .TagFieldTitle {
+        font-size: 30px;
     }
 </style>
 
 <PageTitle>Landing Page</PageTitle>
 
-
-<h1>Projects</h1>
-
 <div class="ProjectContainer">
+
     <div class="ProjectList">
+    <h1>Projects</h1>
         @if (Projects.Count() == 0)
         {
             <p>Loading projects...</p>
@@ -36,45 +62,56 @@
         {
             @foreach (Project p in Projects)
             {
-                <div class="proj">
+                <div class="ProjectEntry">
                     <a href="index/@p.Id">
-                        <p>@p.Id: @p.Name</p>
+                        <h2>@p.Id: @p.Name</h2>
                         <p style="text-align: right">@p.TagString()</p>
                     </a>
                 </div>
             }
         }
     </div>
-    <div class="TagFilter">
-        @if (TagGroups.Count() == 0)
-        {
-            <p>Loading Filter...</p>
-        }
-        else
-        {
-            @foreach (TagGroup tg in TagGroups)
+    <div class="FilterContainer">
+        <h1>Filter</h1>
+        <div class="TagFilter">
+            @if (TagGroups.Count() == 0)
             {
-                <h2>@tg.Name</h2>
-                if (tg.Tags.Count() <= 8)
-                {
-                    <RadzenCheckBoxList @bind-Value=@SelectedTagsOfTagGroup[tg.Id] TValue="int" Orientation="Orientation.Vertical">
-                        <Items>
-                            @foreach (Tag t in tg.Tags)
-                            {
-                                <RadzenCheckBoxListItem Text=@t.Name Value=@t.Id />
-                            }
-                        </Items>
-                    </RadzenCheckBoxList>
-                }
-                else
-                {
-                    <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                @bind-Value=@SelectedTagsOfTagGroup[tg.Id] Multiple="true" Placeholder="Select..."
-                                Data=@tg.Tags TextProperty="Name" ValueProperty="Id" Style="width:300px" />
-                }
+                <p>Loading Filter...</p>
             }
-            <p>Selected tag IDs: @String.Join(", ", SelectedTags)</p>
-        }
+            else
+            {
+                @foreach (TagGroup tg in TagGroups)
+                {
+                    <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagField">
+                        <HeaderTemplate>
+                            <span style="vertical-align: middle">
+                                <b class="TagFieldTitle">@tg.Name.ToUpper()</b>
+                            </span>
+                        </HeaderTemplate>
+                        <ChildContent>
+                            @if (tg.Tags.Count() <= 8)
+                            {
+                                <RadzenCheckBoxList @bind-Value=@SelectedTagsOfTagGroup[tg.Id] TValue="int" Orientation="Orientation.Vertical" Change=@ApplyFilter>
+                                    <Items>
+                                        @foreach (Tag t in tg.Tags)
+                                        {
+                                            <RadzenCheckBoxListItem Text=@t.Name Value=@t.Id />
+                                        }
+                                    </Items>
+                                </RadzenCheckBoxList>
+                            }
+                            else
+                            {
+                                <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            @bind-Value=@SelectedTagsOfTagGroup[tg.Id] Multiple="true" Placeholder="Select..."
+                                            Data=@tg.Tags TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
+                            }
+                        </ChildContent>
+                    </RadzenFieldset>
+                }
+                <p>Selected tag IDs: @String.Join(", ", SelectedTags)</p>
+            }
+        </div>
     </div>
 </div>
 
@@ -104,5 +141,10 @@
         // Create a set of empty "selected" ids for each tag group.
         foreach (TagGroup tg in TagGroups)
             SelectedTagsOfTagGroup.Add(tg.Id, new List<int>());
+    }
+
+    protected async Task ApplyFilter()
+    {
+        Console.WriteLine("Current tags: " + String.Join(", ", SelectedTags));
     }
 }
