@@ -1,0 +1,43 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.9'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: /run/secrets/db_password
+      POSTGRES_DB: projectbank
+    ports:
+      - 1433:1433
+    secrets:
+      - db_password
+
+  server:
+    image: server
+    build:
+      context: .
+      dockerfile: ./Server/Dockerfile
+    environment:
+      ConnectionStrings__ProjectBank:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:;http://+
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/dev_cert.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: localhost
+    ports:
+      - 5077:80
+      - 7207:443
+    depends_on:
+      - db
+    secrets:
+    - source: connection_string
+      target: ConnectionStrings__ProjectBank
+    volumes:
+      - './conf.d/https/:/https/'
+
+secrets:
+  db_password:
+    file: ./.local/db_password.txt
+  connection_string:
+    file: ./.local/connection_string.txt
