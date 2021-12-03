@@ -1,4 +1,6 @@
-namespace Core;
+using ProjectBank.Core.DTOs;
+
+namespace ProjectBank.Core.IRepositories;
 
 public interface ITagGroupRepository
 {

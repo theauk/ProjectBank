@@ -1,4 +1,8 @@
-namespace Infrastructure
+using Infrastructure;
+using ProjectBank.Core.DTOs;
+using ProjectBank.Core.IRepositories;
+
+namespace ProjectBank.Infrastructure.Repositories
 {
     public class ProjectRepository : IProjectRepository
     {
