@@ -1,0 +1,43 @@
+namespace ProjectBank.Server.Controllers;
+
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
+[RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
+public class TagController : ControllerBase
+{
+    private readonly ITagRepository _repository;
+
+    [AllowAnonymous]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<TagDTO>> Get(int id)
+    {
+
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    public async Task<IReadOnlyCollection<TagDTO>> Get()
+    {
+        
+    }
+
+    [Authorize(Roles = "Admin", "Supervisor")] //
+    [HttpPost]
+    public async Task<IActionResult> Post(TagCreateDTO tag)
+    {
+
+    }
+
+    [Authorize(Roles = "Admin")] 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+
+    }
+
+
+
+
+
+}
