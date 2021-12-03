@@ -6,7 +6,7 @@ services:
       - '5433:5432'
     environment:
       POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: db_password
+      POSTGRES_PASSWORD: 'postgress'
       POSTGRES_DB: 'projectbank'
     secrets:
       - db_password
@@ -35,7 +35,9 @@ services:
 
 secrets:
   db_password:
-    file: ./.local/db_password.txt
+    file: .local/db_password.txt
   connection_string:
-    file: ./.local/connection_string.txt
+    file: .local/connection_string.txt
+  certificate:
+    file: .local/https/dev_cert.pfx
   

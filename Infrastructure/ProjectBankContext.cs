@@ -41,14 +41,42 @@ namespace Infrastructure
             });
         }
 
-        public static void Seed(ProjectBankContext context)
+        public async Task SeedAsync()
         {
-            // Create data set
+            // Migrate pending migrations
+            await Database.MigrateAsync();
 
+            // Create universities
+            if (!await Universities.AnyAsync())
+            {
 
-            
-            // ----------------
-            context.SaveChanges();
+            }
+
+            // Create users
+            if (!await Users.AnyAsync())
+            {
+
+            }
+
+            // Create Projects
+            if (!await Projects.AnyAsync())
+            {
+
+            }
+
+            // Create TagGroups
+            if (!await TagGroups.AnyAsync())
+            {
+
+            }
+
+            // Create Tags
+            if (!await Tags.AnyAsync())
+            {
+
+            }
+
+            await SaveChangesAsync();
         }
     }
 }

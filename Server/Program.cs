@@ -17,9 +17,6 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ProjectBankContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("ProjectBank")));
 builder.Services.AddScoped<IProjectBankContext, ProjectBankContext>();
 
-//builder.Services.AddEntityFrameworkNpgsql().AddDbContext<ProjectBankContext>(options => options.UseNpgsql());
-//builder.Services.AddDbContext<ProjectBankContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("ProjectBank")));
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -48,5 +45,7 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+
+await app.SeedAsync();
 
 app.Run();
