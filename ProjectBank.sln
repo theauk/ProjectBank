@@ -2,19 +2,19 @@
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.0.0
 MinimumVisualStudioVersion = 16.0.0.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBank.Server", "Server\ProjectBank.Server.csproj", "{EC40BF5F-F6E6-4883-91EB-D820E673E062}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBank.Server", "ProjectBank.Server\ProjectBank.Server.csproj", "{EC40BF5F-F6E6-4883-91EB-D820E673E062}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBank.Client", "Client\ProjectBank.Client.csproj", "{AFA2EC65-9141-48CF-8281-9A4BD1E1B271}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBank.Client", "ProjectBank.Client\ProjectBank.Client.csproj", "{AFA2EC65-9141-48CF-8281-9A4BD1E1B271}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBank.Shared", "Shared\ProjectBank.Shared.csproj", "{153A52CC-C605-41E5-ADAE-82A95EC8A1D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBank.Shared", "ProjectBank.Shared\ProjectBank.Shared.csproj", "{153A52CC-C605-41E5-ADAE-82A95EC8A1D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBank.Core", "Core\ProjectBank.Core.csproj", "{91E162A9-B355-4FBA-A70F-A35EA4DFBB4F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBank.Core", "ProjectBank.Core\ProjectBank.Core.csproj", "{91E162A9-B355-4FBA-A70F-A35EA4DFBB4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBank.Infrastructure", "Infrastructure\ProjectBank.Infrastructure.csproj", "{B1ACA13A-136E-4EE5-A987-498F2FD3E59C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBank.Infrastructure", "ProjectBank.Infrastructure\ProjectBank.Infrastructure.csproj", "{B1ACA13A-136E-4EE5-A987-498F2FD3E59C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Tests", "Server.Tests\Server.Tests.csproj", "{52FDA8A8-E12A-4D4F-BE44-E49F0C011642}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBank.Server.Tests", "ProjectBank.Server.Tests\ProjectBank.Server.Tests.csproj", "{52FDA8A8-E12A-4D4F-BE44-E49F0C011642}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Tests", "Infrastructure.Tests\Infrastructure.Tests.csproj", "{4304B098-F4D2-43C3-9CA7-2919D032EC24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBank.Infrastructure.Tests", "ProjectBank.Infrastructure.Tests\ProjectBank.Infrastructure.Tests.csproj", "{4304B098-F4D2-43C3-9CA7-2919D032EC24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
