@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 using Infrastructure;
+using Core;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,11 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<ProjectBankContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("ProjectBank")));
 builder.Services.AddScoped<IProjectBankContext, ProjectBankContext>();
+builder.Services.AddScoped<IUniversityRepository, UniversityRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<ITagGroupRepository, TagGroupRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 
 var app = builder.Build();
 
@@ -23,6 +29,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
@@ -41,11 +48,13 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-await app.SeedAsync();
+if (!app.Environment.IsEnvironment("Integration"))
+{
+    await app.SeedAsync();
+}
 
 app.Run();

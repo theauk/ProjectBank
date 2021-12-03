@@ -47,36 +47,36 @@ namespace Infrastructure
             await Database.MigrateAsync();
 
             // Create universities
-            if (!await Universities.AnyAsync())
-            {
+            // if (!await Universities.AnyAsync())
+            // {
+                
+            // }
 
-            }
+            // // Create users
+            // if (!await Users.AnyAsync())
+            // {
 
-            // Create users
-            if (!await Users.AnyAsync())
-            {
+            // }
 
-            }
+            // // Create Projects
+            // if (!await Projects.AnyAsync())
+            // {
 
-            // Create Projects
-            if (!await Projects.AnyAsync())
-            {
+            // }
 
-            }
+            // // Create TagGroups
+            // if (!await TagGroups.AnyAsync())
+            // {
 
-            // Create TagGroups
-            if (!await TagGroups.AnyAsync())
-            {
+            // }
 
-            }
+            // // Create Tags
+            // if (!await Tags.AnyAsync())
+            // {
 
-            // Create Tags
-            if (!await Tags.AnyAsync())
-            {
+            // }
 
-            }
-
-            await SaveChangesAsync();
+            // await SaveChangesAsync();
         }
     }
 }
