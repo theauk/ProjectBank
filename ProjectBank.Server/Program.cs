@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
-using ProjectBank.Infrastructure;
-using ProjectBank.Core;
 using Microsoft.EntityFrameworkCore;
+using ProjectBank.Infrastructure;
+using ProjectBank.Core.IRepositories;
+using ProjectBank.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,9 +60,9 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-if (!app.Environment.IsEnvironment("Integration"))
-{
-    await app.SeedAsync();
-}
+// if (!app.Environment.IsEnvironment("Integration"))
+// {
+//     await app.SeedAsync();
+// }
 
 app.Run();

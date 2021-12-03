@@ -1,4 +1,8 @@
-namespace Infrastructure
+using ProjectBank.Infrastructure;
+using ProjectBank.Core.DTOs;
+using ProjectBank.Core.IRepositories;
+
+namespace ProjectBank.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {

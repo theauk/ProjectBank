@@ -1,4 +1,4 @@
-namespace Infrastructure
+namespace ProjectBank.Infrastructure
 {
     public class User
     {

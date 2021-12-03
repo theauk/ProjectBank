@@ -1,5 +1,3 @@
-using ProjectBank.Core;
-
 namespace ProjectBank.Core.DTOs
 {
     public record ProjectDTO
