@@ -1,16 +1,13 @@
-# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
-
-version: '3.9'
-
+version: "3.9"  # optional since v1.27.0
 services:
   db:
     image: postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: /run/secrets/db_password
-      POSTGRES_DB: projectbank
     ports:
-      - 1433:1433
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: db_password
+      POSTGRES_DB: 'projectbank'
     secrets:
       - db_password
 
@@ -41,3 +38,4 @@ secrets:
     file: ./.local/db_password.txt
   connection_string:
     file: ./.local/connection_string.txt
+  
