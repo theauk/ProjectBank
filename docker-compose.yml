@@ -15,7 +15,7 @@ services:
     image: server
     build:
       context: .
-      dockerfile: ./Server/Dockerfile
+      dockerfile: ./ProjectBank.Server/Dockerfile
     environment:
       ConnectionStrings__ProjectBank:
       ASPNETCORE_ENVIRONMENT: Development

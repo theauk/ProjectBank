@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 COPY ../ /source
-WORKDIR /source/Server
+WORKDIR /source/ProjectBank.Server
 
 RUN dotnet restore
 
