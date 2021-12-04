@@ -28,6 +28,21 @@ namespace ProjectBank.Shared
                     Name = "Semester",
                     Tags = Tag.SampleTagsSemesters,
                 },
+                new TagGroup {
+                    Id = 3,
+                    Name = "sem2",
+                    Tags= Tag.SampleTagsSemesters,
+                },
+                new TagGroup {
+                    Id = 4,
+                    Name = "sem3",
+                    Tags= Tag.SampleTagsSemesters,
+                },
+                new TagGroup {
+                    Id = 5,
+                    Name = "sem4",
+                    Tags= Tag.SampleTagsSemesters,
+                },
             };
         }
     }

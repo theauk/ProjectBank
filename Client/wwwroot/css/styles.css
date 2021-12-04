@@ -1,4 +1,6 @@
-﻿.ProjectContainer {
+﻿/* Project Overview */
+
+.ProjectContainer {
     margin-right: 15%;
 }
 
@@ -10,15 +12,18 @@
     border: 2px solid lightgrey;
     border-radius: 8px;
     padding: 1.2%;
+    overflow: scroll;
+    overflow-x: hidden;
 }
 
 .ProjectEntry {
     width: 100%;
-    background-color: #CCCCCC;
+    background-color: darkred;
     border-radius: 18px;
-    padding: 1;
+    padding: 0.2%;
     padding-right: 3%;
     padding-left: 3%;
+    margin-bottom: 10px;
 }
 
 .FilterContainer {
@@ -38,10 +43,12 @@
     border-radius: 8px;
     height: 92%;
     padding: 1.8%;
-    background-color:darkblue;
+    background-color: darkblue;
+    overflow: scroll;
+    overflow-x: hidden;
 }
 
-.TagField {
+.TagFieldSet {
     margin-bottom: 10px;
     padding-bottom: 5px;
     background-color: aquamarine;
@@ -52,3 +59,9 @@
 .TagFieldTitle {
     font-size: 30px;
 }
+
+/* Project Page */
+
+/* Project Creation */
+
+/* Admin Page */
