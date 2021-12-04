@@ -2,9 +2,20 @@
 
 <PageTitle>Admin Page</PageTitle>
 
-<h1>Hey there</h1>
-
-<p>There should be a way to manage tag group on this page.</p>
+<div class="TagGroupContainer">
+    @foreach (TagGroup tg in TagGroups)
+    {
+        <div class="TagGroupEntry">
+            <h1>@tg.Name</h1>
+        </div>
+    }
+</div>
 
 @code {
+    private IEnumerable<TagGroup> TagGroups = new List<TagGroup>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        TagGroups = TagGroup.SampleTagGroups;
+    }
 }

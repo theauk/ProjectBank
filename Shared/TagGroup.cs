@@ -19,29 +19,26 @@ namespace ProjectBank.Shared
                 new TagGroup
                 {
                     Id = 1,
+                    Name = "Programme",
+                    Tags = Tag.SampleTagsProgrammes,
+                },
+                new TagGroup
+                {
+                    Id = 2,
+                    Name = "Level",
+                    Tags = Tag.SampleTagsLevels,
+                },
+                new TagGroup
+                {
+                    Id = 3,
                     Name = "Topics",
                     Tags = Tag.SampleTagsTopics,
                 },
                 new TagGroup
                 {
-                    Id = 2,
+                    Id = 4,
                     Name = "Semester",
                     Tags = Tag.SampleTagsSemesters,
-                },
-                new TagGroup {
-                    Id = 3,
-                    Name = "sem2",
-                    Tags= Tag.SampleTagsSemesters,
-                },
-                new TagGroup {
-                    Id = 4,
-                    Name = "sem3",
-                    Tags= Tag.SampleTagsSemesters,
-                },
-                new TagGroup {
-                    Id = 5,
-                    Name = "sem4",
-                    Tags= Tag.SampleTagsSemesters,
                 },
             };
         }

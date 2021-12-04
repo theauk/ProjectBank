@@ -18,12 +18,12 @@ namespace ProjectBank.Shared
                 new Tag()
                 {
                     Id = 1,
-                    Name = "Math",
+                    Name = "Number Theory",
                 },
                 new Tag()
                 {
                     Id = 2,
-                    Name = "Crypto",
+                    Name = "Cryptography",
                 },
                 new Tag()
                 {
@@ -53,7 +53,7 @@ namespace ProjectBank.Shared
                 new Tag()
                 {
                     Id = 8,
-                    Name = "Philosophy",
+                    Name = "Ethics",
                 },
                 new Tag()
                 {
@@ -68,7 +68,7 @@ namespace ProjectBank.Shared
                 new Tag()
                 {
                     Id = 11,
-                    Name = "Anatomy",
+                    Name = "Cardio-vascular",
                 },
             };
         }
@@ -100,6 +100,68 @@ namespace ProjectBank.Shared
                 {
                     Id = 16,
                     Name = "End of days",
+                },
+            };
+        }
+        public static IEnumerable<Tag> SampleTagsLevels
+        {
+            get => new List<Tag>()
+            {
+                new Tag()
+                {
+                    Id= 17,
+                    Name = "Bachelor",
+                },
+                new Tag()
+                {
+                    Id= 18,
+                    Name = "Master",
+                },
+                new Tag()
+                {
+                    Id= 19,
+                    Name = "Ph.D",
+                },
+            };
+        }
+        public static IEnumerable<Tag> SampleTagsProgrammes
+        {
+            get => new List<Tag>()
+            {
+                new Tag()
+                {
+                    Id= 20,
+                    Name = "Computer Science",
+                },
+                new Tag()
+                {
+                    Id= 21,
+                    Name = "Software Development",
+                },
+                new Tag()
+                {
+                    Id= 22,
+                    Name = "Mathematics",
+                },
+                new Tag()
+                {
+                    Id= 23,
+                    Name = "Anatomy",
+                },
+                new Tag()
+                {
+                    Id= 24,
+                    Name = "Philosophy",
+                },
+                new Tag()
+                {
+                    Id= 25,
+                    Name = "Law",
+                },
+                new Tag()
+                {
+                    Id= 25,
+                    Name = "Athletics",
                 },
             };
         }

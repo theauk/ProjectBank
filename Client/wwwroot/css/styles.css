@@ -65,3 +65,17 @@
 /* Project Creation */
 
 /* Admin Page */
+
+.TagGroupContainer {
+    position: absolute;
+    margin: auto;
+    border: solid 2px lightgrey;
+    border-radius: 8px;
+    bottom: 50px;
+    top: 75px;
+    left: 20%;
+    right: 20%;
+    overflow: scroll;
+    overflow-x: hidden;
+    padding: 1%;
+}
