@@ -44,7 +44,7 @@
                         <ChildContent>
                             @if (tg.Tags.Count() <= 8)
                             {
-                                <RadzenCheckBoxList @bind-Value=@SelectedTagsOfTagGroup[tg.Id] TValue="int" Orientation="Orientation.Vertical" Change=@ApplyFilter>
+                                <RadzenCheckBoxList @bind-Value=@SelectedTagsOfTagGroup[tg.Id] TValue="int" Orientation="Radzen.Orientation.Vertical" Change=@ApplyFilter>
                                     <Items>
                                         @foreach (Tag t in tg.Tags)
                                         {
