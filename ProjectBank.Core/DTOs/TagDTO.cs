@@ -6,7 +6,10 @@ namespace ProjectBank.Core.DTOs
 
         [Required] 
         public string? Value { get; init; }
+        public int TagGroupId { get; init; }
     }
 
-    public record TagCreateDTO([Required] string value);
+    public record TagCreateDTO(
+        [Required] string value, 
+        int tagGroupId);
 }
