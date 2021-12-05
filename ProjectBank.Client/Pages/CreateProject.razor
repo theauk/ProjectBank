@@ -1,0 +1,11 @@
+﻿@page "/create"
+
+<PageTitle>Create Project Page</PageTitle>
+
+<p>Name:</p>
+<RadzenTextBox Change=@(args => text = args)/>
+<p>Currently says: @text</p>
+
+@code {
+    private string text = "";
+}
