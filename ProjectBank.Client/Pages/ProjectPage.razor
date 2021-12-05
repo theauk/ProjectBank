@@ -1,0 +1,49 @@
+﻿@page "/index/{Id:int}"
+
+<PageTitle>Project Page</PageTitle>
+
+@if (Id != -1)
+{
+    @if (project == null)
+    {
+        <h1>Loading...</h1>
+    }
+    else
+    {
+        <h1>@project.Name</h1>
+        <div>
+            <h2>Description</h2>
+            <p>Just pretend there's a description here.</p>
+        </div>
+        <div>
+            <h2>Supervisors</h2>
+            <p>Prof. P. Professorson</p>
+        </div>
+        <div>
+            <h2>Tags</h2>
+            <p>@project.TagString()</p>
+        </div>
+    }
+}
+else
+{
+    <h1>404 - Project not found.</h1>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Project? project = null;
+
+    protected override void OnParametersSet()
+    {
+        try
+        {
+            project = Project.GetProject(Id);
+        }
+        catch
+        {
+            Id = -1;
+        }
+    }
+}

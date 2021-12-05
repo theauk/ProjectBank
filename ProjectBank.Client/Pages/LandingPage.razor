@@ -1,0 +1,97 @@
+﻿@page "/index"
+
+<PageTitle>Landing Page</PageTitle>
+
+<div class="ProjectContainer">
+
+    <div class="ProjectList">
+    <h1>Projects</h1>
+        @if (Projects.Count() == 0)
+        {
+            <p>Loading projects...</p>
+        }
+        else
+        {
+            @foreach (Project p in Projects)
+            {
+                <div class="ProjectEntry">
+                    <a href="index/@p.Id">
+                        <h2>@p.Id: @p.Name</h2>
+                        <p style="text-align: right">@p.TagString()</p>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+    <div class="FilterContainer">
+        <h1>Filter</h1>
+        <div class="TagFilter">
+            @if (TagGroups.Count() == 0)
+            {
+                <p>Loading Filter...</p>
+            }
+            else
+            {
+                @foreach (TagGroup tg in TagGroups)
+                {
+                    <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
+                        <HeaderTemplate>
+                            <span style="vertical-align: middle">
+                                <b class="TagFieldTitle">@tg.Name.ToUpper()</b>
+                            </span>
+                        </HeaderTemplate>
+                        <ChildContent>
+                            @if (tg.Tags.Count() <= 8)
+                            {
+                                <RadzenCheckBoxList @bind-Value=@SelectedTagsOfTagGroup[tg.Id] TValue="int" Orientation="Orientation.Vertical" Change=@ApplyFilter>
+                                    <Items>
+                                        @foreach (Tag t in tg.Tags)
+                                        {
+                                            <RadzenCheckBoxListItem Text=@t.Name Value=@t.Id />
+                                        }
+                                    </Items>
+                                </RadzenCheckBoxList>
+                            }
+                            else
+                            {
+                                <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            @bind-Value=@SelectedTagsOfTagGroup[tg.Id] Multiple="true" Placeholder="Select..."
+                                            Data=@tg.Tags TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
+                            }
+                        </ChildContent>
+                    </RadzenFieldset>
+                }
+                <p>Selected tag IDs: @String.Join(", ", SelectedTags)</p>
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private IEnumerable<Project> Projects = new List<Project>();
+    private IEnumerable<TagGroup> TagGroups = new List<TagGroup>();
+    private Dictionary<int, IEnumerable<int>> SelectedTagsOfTagGroup = new Dictionary<int, IEnumerable<int>>();
+    // All selected tags, across all TagGroups.
+    private HashSet<int> SelectedTags => SelectedTagsOfTagGroup.Aggregate(
+        new HashSet<int>(),
+        (collection, item) => collection.Concat(item.Value).ToHashSet()
+    );
+
+    protected override async Task OnInitializedAsync()
+    {
+        Projects = Project.SampleProjects; //Lav rigtigt API kald når det er med ProjectBankContext
+        TagGroups = TagGroup.SampleTagGroups; //Lav rigtigt API kald når det er med ProjectBankContext
+
+        // Create a set of empty "selected" ids for each tag group.
+        foreach (TagGroup tg in TagGroups)
+            SelectedTagsOfTagGroup.Add(tg.Id, new List<int>());
+    }
+
+    protected async Task ApplyFilter()
+    {
+        
+        //Kode som sender API kald videre - Vi mangler API som kan håndtere Tag IDs
+        Console.WriteLine("Current tags: " + String.Join(", ", SelectedTags));
+    }
+}
