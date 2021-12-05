@@ -6,6 +6,11 @@ namespace ProjectBank.Infrastructure
         
         [Required]
         [StringLength(100)]
-        public string? Value { get; set; }
+        public string Value { get; set; }
+
+        public Tag(string value)
+        {
+            Value = value;
+        }
     }
 }
