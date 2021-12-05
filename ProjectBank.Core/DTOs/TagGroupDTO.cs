@@ -2,11 +2,11 @@ namespace ProjectBank.Core.DTOs
 {
     public record TagGroupDTO
     {
-        public TagGroupDTO(int id, string? name, HashSet<int> hashSet, bool supervisorCanAddTag, bool requiredInProject, int tagLimit)
+        public TagGroupDTO(int id, string? name, HashSet<TagDTO> tags, bool supervisorCanAddTag, bool requiredInProject, int tagLimit)
         {
             Id = id;
             Name = name;
-            HashSet = hashSet;
+            Tags   = tags;
             SupervisorCanAddTag = supervisorCanAddTag;
             RequiredInProject = requiredInProject;
             TagLimit = tagLimit;
@@ -17,16 +17,18 @@ namespace ProjectBank.Core.DTOs
         [Required] 
         public string? Name { get; set; }
 
-        public ISet<int>? tagIds { get; set; }
+        public ISet<int>? deletedTagIds { get; set; }
+
+        public ISet<TagCreateDTO>? newTags { get; set; }
 
         [Required] 
-        public bool SupervisorCanAddTag { get; set; }
+        public bool SupervisorCanAddTag { get; init; }
 
         [Required] 
-        public bool RequiredInProject { get; set; }
+        public bool RequiredInProject { get; init; }
 
-        public int TagLimit { get; set; }
-        public HashSet<int> HashSet { get; } = new HashSet<int>();
+        public int TagLimit { get; init; }
+        public HashSet<TagDTO> Tags { get; set; } = new HashSet<TagDTO>();
     }
 
     public record TagGroupCreateDTO
