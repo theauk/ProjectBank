@@ -50,6 +50,20 @@ public class TagGroupController : ControllerBase
     {
         throw new NotImplementedException();
     }
+    
+    [Authorize(Roles = "Admin")] 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTag(int taggroupid, int tagid)
+    {
+        throw new NotImplementedException();
+    }
+
+    [Authorize(Roles = "Admin, Supervisor")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PostTag(int taggroupid, [FromBody] TagCreateDTO tag)
+    {
+        throw new NotImplementedException();
+    }
 
 
 
