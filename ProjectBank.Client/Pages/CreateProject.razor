@@ -5,7 +5,7 @@
 
 <div class="CreateProjectContainer">
     <h3 style="text-align: center">Title</h3>
-    <RadzenTextBox class="ProjectTitle" Change=@(args => Name = args)/>
+    <RadzenTextBox class="ProjectTitle" Change=@(args => Name = args) />
     <h3 style="text-align: center">Description</h3>
     <RadzenTextArea class="ProjectTitle" Change=@(args => Description = args) />
     @if (TagGroups.Count() == 0)
@@ -41,7 +41,7 @@
             @bind-Value=@SupervisorIds Data=@Supervisors TextProperty="Name" ValueProperty="Id" Style="height: 200px;width: 30%; margin-left:35%; margin-right: 35%;"/>
     }
     <RadzenButton Click=@Submit Text="Publish" Icon="check_circle" ButtonStyle="ButtonStyle.Success" />
-</div>
+    </div>
 
 @code {
     private IEnumerable<TagGroup> TagGroups { get; set; } = new List<TagGroup>();
