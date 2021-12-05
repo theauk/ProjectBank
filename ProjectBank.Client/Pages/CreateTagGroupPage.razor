@@ -3,13 +3,13 @@
 <div class="row">
     <div class="col-xl-6">
         <h3 style="margin-top: 2rem">Titel*  (TextBox with placeholder)</h3>
-        <RadzenTextBox Placeholder="Insert titel here.." Change=@(args => SetTitle(args, "Titel")) />
+        <RadzenTextBox Placeholder="Insert title here.." Change=@(args => SetTitle(args, "Title")) />
 
         <h3 style="margin-top: 2rem">Tag Brug den her til at adde tags (TextBox with placeholder)</h3>
         <RadzenTextBox Placeholder="Insert tag name here.." Change=@(args => CreateAndAddTag(args, "Tag name")) />
         
         <h3 style="margin-top: 2rem">Set Tag limit  (TextBox with placeholder)</h3>
-        <RadzenTextBox Placeholder="Insert titel here.." Change=@(args => SetTagLimit(args, "Titel")) />
+        <RadzenTextBox Placeholder="Insert title here.." Change=@(args => SetTagLimit(args, "Title")) />
         
         <h3>Supervisors can add tag</h3>
         <RadzenSelectBar @bind-Value=@canAddTag TValue="bool" Change=@(args => OnChange(args, "Supervisors can add tag"))>
@@ -34,13 +34,6 @@
                            ValueProperty="TagID" Change=@(args => OnChange(args, "ListBox with multiple selection")) Style="height:200px" />
         </div>
     </div>
-    
-    
-    
-    <div class="col-xl-6">
-        <h3 style="margin-top: 2rem">Console til test</h3>
-        <EventConsole @ref=@console />
-    </div>
 </div>
 
 @code {
@@ -50,26 +43,19 @@
     
     //TagGroupDTO Importér tagGroup DTO og set values i stedet for nedenstående temp
     // TagGroupCreateDTO createDTO;
-    string TagGroupTitle;
+    string tagGroupTitle;
     int tagLimit = 999;
     HashSet<Tag> tagsTagGroup;
     int idCounter;
-
-
     bool canAddTag = false; // Skal tilføjes til TagGroupDTOen når vi sender den videre. Ændre @bind-Value=@canAddTag til  @bind-Value=@createDTO.canAddTag
-    
     bool isRequiredInProject = false; // Skal tilføjes til TagGroupDTOen når vi sender den videre. Ændre @bind-Value=@isRequiredInProject til  @bind-Value=@createDTO.isRequiredInProject
-    
-    EventConsole console;
-
     IEnumerable<string> multipleValues = new [] {"Tag 1", "Tag 2"};
-    
     IEnumerable<object> tags = new Tag[0];
 
     void SetTitle(string value, string name)
     {
         //createDTO.Name = value;
-        TagGroupTitle = value;
+        tagGroupTitle = value;
         OnChange(value, name);
     }
     
@@ -79,21 +65,17 @@
         tagLimit = Convert.ToInt32(value); //Handle string inputs exceptions
         OnChange(value, name);
     }
-    
 
     void CreateAndAddTag(string value, string name)
     {
          //createDTO.Tags.Add((new Tag() {Id = 1, Name = "Tag 1"} ) // Hvordan håndtere vi unikt id her??
         tagsTagGroup.Add(new Tag() {Id = idCounter, Name = value});
         idCounter++;
-        console.Log($"{name} was added to the list of tags {value}");
     }
 
     void OnChange(object value, string name) 
     {
         var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
-
-        console.Log($"{name} value changed to {str}");
     }
     
     protected override void OnInitialized()
