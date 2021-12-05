@@ -63,9 +63,18 @@
 
 /* Project Creation */
 
+.ProjectTitle {
+    width: 100%;
+}
+
+.CreateTagContainer {
+    margin: auto;
+    width: 70%;
+}
+
 /* Admin Page */
 
-.TagGroupContainer {
+.TagGroupContainer, .CreateProjectContainer {
     position: absolute;
     margin: auto;
     border: solid 2px lightgrey;
