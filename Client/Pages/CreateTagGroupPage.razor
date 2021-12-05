@@ -8,6 +8,9 @@
         <h3 style="margin-top: 2rem">Tag Brug den her til at adde tags (TextBox with placeholder)</h3>
         <RadzenTextBox Placeholder="Insert tag name here.." Change=@(args => CreateAndAddTag(args, "Tag name")) />
         
+        <h3 style="margin-top: 2rem">Set Tag limit  (TextBox with placeholder)</h3>
+        <RadzenTextBox Placeholder="Insert titel here.." Change=@(args => SetTagLimit(args, "Titel")) />
+        
         <h3>Supervisors can add tag</h3>
         <RadzenSelectBar @bind-Value=@canAddTag TValue="bool" Change=@(args => OnChange(args, "Supervisors can add tag"))>
             <Items>
@@ -48,7 +51,7 @@
     //TagGroupDTO Importér tagGroup DTO og set values i stedet for nedenstående temp
     // TagGroupCreateDTO createDTO;
     string TagGroupTitle;
-    int tagLimit;
+    int tagLimit = 999;
     HashSet<Tag> tagsTagGroup;
     int idCounter;
 
@@ -72,8 +75,8 @@
     
     void SetTagLimit(string value, string name)
     {
-        //createDTO.Name = ToInt32(value); 
-        tagLimit = Convert.ToInt32(value);
+        //createDTO.tagLimit = ToInt32(value);  
+        tagLimit = Convert.ToInt32(value); //Handle string inputs exceptions
         OnChange(value, name);
     }
     
