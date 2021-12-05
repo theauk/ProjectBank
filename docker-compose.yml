@@ -4,9 +4,14 @@ services:
     image: postgres
     ports:
       - '5433:5432'
+    entrypoint: entrypoints.sh
+    tmpfs:
+      - /run/secrets
+    volumes:
+      - './entrypoints.sh'
     environment:
       POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'postgress'
+      POSTGRES_PASSWORD: /run/secrets/db_password
       POSTGRES_DB: 'projectbank'
     secrets:
       - db_password
