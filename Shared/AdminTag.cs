@@ -168,7 +168,7 @@ namespace ProjectBank.Shared
                 },
             };
         }
-        public IEnumerable<AdminTag> AllTags
+        public static IEnumerable<AdminTag> AllTags
         {
             get => SampleTagsTopics
                 .Concat(SampleTagsSemesters)
