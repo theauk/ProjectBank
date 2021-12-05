@@ -6,7 +6,7 @@ Write-Host "CREATING DEV CERTIFICATE FOR OS $Env:OS"
 if ($IsWindows) {
     dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\aspnetapp.pfx -p localhost
  } elseif ($IsMacOS -or $IsLinux) {
-    dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p localhost
+    dotnet dev-certs https -ep $env:HOME/.aspnet/https/aspnetapp.pfx -p localhost
 }
 
 dotnet dev-certs https --trust
