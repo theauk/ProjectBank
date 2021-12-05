@@ -1,7 +1,7 @@
 version: "3.9"  # optional since v1.27.0
 services:
   db:
-    image: postgres:latest
+    image: 'postgres:latest'
     ports:
       - '5433:5432'
     environment:
@@ -15,7 +15,7 @@ services:
     image: server
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: './Dockerfile'
     environment:
       ConnectionStrings__ProjectBank:
       ASPNETCORE_ENVIRONMENT: Development
@@ -23,8 +23,8 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
       ASPNETCORE_Kestrel__Certificates__Default__Password: localhost
     ports:
-      - 5077:80
-      - 7207:443
+      - '5077:80'
+      - '7207:443'
     depends_on:
       - db
     secrets:
@@ -35,7 +35,7 @@ services:
 
 secrets:
   db_password:
-    file: .local/db_password.txt
+    file: './.local/db_password.txt'
   connection_string:
-    file: .local/connection_string.txt
+    file: './.local/connection_string.txt'
   

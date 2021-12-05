@@ -19,7 +19,7 @@ namespace ProjectBank.Infrastructure
 
         private static async Task SeedProjectBankAsync(ProjectBankContext context)
         {
-            //await context.Database.MigrateAsync();
+            await context.Database.MigrateAsync();
             
             // // Create universities
             // if (!await context.Universities.AnyAsync())
@@ -51,7 +51,7 @@ namespace ProjectBank.Infrastructure
 
             // }
 
-            //await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
     }
 }
