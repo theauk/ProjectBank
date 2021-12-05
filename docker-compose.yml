@@ -1,17 +1,12 @@
 version: "3.9"  # optional since v1.27.0
 services:
   db:
-    image: postgres
+    image: postgres:latest
     ports:
       - '5433:5432'
-    entrypoint: entrypoints.sh
-    tmpfs:
-      - /run/secrets
-    volumes:
-      - './entrypoints.sh'
     environment:
       POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: /run/secrets/db_password
+      POSTGRES_PASSWORD_FILE: run/secrets/db_password
       POSTGRES_DB: 'projectbank'
     secrets:
       - db_password
@@ -20,12 +15,12 @@ services:
     image: server
     build:
       context: .
-      dockerfile: ./ProjectBank.Server/Dockerfile
+      dockerfile: ./Dockerfile
     environment:
       ConnectionStrings__ProjectBank:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:;http://+
-      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/dev_cert.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
       ASPNETCORE_Kestrel__Certificates__Default__Password: localhost
     ports:
       - 5077:80
@@ -33,16 +28,14 @@ services:
     depends_on:
       - db
     secrets:
-    - source: connection_string
-      target: ConnectionStrings__ProjectBank
+      - source: connection_string
+        target: ConnectionStrings__ProjectBank
     volumes:
-      - './conf.d/https/:/https/'
+      - '~/.aspnet/https/:/https/'
 
 secrets:
   db_password:
     file: .local/db_password.txt
   connection_string:
     file: .local/connection_string.txt
-  certificate:
-    file: .local/https/dev_cert.pfx
   
