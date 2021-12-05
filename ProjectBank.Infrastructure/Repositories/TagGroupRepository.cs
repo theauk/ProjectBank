@@ -59,5 +59,15 @@ namespace ProjectBank.Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
+        
+        public async Task<Response> DeleteTagAsync(int tagGroupId, int tagId)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public async Task<Response> AddTagAsync(int tagGroupId, int tagId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
