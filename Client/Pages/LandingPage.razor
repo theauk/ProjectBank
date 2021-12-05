@@ -72,18 +72,11 @@
     private IEnumerable<Project> Projects = new List<Project>();
     private IEnumerable<TagGroup> TagGroups = new List<TagGroup>();
     private Dictionary<int, IEnumerable<int>> SelectedTagsOfTagGroup = new Dictionary<int, IEnumerable<int>>();
-    private IEnumerable<int> SelectedTags
-    {
-        // Loops over SelectedTagsOfTagGroup and returns all selected tag ids.
-        get => SelectedTagsOfTagGroup.Aggregate(
-            new List<int>(),
-            (collection, item) =>
-            {
-                collection.AddRange(item.Value);
-                return collection;
-            }
-        );
-    }
+    // All selected tags, across all TagGroups.
+    private HashSet<int> SelectedTags => SelectedTagsOfTagGroup.Aggregate(
+        new HashSet<int>(),
+        (collection, item) => collection.Concat(item.Value).ToHashSet()
+    );
 
     protected override async Task OnInitializedAsync()
     {

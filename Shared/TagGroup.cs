@@ -12,6 +12,9 @@ namespace ProjectBank.Shared
         public int Id { get; set; }
         public string Name { get; set; }
         public IEnumerable<Tag> Tags { get; set; }
+        public bool IsRequired { get; set; } = false;
+        public bool Locked { get; set; } = false;
+        public int MaxCount { get; set; } = 0;
         public static IEnumerable<TagGroup> SampleTagGroups
         {
             get => new List<TagGroup>

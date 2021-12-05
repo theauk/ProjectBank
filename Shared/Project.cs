@@ -42,7 +42,7 @@ namespace ProjectBank.Shared
 
         public static Project GetProject(int id)
         {
-            return SampleProjects.Where(p => p.Id == id).First();
+            return SampleProjects.Where(p => p.Id == id).First();;
         }
 
         public string TagString()

@@ -165,5 +165,9 @@ namespace ProjectBank.Shared
                 },
             };
         }
+        public static IEnumerable<Tag> AllTags => SampleTagsTopics
+            .Concat(SampleTagsSemesters)
+            .Concat(SampleTagsLevels)
+            .Concat(SampleTagsProgrammes);
     }
 }
