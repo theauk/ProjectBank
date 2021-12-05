@@ -1,3 +1,5 @@
+# Use this script to generate a valid dev certificate and start the ProjectBank via docker-compose.
+
 # Ensure certificate is present
 Write-Host "CREATING DEV CERTIFICATE FOR OS $Env:OS"
 
