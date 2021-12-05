@@ -13,9 +13,31 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, TagGroupDTO)> CreateAsync(TagGroupCreateDTO tagGroup)
+        public async Task<Response> CreateAsync(TagGroupCreateDTO tagGroup)
         {
-            throw new NotImplementedException();
+            var tags = new HashSet<Tag>();
+            foreach (var tagDto in tagGroup.TagDTOs)
+            {
+                var tag = new Tag
+                {
+                    Value = tagDto.Value
+                };
+                tags.Add(tag);
+            }
+
+            var entity = new TagGroup
+            {
+                Name = tagGroup.Name,
+                Tags = tags,
+                SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
+                RequiredInProject = tagGroup.RequiredInProject,
+                TagLimit = tagGroup.TagLimit
+            };
+            _context.TagGroups.Add(entity);
+
+            await _context.SaveChangesAsync();
+
+            return Response.Created;
         }
 
         public async Task<Response> DeleteAsync(int tagGroupId)

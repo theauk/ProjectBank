@@ -30,9 +30,11 @@ public class TagGroupController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
+    [ProducesResponseType(201)]
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
     {
-        throw new NotImplementedException();
+        var created = await _repository.CreateAsync(tagGroup);
+        return CreatedAtAction(nameof(Get), created);
     }
 
     [Authorize(Roles = "Admin")] 

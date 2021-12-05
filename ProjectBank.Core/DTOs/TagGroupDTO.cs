@@ -17,9 +17,9 @@ namespace ProjectBank.Core.DTOs
 
     public record TagGroupCreateDTO
     {
-        [Required] public string? Name { get; init; }
+        [Required] public string Name { get; init; }
 
-        public ISet<TagDTO>? TagDTOs { get; init; }
+        public ISet<TagCreateDTO> TagDTOs { get; init; }
 
         [Required] public bool SupervisorCanAddTag { get; init; }
 
