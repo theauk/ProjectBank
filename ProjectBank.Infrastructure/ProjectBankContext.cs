@@ -40,15 +40,5 @@ namespace ProjectBank.Infrastructure
                 .IsUnique();
             });
         }
-
-        public static void Seed(ProjectBankContext context)
-        {
-            // Create data set
-
-
-            
-            // ----------------
-            context.SaveChanges();
-        }
     }
 }
