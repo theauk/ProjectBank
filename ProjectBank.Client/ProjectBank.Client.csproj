@@ -26,4 +26,8 @@
     <ProjectReference Include="..\ProjectBank.Shared\ProjectBank.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="Pages\Counter.razor" />
+  </ItemGroup>
+
 </Project>

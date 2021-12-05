@@ -33,6 +33,8 @@
                            
                            ValueProperty="TagID" Change=@(args => OnChange(args, "ListBox with multiple selection")) Style="height:200px" />
         </div>
+        
+        <RadzenButton Click=@(args => Submit()) Text="Publish" Icon="check_circle" ButtonStyle="ButtonStyle.Success" />
     </div>
 </div>
 
@@ -89,6 +91,11 @@
         tags.Append(new Tag() {Id = 4, Name = "Tag 4"});
         tags.Append(new Tag() {Id = 5, Name = "Tag 5"});
         tags.Append(new Tag() {Id = 6, Name = "Tag 6"});
+        
+    }
+
+    void Submit()
+    {
         
     }
 
