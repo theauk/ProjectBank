@@ -1,14 +1,17 @@
 ﻿@page "/TagGroupCreation"
+@using System.Text.Json
 
+
+@*
 <div class="row">
     <div class="col-xl-6">
-        <h3 style="margin-top: 2rem">Titel*  (TextBox with placeholder)</h3>
+        <h3 style="margin-top: 2rem">Titel*</h3>
         <RadzenTextBox Placeholder="Insert title here.." Change=@(args => SetTitle(args, "Title")) />
 
-        <h3 style="margin-top: 2rem">Tag Brug den her til at adde tags (TextBox with placeholder)</h3>
+        <h3 style="margin-top: 2rem">Tag Brug den her til at adde tags</h3>
         <RadzenTextBox Placeholder="Insert tag name here.." Change=@(args => CreateAndAddTag(args, "Tag name")) />
         
-        <h3 style="margin-top: 2rem">Set Tag limit  (TextBox with placeholder)</h3>
+        <h3 style="margin-top: 2rem">Set Tag limit</h3>
         <RadzenTextBox Placeholder="Insert title here.." Change=@(args => SetTagLimit(args, "Title")) />
         
         <h3>Supervisors can add tag</h3>
@@ -36,6 +39,36 @@
         
         <RadzenButton Click=@(args => Submit()) Text="Publish" Icon="check_circle" ButtonStyle="ButtonStyle.Success" />
     </div>
+</div>*@
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="row">
+            <div class="col">
+                <RadzenTemplateForm TItem="TagGroup" Data=@_tagGroup Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+                    <div class="row" style="margin-bottom: 48px">
+                            <div class="col-md-4 align-right">
+                                <RadzenLabel Text="Tag Group Name" />
+                            </div>
+                            <div class="col">
+                                <RadzenTextBox style="display: block" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
+                                <RadzenRequiredValidator Component="TagGroupName" Text="Tag group name is required" Popup=@popup Style="position: absolute"/>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 48px">
+                            <div class="col-md-4">
+                                <RadzenLabel Text="Last Name" />
+                            </div>
+                            <div class="col">
+                                <RadzenTextBox style="display: block" Name="LastName" @bind-Value=@_tagGroup.LastName />
+                                <RadzenRequiredValidator Component="LastName" Text="Last name is required" Popup=@popup Style="position: absolute"/>
+                            </div>
+                        </div>
+                        <RadzenButton ButtonType="ButtonType.Submit" Text="Submit" ></RadzenButton>
+                </RadzenTemplateForm>
+            </div>
+        </div>
+    </div>
 </div>
 
 @code {
@@ -45,7 +78,7 @@
     
     //TagGroupDTO Importér tagGroup DTO og set values i stedet for nedenstående temp
     // TagGroupCreateDTO createDTO;
-    string tagGroupTitle;
+    /*string tagGroupTitle;
     int tagLimit = 999;
     HashSet<Tag> tagsTagGroup;
     int idCounter;
@@ -97,6 +130,27 @@
     void Submit()
     {
         
+    }*/
+    
+    class TagGroup
+    {
+        public string Name { get; set; }
+        public string LastName { get; set; }
+    }
+
+    bool popup;
+
+    TagGroup _tagGroup = new TagGroup();
+    EventConsole console;
+
+    void OnSubmit(TagGroup tagGroup)
+    {
+        Console.WriteLine($"Submit: {JsonSerializer.Serialize(tagGroup, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
     }
 
 }
