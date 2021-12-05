@@ -26,16 +26,16 @@ public class TagGroupRepositoryTest : IDisposable
         var context = new ProjectBankContext(builder.Options);
         context.Database.EnsureCreated();
 
-        var numtheo = new Tag() { Id = 1, Value = "Number Theory",};
-        var crypto = new Tag() {Id = 2, Value = "Cryptography",};
-        var setTheo = new Tag() {Id = 3, Value = "Set Theory",};
-        var regex = new Tag() {Id = 4, Value = "RegEx's",};
-        var autom = new Tag() {Id = 5, Value = "Automatas",};
+        var numtheo = new Tag("Number Theory") {Id = 1};
+        var crypto = new Tag("Cryptography") {Id = 2};
+        var setTheo = new Tag("Set Theory") {Id = 3};
+        var regex = new Tag( "RegEx's") {Id = 4};
+        var autom = new Tag("Automatas") {Id = 5};
 
-        var spring22 = new Tag() {Id = 12, Value = "Spring 2022",};
-        var autumn22 = new Tag() {Id = 13, Value = "Autumn 2022",};
-        var spring23 = new Tag() {Id = 14, Value = "Spring 2023",};
-        var autumn23 = new Tag() {Id = 15, Value = "Autumn 2023",};
+        var spring22 = new Tag("Spring 2022") {Id = 12,};
+        var autumn22 = new Tag("Autumn 2022") {Id = 13};
+        var spring23 = new Tag("Spring 2023") {Id = 14};
+        var autumn23 = new Tag("Autumn 2023") {Id = 15};
 
         var semester = new TagGroup()
         {
@@ -76,11 +76,11 @@ public class TagGroupRepositoryTest : IDisposable
         var taggroup = new TagGroupCreateDTO()
         {
             Name = "Level",
-            TagDTOs = new HashSet<TagCreateDTO>()
+            Tags = new HashSet<TagCreateDTO>()
             {
-                new TagCreateDTO(){Value = "Bachelor"},
-                new TagCreateDTO(){Value = "Master"},
-                new TagCreateDTO(){Value = "PhD"}
+                new TagCreateDTO("Bachelor"),
+                new TagCreateDTO("Master"),
+                new TagCreateDTO("PhD")
             },
             SupervisorCanAddTag = false,
             RequiredInProject = false,
