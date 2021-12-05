@@ -5,27 +5,33 @@ namespace ProjectBank.Core.DTOs
         public int Id { get; init; }
 
         [Required]
-        public int Name { get; init; }
+        public string Name { get; init; }
 
         [Required]
         [StringLength(400)]
         public string? Description { get; init; }
 
         [Required]
-        public ISet<TagDTO>? TagDTOs { get; init; }
+        public ISet<TagDTO>? Tags { get; init; }
+        
+        [Required]
+        public ISet<UserDTO>? Supervisors { get; set; }
     }
 
     public record ProjectCreateDTO
     {
         [Required]
-        public int Name { get; init; }
+        public string Name { get; init; }
 
         [Required]
         [StringLength(400)]
         public string? Description { get; init; }
 
         [Required]
-        public ISet<TagDTO>? TagDTOs { get; init; }
+        public ISet<int>? TagIds { get; init; }
+
+        [Required]
+        public ISet<int>? UserIds { get; init; }
     }
 
     public record ProjectUpdateDTO : ProjectCreateDTO { }

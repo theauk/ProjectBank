@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ProjectBank.Core\ProjectBank.Core.csproj" />
     <ProjectReference Include="..\ProjectBank.Shared\ProjectBank.Shared.csproj" />
   </ItemGroup>
 
