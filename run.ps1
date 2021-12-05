@@ -2,6 +2,7 @@
 
 # Ensure certificate is present
 Write-Host "CREATING DEV CERTIFICATE FOR OS $Env:OS"
+dotnet dev-certs https --clean
 
 if ($IsWindows) {
     dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\aspnetapp.pfx -p localhost

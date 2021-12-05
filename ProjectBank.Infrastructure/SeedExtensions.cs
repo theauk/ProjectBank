@@ -19,39 +19,39 @@ namespace ProjectBank.Infrastructure
 
         private static async Task SeedProjectBankAsync(ProjectBankContext context)
         {
-            await context.Database.MigrateAsync();
+            //await context.Database.MigrateAsync();
             
-            // Create universities
-            if (!await context.Universities.AnyAsync())
-            {
+            // // Create universities
+            // if (!await context.Universities.AnyAsync())
+            // {
 
-            }
+            // }
 
-            // Create users
-            if (!await context.Users.AnyAsync())
-            {
+            // // Create users
+            // if (!await context.Users.AnyAsync())
+            // {
 
-            }
+            // }
 
-            // Create Projects
-            if (!await context.Projects.AnyAsync())
-            {
+            // // Create Projects
+            // if (!await context.Projects.AnyAsync())
+            // {
 
-            }
+            // }
 
-            // Create TagGroups
-            if (!await context.TagGroups.AnyAsync())
-            {
+            // // Create TagGroups
+            // if (!await context.TagGroups.AnyAsync())
+            // {
 
-            }
+            // }
 
-            // Create Tags
-            if (!await context.Tags.AnyAsync())
-            {
+            // // Create Tags
+            // if (!await context.Tags.AnyAsync())
+            // {
 
-            }
+            // }
 
-            await context.SaveChangesAsync();
+            //await context.SaveChangesAsync();
         }
     }
 }
