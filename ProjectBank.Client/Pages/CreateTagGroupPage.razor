@@ -1,6 +1,8 @@
 ﻿@page "/TagGroupCreation"
 @using System.Text.Json
 
+<h1 style="margin-bottom: 48px">Create Tag Group</h1>
+
 <div class="row">
     <div class="col-xl-6">
         <div class="row">
@@ -8,7 +10,7 @@
                 <RadzenTemplateForm TItem="TagGroup" Data=@_tagGroup Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
                     <div class="row" style="margin-bottom: 48px">
                         <div class="col-md-4 align-right">
-                            <RadzenLabel Text="Tag group Name"/>
+                            <RadzenLabel Text="Name"/>
                         </div>
                         <div class="col">
                             <RadzenTextBox style="display: block" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
@@ -17,37 +19,48 @@
                     </div>
                     <div class="row" style="margin-bottom: 48px">
                         <div class="col-md-4">
-                            <RadzenLabel Text="Predefined tags"/>
+                            <RadzenLabel Text="Predefined Tags"/>
                         </div>
                         <div class="col">
-                            <TagSelector></TagSelector>
+                            <Autocomplete class="autocompleteTags"
+                                          TItem="Tag"
+                                          TValue="string"
+                                          Data="@Tags"
+                                          TextField="@(( item ) => item.Name)"
+                                          ValueField="@(( item ) => item.Id.ToString())"
+                                          Placeholder="Search..."
+                                          Multiple
+                                          FreeTyping
+                                          @bind-SelectedValues="multipleSelectionData"
+                                          @bind-SelectedTexts="multipleSelectionTexts">
+                            </Autocomplete>
                         </div>
                     </div>
-                    <div class="row" style="margin-bottom: 48px">
+                    <div class="row supervisorTagsLimit" style="margin-bottom: 48px">
                         <div class="col-md-4">
-                            <RadzenLabel Text="Supervisor tags limit"/>
+                            <RadzenLabel Text="Maximum Amount of Tags"/>
                         </div>
                         <div class="col">
-                            <RadzenNumeric TValue="int" Min="0" />
+                            <RadzenNumeric TValue="int?" Placeholder="Unlimited" Min="1"/>
                         </div>
                     </div>
-                    <div class="row" style="margin-bottom: 48px">
+                    <div class="row supervisorAddTags" style="margin-bottom: 48px">
                         <div class="col-md-4">
-                            <RadzenLabel Text="Supervisors can add tags to the tag group"/>
+                            <RadzenLabel Text="Supervisors Can Add Tags"/>
                         </div>
                         <div class="col">
                             <RadzenCheckBox @bind-Value=@_tagGroup.SupervisorCanAdd  Name="SupervisorCanAdd" TValue="bool" />
                         </div>
                     </div>
-                    <div class="row" style="margin-bottom: 48px">
+                    <div class="row requiredInProject" style="margin-bottom: 48px">
                         <div class="col-md-4">
-                            <RadzenLabel Text="Required in project"/>
+                            <RadzenLabel Text="Tag Group Required"/>
                         </div>
                         <div class="col">
                             <RadzenCheckBox @bind-Value=@_tagGroup.RequiredInProject  Name="RequiredInProject" TValue="bool" />
                         </div>
                     </div>
-                    <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
+                    <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Submit" class="createTagGroupSubmit"></RadzenButton>
                 </RadzenTemplateForm>
             </div>
         </div>
@@ -55,6 +68,36 @@
 </div>
 
 @code {
+    
+    public IEnumerable<Tag> Tags = new List<Tag>();
+    List<string> multipleSelectionData;
+    List<string> multipleSelectionTexts = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var t1 = new Tag
+        {
+            Name = "Machine Learning",
+            Id = 1
+        };
+        var t2 = new Tag
+        {
+            Name = "Algorithms",
+            Id = 2
+        };
+        var t3 = new Tag
+        {
+            Name = "C#",
+            Id = 3
+        };
+
+        Tags = Tags.Append(t1);
+        Tags = Tags.Append(t2);
+        Tags = Tags.Append(t3);
+        
+        multipleSelectionData = new List<string>() { Tags.ElementAt( 1 ).Id.ToString(), Tags.ElementAt( 2 ).Id.ToString() };
+        await base.OnInitializedAsync();
+    }
 
     class TagGroup
     {

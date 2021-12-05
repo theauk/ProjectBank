@@ -1,4 +1,9 @@
-﻿/* Project Overview */
+﻿:root {
+    --submitButton: #3c5ebe;
+    --tagBadgeColor: #7474ad;
+}
+
+/* Project Overview */
 
 .ProjectContainer {
     margin-right: 15%;
@@ -86,4 +91,25 @@
     overflow: scroll;
     overflow-x: hidden;
     padding: 1%;
+}
+
+.autocompleteTags {
+    background-color: white;
+    font-size: 18px;
+}
+
+.badge.badge-primary.ml-2 {
+    background-color: var(--tagBadgeColor);
+}
+
+.rz-chkbox-box.rz-state-active {
+    background-color: var(--tagBadgeColor);
+}
+
+.rz-spinner-button-icon.rzi.rzi-caret-up, .rz-spinner-button-icon.rzi.rzi-caret-down {
+    background-color: #b1b4b6;
+}
+
+.rz-button.rz-button-md.btn-primary.createTagGroupSubmit {
+    background-color: var(--submitButton);
 }
