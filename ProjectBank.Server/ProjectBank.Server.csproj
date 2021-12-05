@@ -10,11 +10,19 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\ProjectBank.Client.csproj" />
-    <ProjectReference Include="..\Shared\ProjectBank.Shared.csproj" />
+    <ProjectReference Include="..\ProjectBank.Client\ProjectBank.Client.csproj" />
+    <ProjectReference Include="..\ProjectBank.Core\ProjectBank.Core.csproj" />
+    <ProjectReference Include="..\ProjectBank.Shared\ProjectBank.Shared.csproj" />
+    <ProjectReference Include="..\ProjectBank.Infrastructure\ProjectBank.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
