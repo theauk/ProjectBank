@@ -41,7 +41,7 @@
                             <RadzenLabel Text="Maximum Amount of Tags"/>
                         </div>
                         <div class="col">
-                            <RadzenNumeric @bind-Value=@_tagGroup.TagLimit TValue="int" Placeholder="Unlimited" Min="1" />
+                            <RadzenNumeric @bind-Value=@MaxLimit TValue="int?" Placeholder="No Limit" Min="1" />
                         </div>
                     </div>
                     <div class="row supervisorAddTags" style="margin-bottom: 48px">
@@ -70,6 +70,7 @@
 @code {
     // TODO: Fix enter tryk i tag søge feltet 
 
+    int? MaxLimit; // brug den her men hvis null skal den være 999
     TagGroupCreateDTO _tagGroup = new();
 
     List<String> _multipleSelectionData;
