@@ -17,15 +17,15 @@ namespace ProjectBank.Core.DTOs
 
     public record TagGroupCreateDTO
     {
-        [Required] public string? Name { get; init; }
+        [Required] public string? Name { get; set; }
 
-        public ISet<TagDTO>? TagDTOs { get; init; }
+        public ISet<TagCreateDTO>? TagCreateDTOs { get; set; }
 
-        [Required] public bool SupervisorCanAddTag { get; init; }
+        [Required] public bool SupervisorCanAddTag { get; set; }
 
-        [Required] public bool RequiredInProject { get; init; }
+        [Required] public bool RequiredInProject { get; set; }
 
-        public int TagLimit { get; init; }
+        public int TagLimit { get; set; }
     }
 
     public record TagGroupUpdateDTO : TagCreateDTO

@@ -1,3 +1,5 @@
+using ProjectBank.Infrastructure.Entities;
+
 namespace ProjectBank.Infrastructure
 {
     public class ProjectBankContext : DbContext, IProjectBankContext

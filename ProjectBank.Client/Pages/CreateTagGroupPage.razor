@@ -7,7 +7,7 @@
     <div class="col-xl-6">
         <div class="row">
             <div class="col">
-                <RadzenTemplateForm TItem="TagGroup" Data=@_tagGroup Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+                <RadzenTemplateForm TItem="TagGroupCreateDTO" Data=@_tagGroup Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
                     <div class="row" style="margin-bottom: 48px">
                         <div class="col-md-4 align-right">
                             <RadzenLabel Text="Name"/>
@@ -22,17 +22,17 @@
                             <RadzenLabel Text="Predefined Tags"/>
                         </div>
                         <div class="col">
-                            <Autocomplete class="autocompleteTags"
-                                          TItem="Tag"
+                            <Autocomplete class="autocompleteTags" 
+                                          TItem="TagCreateDTO"
                                           TValue="string"
-                                          Data="@Tags"
-                                          TextField="@(( item ) => item.Name)"
-                                          ValueField="@(( item ) => item.Id.ToString())"
+                                          Data="@_tagGroup.TagCreateDTOs"
+                                          TextField="@(( item ) => item.Value)"
+                                          ValueField="@(( item ) => item.Value)"
                                           Placeholder="Search..."
                                           Multiple
                                           FreeTyping
-                                          @bind-SelectedValues="multipleSelectionData"
-                                          @bind-SelectedTexts="multipleSelectionTexts">
+                                          @bind-SelectedValues="_multipleSelectionData"
+                                          @bind-SelectedTexts="_multipleSelectionTexts">
                             </Autocomplete>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                             <RadzenLabel Text="Maximum Amount of Tags"/>
                         </div>
                         <div class="col">
-                            <RadzenNumeric TValue="int?" Placeholder="Unlimited" Min="1"/>
+                            <RadzenNumeric @bind-Value=@_tagGroup.TagLimit TValue="int" Placeholder="Unlimited" Min="1" />
                         </div>
                     </div>
                     <div class="row supervisorAddTags" style="margin-bottom: 48px">
@@ -49,7 +49,7 @@
                             <RadzenLabel Text="Supervisors Can Add Tags"/>
                         </div>
                         <div class="col">
-                            <RadzenCheckBox @bind-Value=@_tagGroup.SupervisorCanAdd  Name="SupervisorCanAdd" TValue="bool" />
+                            <RadzenCheckBox @bind-Value=@_tagGroup.SupervisorCanAddTag Name="SupervisorCanAdd" TValue="bool" />
                         </div>
                     </div>
                     <div class="row requiredInProject" style="margin-bottom: 48px">
@@ -57,7 +57,7 @@
                             <RadzenLabel Text="Tag Group Required"/>
                         </div>
                         <div class="col">
-                            <RadzenCheckBox @bind-Value=@_tagGroup.RequiredInProject  Name="RequiredInProject" TValue="bool" />
+                            <RadzenCheckBox @bind-Value=@_tagGroup.RequiredInProject Name="RequiredInProject" TValue="bool" />
                         </div>
                     </div>
                     <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Submit" class="createTagGroupSubmit"></RadzenButton>
@@ -68,49 +68,35 @@
 </div>
 
 @code {
-    
-    public IEnumerable<Tag> Tags = new List<Tag>();
-    List<string> multipleSelectionData;
-    List<string> multipleSelectionTexts = new();
+    // TODO: Fix enter tryk i tag søge feltet 
+
+    TagGroupCreateDTO _tagGroup = new();
+
+    List<String> _multipleSelectionData;
+    List<String> _multipleSelectionTexts = new List<string>();
+    int? _maxCount;
     
     protected override async Task OnInitializedAsync()
     {
-        var t1 = new Tag
-        {
-            Name = "Machine Learning",
-            Id = 1
-        };
-        var t2 = new Tag
-        {
-            Name = "Algorithms",
-            Id = 2
-        };
-        var t3 = new Tag
-        {
-            Name = "C#",
-            Id = 3
-        };
-
-        Tags = Tags.Append(t1);
-        Tags = Tags.Append(t2);
-        Tags = Tags.Append(t3);
-        
-        multipleSelectionData = new List<string>() { Tags.ElementAt( 1 ).Id.ToString(), Tags.ElementAt( 2 ).Id.ToString() };
+        // here we need to read in the existing tags for the current tag group – so we need to get the tag group ID somehow
+        _multipleSelectionData = new List<string>();
         await base.OnInitializedAsync();
     }
 
-    class TagGroup
+    void OnSubmit(TagGroupCreateDTO tagGroup)
     {
-        public string Name { get; set; }
-        public string LastName { get; set; }
-        public bool SupervisorCanAdd { get; set; }
-        public bool RequiredInProject { get; set; }
-    }
-
-    TagGroup _tagGroup = new TagGroup();
-
-    void OnSubmit(TagGroup tagGroup)
-    {
+        // here we should submit the _tagGroup 
+        // the "final" tags are in a list of strings. That needs to be turned into tags 
+        Console.WriteLine("Submit");
+        
+        foreach (var VARIABLE in _multipleSelectionData)
+        {
+            Console.WriteLine("Data: " + VARIABLE);
+        }
+        foreach (var VARIABLE in _multipleSelectionTexts)
+        {
+            Console.WriteLine("Text: " + VARIABLE);
+        }
         Console.WriteLine($"Submit: {JsonSerializer.Serialize(tagGroup, new JsonSerializerOptions() {WriteIndented = true})}");
     }
 
