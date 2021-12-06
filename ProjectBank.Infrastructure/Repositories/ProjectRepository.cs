@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ProjectBank.Infrastructure;
 using ProjectBank.Core.DTOs;
 using ProjectBank.Core.IRepositories;
@@ -13,7 +16,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, ProjectDTO)> CreateAsync(ProjectCreateDTO project)
+        public async Task<(Response, int)> CreateAsync(ProjectCreateDTO project)
         {
             throw new NotImplementedException();
         }
@@ -24,6 +27,11 @@ namespace ProjectBank.Infrastructure.Repositories
         }
 
         public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadFilteredAsync(IEnumerable<int> tagIds)
         {
             throw new NotImplementedException();
         }

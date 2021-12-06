@@ -1,5 +1,8 @@
 ﻿@page "/"
 @inject HttpClient Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
 
 <PageTitle>Landing Page</PageTitle>
 
@@ -7,18 +10,22 @@
 
     <div class="ProjectList">
     <h1>Projects</h1>
-        @if (Projects.Count() == 0)
+        @if (!_loaded)
         {
-            <p>Loading projects...</p>
+            <p>Loading...</p>
+        }
+        else if (!Projects.Any())
+        {
+            <p>No results</p>
         }
         else
         {
-            @foreach (Project p in Projects)
+            @foreach (var p in Projects)
             {
                 <div class="ProjectEntry">
                     <a href="index/@p.Id">
                         <h2>@p.Id: @p.Name</h2>
-                        <p style="text-align: right">@p.TagString()</p>
+                        <p style="text-align: right">@String.Join(", ", p.Tags.Select(t => t.Value))</p>
                     </a>
                 </div>
             }
@@ -27,13 +34,13 @@
     <div class="FilterContainer">
         <h1>Filter</h1>
         <div class="TagFilter">
-            @if (TagGroups.Count() == 0)
+            @if (!TagGroups.Any())
             {
                 <p>Loading Filter...</p>
             }
             else
             {
-                @foreach (TagGroup tg in TagGroups)
+                @foreach (var tg in TagGroups)
                 {
                     <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
                         <HeaderTemplate>
@@ -70,28 +77,46 @@
 
 
 @code {
-    private IEnumerable<Project> Projects = new List<Project>();
+
+    private IEnumerable<ProjectDTO> Projects => _projects
+        .Where(p =>
+        {
+            foreach (var id in SelectedTags)
+            {
+                if (!p.Tags.Select(t => t.Id).Contains(id))
+                    return false;
+            }
+            return true;
+        });
+    private IEnumerable<ProjectDTO> _projects = new List<ProjectDTO>();
     private IEnumerable<TagGroup> TagGroups = new List<TagGroup>();
-    private Dictionary<int, IEnumerable<int>> SelectedTagsOfTagGroup = new Dictionary<int, IEnumerable<int>>();
+    private Dictionary<int, IEnumerable<int>> SelectedTagsOfTagGroup = new();
     // All selected tags, across all TagGroups.
     private HashSet<int> SelectedTags => SelectedTagsOfTagGroup.Aggregate(
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
     );
 
+    private bool _loaded = false;
+
     protected override async Task OnInitializedAsync()
     {
-        Projects = Project.SampleProjects; //Lav rigtigt API kald når det er med ProjectBankContext
+        //Projects = Project.SampleProjects; //Lav rigtigt API kald når det er med ProjectBankContext
+        _projects = await Http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
+            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
         TagGroups = TagGroup.SampleTagGroups; //Lav rigtigt API kald når det er med ProjectBankContext
 
         // Create a set of empty "selected" ids for each tag group.
         foreach (TagGroup tg in TagGroups)
             SelectedTagsOfTagGroup.Add(tg.Id, new List<int>());
+
+        _loaded = true;
     }
 
-    protected async Task ApplyFilter()
+    private async Task ApplyFilter()
     {
         //Kode som sender API kald videre - Vi mangler API som kan håndtere Tag IDs
-        Console.WriteLine("Current tags: " + String.Join(", ", SelectedTags));
+        _projects = await Http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
+            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
     }
 }
