@@ -76,7 +76,8 @@
         {
             Name = Name,
             Description = Description,
-            TagIds = TagIds,
+            ExistingTagIds = TagIds,
+            NewTagDTOs = new HashSet<TagCreateDTO>(), //TODO: Skal opdateres med eventualle nye tags
             UserIds = SupervisorIds.ToHashSet(),
         };
 

@@ -6,8 +6,8 @@ namespace ProjectBank.Infrastructure.Entities
         
         [Required]
         public string? Name { get; set; }
-        
-        public ISet<Tag>? Tags { get; set; }
+
+        public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
 
         [Required]
         public bool SupervisorCanAddTag { get; set;}
