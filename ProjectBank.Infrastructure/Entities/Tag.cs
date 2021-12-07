@@ -8,9 +8,5 @@ namespace ProjectBank.Infrastructure.Entities
         [StringLength(100)]
         public string Value { get; set; }
 
-        public Tag(string value)
-        {
-            Value = value;
-        }
     }
 }

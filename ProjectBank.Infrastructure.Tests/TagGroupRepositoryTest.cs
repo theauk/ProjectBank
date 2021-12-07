@@ -9,6 +9,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using ProjectBank.Core;
 using ProjectBank.Core.DTOs;
+using ProjectBank.Infrastructure.Entities;
 using Xunit;
 
 namespace ProjectBank.Infrastructure.Tests;
@@ -29,16 +30,16 @@ public class TagGroupRepositoryTest : IDisposable
         _repository = new TagGroupRepository(_context);
         _context.Database.EnsureCreated();
 
-        var numtheo = new Tag("Number Theory") {Id = 1};
-        var crypto = new Tag("Cryptography") {Id = 2};
-        var setTheo = new Tag("Set Theory") {Id = 3};
-        var regex = new Tag( "RegEx's") {Id = 4};
-        var autom = new Tag("Automatas") {Id = 5};
+        var numtheo = new Tag() {Id = 1, Value = "Number Theory"};
+        var crypto = new Tag() {Id = 2, Value = "Cryptography"};
+        var setTheo = new Tag() {Id = 3, Value = "Set Theory"};
+        var regex = new Tag() {Id = 4, Value = "RegEx's"};
+        var autom = new Tag() {Id = 5, Value = "Automatas"};
 
-        var spring22 = new Tag("Spring 2022") {Id = 12,};
-        var autumn22 = new Tag("Autumn 2022") {Id = 13};
-        var spring23 = new Tag("Spring 2023") {Id = 14};
-        var autumn23 = new Tag("Autumn 2023") {Id = 15};
+        var spring22 = new Tag() {Id = 12, Value = "Spring 2022"};
+        var autumn22 = new Tag() {Id = 13, Value = "Autumn 2022"};
+        var spring23 = new Tag() {Id = 14, Value = "Spring 2023"};
+        var autumn23 = new Tag() {Id = 15, Value = "Autumn 2023"};
 
         var semester = new TagGroup()
         {
@@ -73,9 +74,24 @@ public class TagGroupRepositoryTest : IDisposable
         _context.SaveChanges();
 
     }
-
-
-
+    public void AssertCompareTagDTOs(ISet<TagDTO> tagsExpected, ISet<TagDTO> tagsActual)
+    {
+        var tagsExpectedEnum = tagsExpected.GetEnumerator();
+        var tagsActualEnum = tagsActual.GetEnumerator();        var currentGroupId = -1;
+        while (tagsExpectedEnum.MoveNext())
+        {
+            if (tagsExpectedEnum.Current.Id != currentGroupId)
+            {
+                tagsActualEnum.MoveNext();
+                currentGroupId = tagsActualEnum.Current.Id;
+            }
+            Assert.Equal(tagsExpectedEnum.Current.Id, tagsActualEnum.Current.Id); // Lidt redundant, men ok for at have en assert
+            Assert.Equal(tagsExpectedEnum.Current.Value, tagsActualEnum.Current.Value);
+        }
+        tagsExpectedEnum.Dispose();
+        tagsActualEnum.Dispose();
+    }
+    
     [Fact]
     public async Task ReadAsync_finds_TagGroup_with_id_31()
     {
@@ -85,73 +101,70 @@ public class TagGroupRepositoryTest : IDisposable
         var spring23 = new TagDTO() {Id = 14, Value = "Spring 2023"};
         var autumn23 = new TagDTO() {Id = 15, Value = "Autumn 2023"};
         var tags = new HashSet<TagDTO>() {spring22, spring23, autumn22, autumn23};
-        var tagsExpected = tags.GetEnumerator();
 
 
         // Act
         var found = await _repository.ReadAsync(31);
-        var tagsActual = found.Tags.GetEnumerator();
         
         //Assert
-        Assert.Equal(31, found.Id);
-        Assert.Equal("Semester", found.Name);
-        Assert.Equal(tags.Count, found.Tags.Count); //Ser om de har samme længde
-
-        var currentGroupId = -1;
-        while (tagsExpected.MoveNext())
-        {
-            if (tagsExpected.Current.Id != currentGroupId)
-            {
-                tagsActual.MoveNext();
-                currentGroupId = tagsActual.Current.Id;
-            }
-            Assert.Equal(tagsExpected.Current.Id, tagsActual.Current.Id); // Lidt redundant, men ok for at have en assert
-            Assert.Equal(tagsExpected.Current.Value, tagsActual.Current.Value);
-        }
-        
-        
-        Assert.False(found.SupervisorCanAddTag);
-        Assert.False(found.RequiredInProject);
-        Assert.Equal(999, found.TagLimit);
-        tagsActual.Dispose();
-        tagsExpected.Dispose();
+        Assert.Equal(31, found.Value.Id);
+        Assert.Equal("Semester", found.Value.Name);
+        Assert.Equal(tags.Count, found.Value.TagDTOs.Count); //Ser om de har samme længde
+        AssertCompareTagDTOs(tags, found.Value.TagDTOs);
+        Assert.False(found.Value.SupervisorCanAddTag);
+        Assert.False(found.Value.RequiredInProject);
+        Assert.Equal(999, found.Value.TagLimit);
     }
-
+/*
     [Fact]
-    public async Task ReadAsync_on_nonexistant_id_returns_null()
+    public async Task ReadAsync_on_nonexistant_id_throws_InvalidOperationException()
     {
-        //TODO Overvej om der er brug for en Response.NotFound i stedet - con at det kræver at vi laver om på repo
-        var notFound = await _repository.ReadAsync(56);
-        
-        Assert.Null(notFound);
+            //TODO Fix/Spørgsmål: Hvordan fungere det med InvalidOperationException i Options?
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _repository.ReadAsync(56));
     }
-
+*/
     [Fact]
     public async Task CreateAsync_creates_new_TagGroup_with_generated_id()
     {
+        //Arrange
         var taggroup = new TagGroupCreateDTO()
         {
             Name = "Level",
-            Tags = new HashSet<TagCreateDTO>()
+            TagCreateDTOs = new HashSet<TagCreateDTO>()
             {
-                new TagCreateDTO("Bachelor"),
-                new TagCreateDTO("Master"),
-                new TagCreateDTO("PhD")
+                new TagCreateDTO() {Value = "Bachelor"},
+                new TagCreateDTO() {Value = "Master"},
+                new TagCreateDTO() {Value = "PhD"}
             },
             SupervisorCanAddTag = false,
             RequiredInProject = false,
             TagLimit = 999,
         };
+        
+        //act
         var created  = await _repository.CreateAsync(taggroup);
-        Assert.Equal(Response.Created, created); 
-        // Vi skal lave vores (I)TagGroupRepository om hvis vi skal teste createAsync ift. indholdet - men vi får ikke brug for det i praksis. - oli
-        //TODO this - hvis vi laver repo om
+        var readAllTagGroups = await _repository.ReadAllAsync();
+        var createdTagGroupDtO = readAllTagGroups.FirstOrDefault(tgDTO => tgDTO.Name == taggroup.Name); //TODO Need implementation: Kræver at vi checker efter duplicate tag groups for at være trolig
+        
+        
+        //Assert
+        Assert.Equal(Response.Created, created);
+        Assert.Equal(taggroup.Name, createdTagGroupDtO.Name);
+        Assert.Equal(taggroup.RequiredInProject, createdTagGroupDtO.RequiredInProject);
+        Assert.Equal(taggroup.SupervisorCanAddTag, createdTagGroupDtO.SupervisorCanAddTag);
+        Assert.Equal(taggroup.TagLimit, createdTagGroupDtO.TagLimit);
+        Assert.Equal(taggroup.TagCreateDTOs.Count, createdTagGroupDtO.TagDTOs.Count);
+        
+        foreach (var expected in taggroup.TagCreateDTOs)
+        {
+            Assert.True(createdTagGroupDtO.TagDTOs.Any(actual => actual.Value == expected.Value));   
+        }
     }
 /*
     [Fact]
-    public async Task CreateAsync_create_duplicate_returns_error()
+    public async Task CreateAsync_create_duplicate_returns_duplicate_response()
     {
-        //TODO den her
+        //TODO implementér den her
         // Lidt uden for scope, men kunne være relevant - er ikke blevet implementeret endnu
         throw new NotImplementedException();
     }
@@ -177,31 +190,45 @@ public class TagGroupRepositoryTest : IDisposable
     public async Task Update_TagGroup_31_with_required_bool_new_tags_new_name()
     {
         //Arrange
-        var tagGroupUpdate = new TagGroupUpdateDTO()
-            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true};
+
         var tagsToDelete = new HashSet<int>() {12};
-        var spring23 = new TagCreateDTO("spring 23");
+        var spring23 = new TagCreateDTO() {Value = "spring 23"};
         var tagsToAdd = new HashSet<TagCreateDTO>() {spring23};
+        var tagGroupUpdate = new TagGroupUpdateDTO()
+            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTags = tagsToAdd};
 
         
         // Act
         var update =  await _repository.UpdateAsync
-            (31, tagGroupUpdate ,tagsToDelete, tagsToAdd);
+            (31, tagGroupUpdate);
         var readUpdatedTagGroup = await _repository.ReadAsync(31);
-        var updatedTags = readUpdatedTagGroup.Tags;
+        var updatedTags = readUpdatedTagGroup.Value.TagDTOs;
         
         //Assert
         Assert.Equal(Response.Updated, update);
-        Assert.False(readUpdatedTagGroup.SupervisorCanAddTag);
-        Assert.True(readUpdatedTagGroup.RequiredInProject);
-        Assert.Equal("Semester (Updated)", readUpdatedTagGroup.Name);
-        Assert.True(readUpdatedTagGroup.Tags.Any(t => t.Id != 12 && t.Value != "Spring 2022"));
-        Assert.True(readUpdatedTagGroup.Tags.Any(t => t.Value == "Spring 2023"));
-        
-        
+        Assert.False(readUpdatedTagGroup.Value.SupervisorCanAddTag);
+        Assert.True(readUpdatedTagGroup.Value.RequiredInProject);
+        Assert.Equal("Semester (Updated)", readUpdatedTagGroup.Value.Name);
+        Assert.True(updatedTags.Any(t => t.Id != 12 && t.Value != "Spring 2022"));
+        Assert.True(updatedTags.Any(t => t.Value == "Spring 2023"));
     }
-    
 
+    [Fact]
+    public async Task Update_TagGroupID_56_returns_NotFound()
+    {
+        //Arrange
+        var tagsToDelete = new HashSet<int>() {12};
+        var spring23 = new TagCreateDTO() {Value = "spring 23"};
+        var tagsToAdd = new HashSet<TagCreateDTO>() {spring23};
+        var tagGroupUpdate = new TagGroupUpdateDTO()
+            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTags = tagsToAdd};
+    
+        // Act
+        var notFound =  await _repository.UpdateAsync
+            (56, tagGroupUpdate);
+        
+        Assert.Equal(Response.NotFound,notFound);
+    }
 
 
     protected virtual void Dispose(bool disposing)
@@ -211,7 +238,6 @@ public class TagGroupRepositoryTest : IDisposable
             if (disposing)
             {
                 // TODO: dispose managed state (managed objects)
-                ReadAsync_finds_TagGroup_with_id_31().Dispose();
             }
 
             // TODO: free unmanaged resources (unmanaged objects) and override finalizer

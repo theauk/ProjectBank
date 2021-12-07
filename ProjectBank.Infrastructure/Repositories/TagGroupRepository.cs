@@ -85,6 +85,7 @@ namespace ProjectBank.Infrastructure.Repositories
             entity.SupervisorCanAddTag = tagGroup.SupervisorCanAddTag;
             entity.TagLimit = tagGroup.TagLimit;
 
+            //TODO Corner Case/Spørgsmål (Måske - skal lige snakke med jer :))): Hvis 2 brugere ændre på en tag groups tags samtidig, kan det skabe problemer, medmindre at vi sammenligner tags lige inden kaldet.
             await DeleteTagAsync(tagGroupId, tagGroup.DeletedTagIds);
             await AddTagAsync(tagGroupId, tagGroup.NewTags);
             
@@ -100,7 +101,7 @@ namespace ProjectBank.Infrastructure.Repositories
             {
                 var entity = await _context.Tags.FindAsync(id);
 
-                if (entity == null) return Response.Conflict;
+                if (entity == null) return Response.Conflict; //TODO Spørgsmål: Burde det her ikke være en NotFound/den burde vel ikke returnerer?
 
                 _context.Tags.Remove(entity);
             }
