@@ -1,5 +1,7 @@
 ﻿@page "/TagGroupCreation"
 @using System.Text.Json
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
 
 <h1 style="margin-bottom: 48px">Create Tag Group</h1>
 
@@ -78,26 +80,25 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // For the update page
         // here we need to read in the existing tags for the current tag group – so we need to get the tag group ID somehow
         _multipleSelectionData = new List<string>();
         await base.OnInitializedAsync();
     }
 
-    void OnSubmit(TagGroupCreateDTO tagGroup)
+    async Task OnSubmit(TagGroupCreateDTO tagGroup)
     {
         // here we should submit the _tagGroup 
         // the "final" tags are in a list of strings. That needs to be turned into tags 
-        Console.WriteLine("Submit");
         
-        foreach (var VARIABLE in _multipleSelectionData)
+        
+        var response = await Http.PostAsJsonAsync("api/TagGroupController", _tagGroup);
+
+        if (response.IsSuccessStatusCode)
         {
-            Console.WriteLine("Data: " + VARIABLE);
+            var uri = $"{NavigationManager.BaseUri}characters/admin";
+            NavigationManager.NavigateTo(uri);
         }
-        foreach (var VARIABLE in _multipleSelectionTexts)
-        {
-            Console.WriteLine("Text: " + VARIABLE);
-        }
-        Console.WriteLine($"Submit: {JsonSerializer.Serialize(tagGroup, new JsonSerializerOptions() {WriteIndented = true})}");
     }
 
     void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
