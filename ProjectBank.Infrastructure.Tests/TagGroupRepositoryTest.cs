@@ -74,24 +74,7 @@ public class TagGroupRepositoryTest : IDisposable
         _context.SaveChanges();
 
     }
-    public void AssertCompareTagDTOs(ISet<TagDTO> tagsExpected, ISet<TagDTO> tagsActual)
-    {
-        var tagsExpectedEnum = tagsExpected.GetEnumerator();
-        var tagsActualEnum = tagsActual.GetEnumerator();        var currentGroupId = -1;
-        while (tagsExpectedEnum.MoveNext())
-        {
-            if (tagsExpectedEnum.Current.Id != currentGroupId)
-            {
-                tagsActualEnum.MoveNext();
-                currentGroupId = tagsActualEnum.Current.Id;
-            }
-            Assert.Equal(tagsExpectedEnum.Current.Id, tagsActualEnum.Current.Id); // Lidt redundant, men ok for at have en assert
-            Assert.Equal(tagsExpectedEnum.Current.Value, tagsActualEnum.Current.Value);
-        }
-        tagsExpectedEnum.Dispose();
-        tagsActualEnum.Dispose();
-    }
-    
+
     [Fact]
     public async Task ReadAsync_finds_TagGroup_with_id_31()
     {
@@ -110,7 +93,10 @@ public class TagGroupRepositoryTest : IDisposable
         Assert.Equal(31, found.Value.Id);
         Assert.Equal("Semester", found.Value.Name);
         Assert.Equal(tags.Count, found.Value.TagDTOs.Count); //Ser om de har samme længde
-        AssertCompareTagDTOs(tags, found.Value.TagDTOs);
+        foreach (var expected in tags)
+        {
+            Assert.True(found.Value.TagDTOs.Any(actual => actual.Value == expected.Value && actual.Id == expected.Id));   
+        }
         Assert.False(found.Value.SupervisorCanAddTag);
         Assert.False(found.Value.RequiredInProject);
         Assert.Equal(999, found.Value.TagLimit);
