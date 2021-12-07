@@ -61,7 +61,7 @@ namespace ProjectBank.Infrastructure.Repositories
             if (entity == null) return Response.NotFound;
             
             entity.Name = tagGroup.Name;
-            entity.RequiredInProject = !tagGroup.RequiredInProject; //TODO Af en eller anden grund tager den det modsatte input, så true=false og omvendt
+            entity.RequiredInProject = !tagGroup.RequiredInProject; //TODO Af en eller anden grund tager den det modsatte input, så true=false og omvendt - det skal helst fixes
             entity.SupervisorCanAddTag = !tagGroup.SupervisorCanAddTag;
             entity.TagLimit = tagGroup.TagLimit;
             
