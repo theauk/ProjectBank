@@ -87,3 +87,7 @@
     overflow-x: hidden;
     padding: 1%;
 }
+
+.TagGroupEntry {
+    margin-bottom: 10px;
+}

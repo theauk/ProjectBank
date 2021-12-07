@@ -1,12 +1,26 @@
 ﻿@page "/admin"
+@inject HttpClient Http
 
 <PageTitle>Admin Page</PageTitle>
 
 <div class="TagGroupContainer">
-    @foreach (TagGroup tg in TagGroups)
+    @foreach (var tg in TagGroups)
     {
         <div class="TagGroupEntry">
-            <h1>@tg.Name</h1>
+            <RadzenFieldset AllowCollapse="true" Collapsed="true">
+                <HeaderTemplate>
+                    <span>
+                        <b style="font-size: 30px">@tg.Name</b>
+                    </span>
+                </HeaderTemplate>
+                <ChildContent>
+                    <div class="flex-row">
+                        <RadzenCheckBox Name="Required" TValue="bool" /><RadzenLabel Text="Required" />
+                        <RadzenCheckBox Name="Supervisor can add" TValue="bool" /><RadzenLabel Text="Supervisor can add" />
+                        <RadzenNumeric TValue="int" style="width: 50px" /><RadzenLabel Text="Limit" />
+                    </div>
+                </ChildContent>
+            </RadzenFieldset>
         </div>
     }
 </div>
@@ -17,5 +31,6 @@
     protected override async Task OnInitializedAsync()
     {
         TagGroups = TagGroup.SampleTagGroups;
+        //TagGroups = await Http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
     }
 }
