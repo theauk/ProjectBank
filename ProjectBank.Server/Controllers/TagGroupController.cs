@@ -15,6 +15,11 @@ public class TagGroupController : ControllerBase
 {
     private readonly ITagGroupRepository _repository;
 
+    public TagGroupController(ITagGroupRepository repository)
+    {
+        _repository = repository;
+    }
+
     [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<TagGroupDTO>> Get(int id)
@@ -34,11 +39,7 @@ public class TagGroupController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
     {
-        Console.WriteLine("im in post");
         var response = await _repository.CreateAsync(tagGroup);
-
-        Console.WriteLine(tagGroup.Name);
-        Console.WriteLine(response);
         return response.ToActionResult();
     }
 
