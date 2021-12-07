@@ -18,7 +18,7 @@ public class TagGroupRepositoryTest : IDisposable
 {
     private readonly ProjectBankContext _context;
     private readonly TagGroupRepository _repository;
-    private bool disposedValue;
+    private bool _disposedValue;
 
     public TagGroupRepositoryTest()
     {
@@ -64,7 +64,7 @@ public class TagGroupRepositoryTest : IDisposable
         var project = new Project()
         {
             Name = "Project project",
-            Description = "Descripton",
+            Description = "Description",
             Id = 100,
             Tags = new HashSet<Tag>() {numtheo}
         };
@@ -94,7 +94,7 @@ public class TagGroupRepositoryTest : IDisposable
         Assert.Equal(tags.Count, found.Value.TagDTOs.Count); //Ser om de har samme længde
         foreach (var expected in tags)
         {
-            Assert.True(found.Value.TagDTOs.Any(actual => actual.Value == expected.Value && actual.Id == expected.Id));   
+            Assert.Contains(found.Value.TagDTOs, actual => actual.Value == expected.Value && actual.Id == expected.Id);   
         }
         Assert.False(found.Value.SupervisorCanAddTag);
         Assert.False(found.Value.RequiredInProject);
@@ -140,7 +140,7 @@ public class TagGroupRepositoryTest : IDisposable
         Assert.Equal(taggroup.TagCreateDTOs.Count, createdTagGroupDtO.TagDTOs.Count);
         foreach (var expected in taggroup.TagCreateDTOs)
         {
-            Assert.True(createdTagGroupDtO.TagDTOs.Any(actual => actual.Value == expected.Value));   
+            Assert.Contains(createdTagGroupDtO.TagDTOs, actual => actual.Value == expected.Value);   
         }
     }
 /*
@@ -164,7 +164,7 @@ public class TagGroupRepositoryTest : IDisposable
     }
     
     [Fact]
-    public async Task DeleteAsync_delete_nonexistant_returns_NotFound()
+    public async Task DeleteAsync_delete_nonexistent_returns_NotFound()
     {
         //Act
         var notFound = await _repository.DeleteAsync(-1);
@@ -196,8 +196,8 @@ public class TagGroupRepositoryTest : IDisposable
         Assert.False(readUpdatedTagGroup.Value.SupervisorCanAddTag);
         Assert.True(readUpdatedTagGroup.Value.RequiredInProject);
         Assert.Equal("Semester (Updated)", readUpdatedTagGroup.Value.Name);
-        Assert.True(updatedTags.Any(t => t.Id != 12 && t.Value != "Spring 2022"));
-        Assert.True(updatedTags.Any(t => t.Value == "Spring 2023"));
+        Assert.Contains(updatedTags, t => t.Id != 12 && t.Value != "Spring 2022");
+        Assert.Contains(updatedTags, t => t.Value == "Spring 2023");
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class TagGroupRepositoryTest : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
@@ -230,7 +230,7 @@ public class TagGroupRepositoryTest : IDisposable
 
             // TODO: free unmanaged resources (unmanaged objects) and override finalizer
             // TODO: set large fields to null
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 
