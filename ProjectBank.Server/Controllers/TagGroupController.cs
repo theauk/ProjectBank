@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
 using ProjectBank.Core.DTOs;
 using ProjectBank.Core.IRepositories;
+using ProjectBank.Server.Model;
 
 namespace ProjectBank.Server.Controllers;
 
@@ -32,7 +33,11 @@ public class TagGroupController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
     {
-        throw new NotImplementedException();
+        var created = await _repository.CreateAsync(tagGroup);
+
+        Console.WriteLine(tagGroup.Name);
+        Console.WriteLine(created);
+        return created.ToActionResult();
     }
 
     [Authorize(Roles = "Admin")] 
