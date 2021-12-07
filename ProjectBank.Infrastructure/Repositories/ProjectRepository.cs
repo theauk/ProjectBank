@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace ProjectBank.Infrastructure.Repositories
 {
     public class ProjectRepository : IProjectRepository
@@ -11,7 +9,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, ProjectDTO)> CreateAsync(ProjectCreateDTO project)
+        public async Task<(Response, ProjectDTO?)> CreateAsync(ProjectCreateDTO project)
         {
             var entity = new Project
             {
@@ -21,11 +19,17 @@ namespace ProjectBank.Infrastructure.Repositories
                 Supervisors = await GetUsersAsync(project.UserIds).ToSetAsync()
             };
 
+            if (entity.Supervisors.Contains(null))
+            {
+                return (Response.BadRequest, null);
+            }
+
             _context.Projects.Add(entity);
 
             await _context.SaveChangesAsync();
 
-            return (Response.Created, new ProjectDTO {
+            return (Response.Created, new ProjectDTO
+            {
                 Id = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
@@ -36,27 +40,79 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<Response> DeleteAsync(int projectId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (entity == null)
+            {
+                return Response.NotFound;
+            }
+
+            _context.Projects.Remove(entity);
+            await _context.SaveChangesAsync();
+
+            return Response.Deleted;
         }
 
-        public async Task<(Response, ProjectDTO)> ReadAsync(int projectId)
+        public async Task<(Response, ProjectDTO?)> ReadAsync(int projectId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (entity == null)
+            {
+                return (Response.NotFound, null);
+            }
+
+            return (Response.Success, new ProjectDTO
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Description = entity.Description,
+                Tags = entity.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                Supervisors = entity.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
+            });
         }
 
-        public Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadFilteredAsync(IEnumerable<int> tagIds)
+        public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadFilteredAsync(IEnumerable<int> tagIds)
         {
             throw new NotImplementedException();
         }
 
         public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadAllAsync()
         {
-            throw new NotImplementedException();
+            var projects = (await _context.Projects.Select(p => new ProjectDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet()
+            }).ToListAsync()).AsReadOnly();
+
+            return (Response.Success, projects);
         }
 
         public async Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Projects.Include(p => p.Tags).FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (entity == null)
+            {
+                return Response.NotFound;
+            }
+
+            entity.Name = project.Name;
+            entity.Description = project.Description;
+            entity.Tags = await GetTagsAsync(project.TagIds).ToSetAsync();
+            entity.Supervisors = await GetUsersAsync(project.UserIds).ToSetAsync();
+
+            if (entity.Supervisors.Contains(null))
+            {
+                return Response.BadRequest;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Response.Updated;
         }
 
         private async IAsyncEnumerable<Tag> GetTagsAsync(IEnumerable<int> tagIds)
@@ -65,7 +121,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
             foreach (var tagId in tagIds)
             {
-                yield return existing.TryGetValue(tagId, out var t) ? t : new Tag{Value = t.Value};
+                yield return existing.TryGetValue(tagId, out var t) ? t : new Tag { Value = t.Value };
             }
         }
 

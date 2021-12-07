@@ -1,4 +1,4 @@
-namespace ProjectBank.Infrastructure 
+namespace ProjectBank.Infrastructure
 {
     public class Project
     {
@@ -6,16 +6,16 @@ namespace ProjectBank.Infrastructure
 
         [Required]
         [StringLength(100)]
-        public string? Name { get; set;}
+        public string? Name { get; set; }
 
         [Required]
         [StringLength(400)]
-        public string? Description {get; set;}
+        public string? Description { get; set; }
 
         [Required]
-        public ISet<Tag> Tags {get; set;} = new HashSet<Tag>();
+        public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
 
         [Required]
-        public ISet<User> Supervisors = new HashSet<User>();
+        public ISet<User> Supervisors { get; set; } = new HashSet<User>();
     }
 }

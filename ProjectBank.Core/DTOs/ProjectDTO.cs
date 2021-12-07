@@ -15,7 +15,7 @@ namespace ProjectBank.Core.DTOs
         public ISet<TagDTO> Tags { get; init; } = new HashSet<TagDTO>();
         
         [Required]
-        public ISet<UserDTO> Supervisors { get; set; } = new HashSet<UserDTO>();
+        public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
     }
 
     public record ProjectCreateDTO

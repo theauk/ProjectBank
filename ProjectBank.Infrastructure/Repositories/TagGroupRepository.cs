@@ -1,7 +1,3 @@
-using ProjectBank.Infrastructure;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-
 namespace ProjectBank.Infrastructure.Repositories
 {
     public class TagGroupRepository : ITagGroupRepository
@@ -15,22 +11,74 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<(Response, TagGroupDTO)> CreateAsync(TagGroupCreateDTO tagGroup)
         {
-            throw new NotImplementedException();
+            var entity = new TagGroup
+            {
+                Name = tagGroup.Name,
+                Tags = tagGroup.TagDTOs.Select(t => new Tag { Value = t.Value }).ToHashSet(),
+                SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
+                RequiredInProject = tagGroup.RequiredInProject,
+                TagLimit = tagGroup.TagLimit
+            };
+
+            _context.TagGroups.Add(entity);
+            await _context.SaveChangesAsync();
+
+            return (Response.Created, new TagGroupDTO
+            {
+                Name = entity.Name,
+                TagDTOs = entity.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                SupervisorCanAddTag = entity.SupervisorCanAddTag,
+                RequiredInProject = entity.RequiredInProject,
+                TagLimit = entity.TagLimit
+            });
         }
 
         public async Task<Response> DeleteAsync(int tagGroupId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.TagGroups.FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
+
+            if (entity == null)
+            {
+                return Response.NotFound;
+            }
+
+            _context.TagGroups.Remove(entity);
+            await _context.SaveChangesAsync();
+
+            return Response.Deleted;
+        }
+
+        public async Task<(Response, TagGroupDTO?)> ReadAsync(int tagGroupId)
+        {
+            var entity = await _context.TagGroups.FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
+
+            if (entity == null)
+            {
+                return (Response.NotFound, null);
+            }
+
+            return (Response.Success, new TagGroupDTO
+            {
+                Name = entity.Name,
+                TagDTOs = entity.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                SupervisorCanAddTag = entity.SupervisorCanAddTag,
+                RequiredInProject = entity.RequiredInProject,
+                TagLimit = entity.TagLimit
+            });
         }
 
         public async Task<(Response, IReadOnlyCollection<TagGroupDTO>)> ReadAllAsync()
         {
-            throw new NotImplementedException();
-        }
+            var tagGroups = (await _context.TagGroups.Select(tg => new TagGroupDTO
+            {
+                Name = tg.Name,
+                TagDTOs = tg.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                SupervisorCanAddTag = tg.SupervisorCanAddTag,
+                RequiredInProject = tg.RequiredInProject,
+                TagLimit = tg.TagLimit
+            }).ToListAsync()).AsReadOnly();
 
-        public async Task<(Response, TagGroupDTO)> ReadAsync(int tagGroupId)
-        {
-            throw new NotImplementedException();
+            return (Response.Success, tagGroups);
         }
 
         public async Task<Response> UpdateAsync(int tagGroupId, TagGroupUpdateDTO tagGroup)
