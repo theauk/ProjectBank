@@ -1,7 +1,7 @@
 ﻿
 
 namespace ProjectBank.Server.Model;
-
+// Modified code from Rasmus Lystrøm
 public static class Extensions
 {
     public static IActionResult ToActionResult(this Response response) => response switch
@@ -15,4 +15,7 @@ public static class Extensions
         
         _ => throw new NotSupportedException($"{response} not supported")
     };
+    
+    public static ActionResult<T> ToActionResult<T>(this Option<T> option) where T : class
+        => option.IsSome ? option.Value : new NotFoundResult();
 }

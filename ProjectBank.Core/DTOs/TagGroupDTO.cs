@@ -40,9 +40,9 @@ namespace ProjectBank.Core.DTOs
         [Required] public bool RequiredInProject { get; init; }
 
         public int TagLimit { get; init; }
-        
-        public ISet<int>? DeletedTagIds { get; set; }
 
-        public ISet<TagCreateDTO>? NewTags { get; set; }
+        public ISet<int>? DeletedTagIds { get; set; } = new HashSet<int>();
+
+        public ISet<TagCreateDTO>? NewTags { get; set; } = new HashSet<TagCreateDTO>();
     }
 }

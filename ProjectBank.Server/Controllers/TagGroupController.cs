@@ -19,7 +19,8 @@ public class TagGroupController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<TagGroupDTO>> Get(int id)
     {
-        throw new NotImplementedException();
+        var tagGroupDto = await _repository.ReadAsync(id);
+        return tagGroupDto.ToActionResult();
     }
 
     [AllowAnonymous]
@@ -34,39 +35,27 @@ public class TagGroupController : ControllerBase
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
     {
         Console.WriteLine("im in post");
-        var created = await _repository.CreateAsync(tagGroup);
+        var response = await _repository.CreateAsync(tagGroup);
 
         Console.WriteLine(tagGroup.Name);
-        Console.WriteLine(created);
-        return created.ToActionResult();
+        Console.WriteLine(response);
+        return response.ToActionResult();
     }
 
     [Authorize(Roles = "Admin")] 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        throw new NotImplementedException();
+        var response = await _repository.DeleteAsync(id);
+        return response.ToActionResult();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] TagGroupUpdateDTO tagGroup)
     {
-        throw new NotImplementedException();
-    }
-
-    [Authorize(Roles = "Admin")] 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTag(int taggroupid, int tagid)
-    {
-        throw new NotImplementedException();
-    }
-
-    [Authorize(Roles = "Admin, Supervisor")]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PostTag(int taggroupid, [FromBody] TagCreateDTO tag)
-    {
-        throw new NotImplementedException();
+        var response = await _repository.UpdateAsync(id, tagGroup);
+        return response.ToActionResult();
     }
 
 }

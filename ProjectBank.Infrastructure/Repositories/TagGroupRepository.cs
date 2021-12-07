@@ -43,7 +43,7 @@ namespace ProjectBank.Infrastructure.Repositories
             return Response.Deleted;
         }
 
-        public async Task<TagGroupDTO?> ReadAsync(int tagGroupId)
+        public async Task<Option<TagGroupDTO?>> ReadAsync(int tagGroupId)
         {
             var tagGroup = await _context.TagGroups.FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
             return tagGroup == null
@@ -74,7 +74,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 .AsReadOnly();
         }
 
-        public async Task<Response> UpdateAsync(int tagGroupId, TagGroupUpdateDTO tagGroup, ISet<int> tagsToDelete, ISet<TagCreateDTO> tagsToAdd)
+        public async Task<Response> UpdateAsync(int tagGroupId, TagGroupUpdateDTO tagGroup)
         {
             var entity = await _context.TagGroups.Include(tg => tg.Tags).FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
 
@@ -85,10 +85,11 @@ namespace ProjectBank.Infrastructure.Repositories
             entity.SupervisorCanAddTag = tagGroup.SupervisorCanAddTag;
             entity.TagLimit = tagGroup.TagLimit;
 
-            await DeleteTagAsync(tagGroupId, tagsToDelete);
-            await AddTagAsync(tagGroupId, tagsToAdd);
+            await DeleteTagAsync(tagGroupId, tagGroup.DeletedTagIds);
+            await AddTagAsync(tagGroupId, tagGroup.NewTags);
             
-            //TODO : pleazzzzzzz handle responses from delete tag and add tag
+            //TODO : handle responses from delete tag and add tag
+            await _context.SaveChangesAsync();
             
             return Response.Updated;
         }
