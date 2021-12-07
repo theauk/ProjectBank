@@ -99,11 +99,7 @@
     font-size: 18px;
 }
 
-.badge.badge-primary.ml-2 {
-    background-color: var(--tagBadgeColor);
-}
-
-.rz-chkbox-box.rz-state-active {
+.badge.badge-primary.ml-2, .rz-chkbox-box.rz-state-active {
     background-color: var(--tagBadgeColor);
 }
 

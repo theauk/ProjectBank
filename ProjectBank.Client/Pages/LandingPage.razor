@@ -1,5 +1,7 @@
 ﻿@page "/"
-@inject HttpClient Http
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin, Supervisor, Student")]
+@inject HttpClient _http
 
 <PageTitle>Landing Page</PageTitle>
 
@@ -7,13 +9,13 @@
 
     <div class="ProjectList">
     <h1>Projects</h1>
-        @if (Projects.Count() == 0)
+        @if (!_projects.Any())
         {
             <p>Loading projects...</p>
         }
         else
         {
-            @foreach (Project p in Projects)
+            @foreach (Project p in _projects)
             {
                 <div class="ProjectEntry">
                     <a href="index/@p.Id">
@@ -27,13 +29,13 @@
     <div class="FilterContainer">
         <h1>Filter</h1>
         <div class="TagFilter">
-            @if (TagGroups.Count() == 0)
+            @if (!_tagGroups.Any())
             {
                 <p>Loading Filter...</p>
             }
             else
             {
-                @foreach (TagGroup tg in TagGroups)
+                @foreach (TagGroup tg in _tagGroups)
                 {
                     <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
                         <HeaderTemplate>
@@ -44,9 +46,9 @@
                         <ChildContent>
                             @if (tg.Tags.Count() <= 8)
                             {
-                                <RadzenCheckBoxList @bind-Value=@SelectedTagsOfTagGroup[tg.Id] TValue="int" Orientation="Radzen.Orientation.Vertical" Change=@ApplyFilter>
+                                <RadzenCheckBoxList @bind-Value=@_selectedTagsOfTagGroup[tg.Id] TValue="int" Orientation="Radzen.Orientation.Vertical" Change=@ApplyFilter>
                                     <Items>
-                                        @foreach (Tag t in tg.Tags)
+                                        @foreach (var t in tg.Tags)
                                         {
                                             <RadzenCheckBoxListItem Text=@t.Name Value=@t.Id />
                                         }
@@ -56,13 +58,13 @@
                             else
                             {
                                 <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                            @bind-Value=@SelectedTagsOfTagGroup[tg.Id] Multiple="true" Placeholder="Select..."
+                                            @bind-Value=@_selectedTagsOfTagGroup[tg.Id] Multiple="true" Placeholder="Select..."
                                             Data=@tg.Tags TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
                             }
                         </ChildContent>
                     </RadzenFieldset>
                 }
-                <p>Selected tag IDs: @String.Join(", ", SelectedTags)</p>
+                <p>Selected tag IDs: @string.Join(", ", SelectedTags)</p>
             }
         </div>
     </div>
@@ -70,28 +72,28 @@
 
 
 @code {
-    private IEnumerable<Project> Projects = new List<Project>();
-    private IEnumerable<TagGroup> TagGroups = new List<TagGroup>();
-    private Dictionary<int, IEnumerable<int>> SelectedTagsOfTagGroup = new Dictionary<int, IEnumerable<int>>();
+    private IEnumerable<Project> _projects = new List<Project>();
+    private IEnumerable<TagGroup> _tagGroups = new List<TagGroup>();
+    private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new Dictionary<int, IEnumerable<int>>();
     // All selected tags, across all TagGroups.
-    private HashSet<int> SelectedTags => SelectedTagsOfTagGroup.Aggregate(
+    private IEnumerable<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate(
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
     );
 
     protected override async Task OnInitializedAsync()
     {
-        Projects = Project.SampleProjects; //Lav rigtigt API kald når det er med ProjectBankContext
-        TagGroups = TagGroup.SampleTagGroups; //Lav rigtigt API kald når det er med ProjectBankContext
+        _projects = Project.SampleProjects; //Lav rigtigt API kald når det er med ProjectBankContext
+        _tagGroups = TagGroup.SampleTagGroups; //Lav rigtigt API kald når det er med ProjectBankContext
 
         // Create a set of empty "selected" ids for each tag group.
-        foreach (TagGroup tg in TagGroups)
-            SelectedTagsOfTagGroup.Add(tg.Id, new List<int>());
+        foreach (var tg in _tagGroups)
+            _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
     }
 
-    protected async Task ApplyFilter()
+    private async Task ApplyFilter()
     {
         //Kode som sender API kald videre - Vi mangler API som kan håndtere Tag IDs
-        Console.WriteLine("Current tags: " + String.Join(", ", SelectedTags));
+        Console.WriteLine("Current tags: " + string.Join(", ", SelectedTags));
     }
 }

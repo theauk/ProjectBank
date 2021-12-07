@@ -3,7 +3,7 @@
 <PageTitle>Admin Page</PageTitle>
 
 <div class="TagGroupContainer">
-    @foreach (TagGroup tg in TagGroups)
+    @foreach (var tg in _tagGroups)
     {
         <div class="TagGroupEntry">
             <h1>@tg.Name</h1>
@@ -12,10 +12,10 @@
 </div>
 
 @code {
-    private IEnumerable<TagGroup> TagGroups = new List<TagGroup>();
+    private IEnumerable<TagGroup> _tagGroups = new List<TagGroup>();
 
     protected override async Task OnInitializedAsync()
     {
-        TagGroups = TagGroup.SampleTagGroups;
+        _tagGroups = TagGroup.SampleTagGroups;
     }
 }

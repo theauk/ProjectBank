@@ -1,7 +1,6 @@
 ﻿@page "/TagGroupCreation"
-@using System.Text.Json
-@inject HttpClient Http
-@inject NavigationManager NavigationManager
+@inject HttpClient _http
+@inject NavigationManager _navigationManager
 
 <h1 style="margin-bottom: 48px">Create Tag Group</h1>
 
@@ -74,7 +73,7 @@
 
 @code {
     private string submitFormId = "submitForm";
-    TagGroupCreateDTO _tagGroup = new() {};
+    TagGroupCreateDTO _tagGroup = new TagGroupCreateDTO();
     List<String> _multipleSelectionTagsData; // TODO: for update – might need ID instead of value. 
     List<String> _multipleSelectionTagsTexts = new List<string>();
 
@@ -88,7 +87,7 @@
     {
         CreateTags();
         
-        var response = await Http.PostAsJsonAsync("api/TagGroup", _tagGroup);
+        var response = await _http.PostAsJsonAsync("api/TagGroup", _tagGroup);
 
         if (response.IsSuccessStatusCode)
         {
@@ -104,8 +103,8 @@
 
     void Redirect()
     {
-        var uri = $"{NavigationManager.BaseUri}/admin";
-        NavigationManager.NavigateTo(uri);
+        var uri = $"{_navigationManager.BaseUri}/admin";
+        _navigationManager.NavigateTo(uri);
     }
 
 }

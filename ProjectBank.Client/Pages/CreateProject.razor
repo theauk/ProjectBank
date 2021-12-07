@@ -1,5 +1,5 @@
 ﻿@page "/create"
-@inject HttpClient Http
+@inject HttpClient _http
 
 <PageTitle>Create Project Page</PageTitle>
 
@@ -8,7 +8,7 @@
     <RadzenTextBox class="ProjectTitle" Change=@(args => Name = args) />
     <h3 style="text-align: center">Description</h3>
     <RadzenTextArea class="ProjectTitle" Change=@(args => Description = args) />
-    @if (TagGroups.Count() == 0)
+    @if (!TagGroups.Any())
     {
         <h3 style="text-align: center">Loading tags...</h3>
     }
@@ -81,7 +81,7 @@
             UserIds = SupervisorIds.ToHashSet(),
         };
 
-        await Http.PostAsJsonAsync("api/Project", project);
+        await _http.PostAsJsonAsync("api/Project", project);
         // TODO: Redirect user to new Project Page.
     }
 
