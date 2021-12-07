@@ -1,76 +1,135 @@
 ﻿@page "/create"
 @inject HttpClient _http
+@inject NavigationManager _navigationManager
 
-<PageTitle>Create Project Page</PageTitle>
+<PageTitle>Create Project</PageTitle>
 
-<div class="CreateProjectContainer">
-    <h3 style="text-align: center">Title</h3>
-    <RadzenTextBox class="ProjectTitle" Change=@(args => Name = args) />
-    <h3 style="text-align: center">Description</h3>
-    <RadzenTextArea class="ProjectTitle" Change=@(args => Description = args) />
+<h1 style="margin-bottom: 48px">Create Project</h1>
+
+<RadzenTemplateForm TItem="ProjectCreateDTO" Data=@_project Submit=@OnSubmit>
+    <div class="row" style="margin-bottom: 48px">
+        <div class="col-md-2 align-right">
+            <RadzenLabel class="formLabelText" Text="Name"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox style="display: block; width: 40%" Name="ProjectName" @bind-Value=@_project.Name />
+            <RadzenRequiredValidator Component="ProjectName" Text="Project name is required"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 48px">
+        <div class="col-md-2 align-right">
+            <RadzenLabel class="formLabelText" Text="Description"/>
+        </div>
+        <div class="col">
+            <RadzenTextArea style="display: block; width: 70%" Name="ProjectDescription" @bind-Value=@_project.Description></RadzenTextArea>
+            <RadzenRequiredValidator Component="ProjectDescription" Text="Description is required" />
+        </div>
+    </div>
+
     @if (!TagGroups.Any())
     {
-        <h3 style="text-align: center">Loading tags...</h3>
+        <div class="row" style="margin-bottom: 48px">
+            <div class="col-md-2 align-right">
+                <RadzenLabel class="formLabelText" Text="Loading tags..." />
+            </div>
+        </div>
     }
     else
     {
-        foreach (var tg in TagGroups)
-        {
-            <div class="CreateTagContainer">
-                <h4 style="text-align: center">@tg.Name</h4>
-                @if (tg.Tags.Count() <= 8)
+        <div class="row" style="margin-bottom: 48px">
+            <div class="col-md-2 align-right">
+                <RadzenLabel class="formLabelText" Text="Tags"/>
+            </div>
+            <div class="col">
+                @foreach (var tg in TagGroups)
                 {
-                    <RadzenCheckBoxList @bind-Value=@SelectedTags[tg.Id] TValue="int">
-                        <Items>
-                            @foreach (var tag in tg.Tags)
-                            {
-                                <RadzenCheckBoxListItem Text=@tag.Name Value=@tag.Id />
-                            }
-                        </Items>
-                    </RadzenCheckBoxList>
-                }
-                else
-                {
-                    <RadzenListBox AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true"
-                        @bind-Value=@SelectedTags[tg.Id] Data=@tg.Tags TextProperty="Name" ValueProperty="Id" style="height: 200px; width: 30%; margin-right: 35%; margin-left: 35%;"/>
+                    @if (tg.Locked && tg.Tags.Any()) 
+                    {
+                        <h5 class="tagCheckItem">@tg.Name</h5>
+                        @if (tg.Tags.Count() <= 8)
+                        {
+                            <RadzenCheckBoxList style="margin-bottom: 20px" @bind-Value=@SelectedTags[tg.Id] TValue="int">
+                                <Items>
+                                    @foreach (var tag in tg.Tags)
+                                    {
+                                        <RadzenCheckBoxListItem Style="min-width: 160px; max-width: 160px" Text=@tag.Name Value=@tag.Id />
+                                    }
+                                </Items>
+                            </RadzenCheckBoxList>
+                        }
+                    } else if (!tg.Locked)
+                    {
+                        
+                    }
                 }
             </div>
-        }
-        <h4 style="text-align: center">Supervisors</h4>
-        <RadzenListBox AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true"
-            @bind-Value=@SupervisorIds Data=@Supervisors TextProperty="Name" ValueProperty="Id" Style="height: 200px;width: 30%; margin-left:35%; margin-right: 35%;"/>
+        </div>
+        <div class="row supervisors" style="margin-bottom: 48px">
+            <div class="col-md-2">
+                <RadzenLabel class="formLabelText" Text="Supervisors" />
+            </div>
+            <div class="col">
+                <RadzenListBox Style="min-width: 250px" AllowFiltering="true"
+                               FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                               Multiple="true"
+                               @bind-Value=@SupervisorIds
+                               Data=@Supervisors
+                               TextProperty="Name"
+                               ValueProperty="Id"/>
+            </div>
+        </div>
     }
-    <RadzenButton Click=@Submit Text="Publish" Icon="check_circle" ButtonStyle="ButtonStyle.Success" />
-    </div>
+
+    <RadzenButton class="submitButton" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
+    <RadzenButton class="cancelButton" Click=@Redirect Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
+</RadzenTemplateForm>
 
 @code {
+
+    public class NotLockedTags
+    {
+        public HashSet<TagCreateDTO> Tags { get; set; }
+    }
+    
+    private ProjectCreateDTO _project = new();
+    
+    
+    
+    
+    
+    
+    
+    
+
+
     private IEnumerable<TagGroup> TagGroups { get; set; } = new List<TagGroup>();
     private IEnumerable<Supervisor> Supervisors { get; set; } = new List<Supervisor>();
     private Dictionary<int, IEnumerable<int>> SelectedTags = new();
 
     private string Name { get; set; } = "";
     private string Description { get; set; } = "";
+
     private ISet<int> TagIds => SelectedTags.Aggregate(
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
-    );
+        );
+
     private IEnumerable<int> SupervisorIds { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        // TODO: Fetch TagGroups from API.
-        //TagGroups = await Http.GetFromJsonAsync<TagGroupDTO>("api/Project");
+    // TODO: Fetch TagGroups from API.
+    //TagGroups = await Http.GetFromJsonAsync<TagGroupDTO>("api/Project");
         TagGroups = TagGroup.SampleTagGroups;
-
         foreach (var tg in TagGroups)
             SelectedTags.Add(tg.Id, new List<int>());
 
-        // TODO: Fetch Supervisors from API.
+    // TODO: Fetch Supervisors from API.
         Supervisors = Supervisor.SampleSupervisors;
-        // TODO: Automatically add current user to SupervisorIds.
+    // TODO: Automatically add current user to SupervisorIds.
     }
 
-    private async void Submit()
+    private async void OnSubmit()
     {
         ProjectCreateDTO project = new()
         {
@@ -82,8 +141,14 @@
         };
 
         await _http.PostAsJsonAsync("api/Project", project);
-        // TODO: Redirect user to new Project Page.
+    // TODO: Redirect user to new Project Page.
     }
 
     // TODO: Limit amount of tags chosen, accoring to TagGroup MaxCount.
+
+    void Redirect()
+    {
+        _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+    }
+
 }

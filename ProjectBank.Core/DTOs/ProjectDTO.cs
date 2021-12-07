@@ -21,11 +21,11 @@ namespace ProjectBank.Core.DTOs
     public record ProjectCreateDTO
     {
         [Required]
-        public string Name { get; init; }
+        public string Name { get; set; }
 
         [Required]
         [StringLength(400)]
-        public string Description { get; init; }
+        public string Description { get; set; }
 
         [Required]
         public ISet<int> ExistingTagIds { get; set; } = new HashSet<int>();
@@ -33,7 +33,7 @@ namespace ProjectBank.Core.DTOs
         [Required] public ISet<TagCreateDTO> NewTagDTOs { get; set; } = new HashSet<TagCreateDTO>();
 
         [Required]
-        public ISet<int> UserIds { get; init; } = new HashSet<int>();
+        public ISet<int> UserIds { get; set; } = new HashSet<int>();
     }
 
     public record ProjectUpdateDTO : ProjectCreateDTO { }

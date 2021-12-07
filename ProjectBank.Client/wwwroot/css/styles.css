@@ -69,13 +69,8 @@
 
 /* Project Creation */
 
-.ProjectTitle {
-    width: 100%;
-}
-
-.CreateTagContainer {
-    margin: auto;
-    width: 70%;
+.tagCheckItem {
+    text-decoration: underline;
 }
 
 /* Admin Page */
@@ -107,11 +102,17 @@
     background-color: #b1b4b6;
 }
 
-.rz-button.rz-button-md.btn-primary.createTagGroupSubmit {
-    background-color: var(--submitButton);
+/* General */
+
+.formLabelText {
+    font-weight: bold;
+}
+
+.submitButton {
+    background-color: var(--submitButton) !important;
     margin-right: 20px;
 }
 
-.rz-button.rz-button-md.btn-light.cancel {
-    background-color: var(--cancelButton);
+.cancelButton {
+    background-color: var(--cancelButton) !important;
 }
