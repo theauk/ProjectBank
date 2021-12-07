@@ -46,9 +46,9 @@
                     @if (tg.Locked && tg.Tags.Any()) 
                     {
                         <h5 class="tagCheckItem">@tg.Name</h5>
-                        @if (tg.Tags.Count() <= 8)
+                        @if (tg.Tags.Count() <= 5)
                         {
-                            <RadzenCheckBoxList style="margin-bottom: 20px" @bind-Value=@SelectedTags[tg.Id] TValue="int">
+                            <RadzenCheckBoxList style="margin-bottom: 20px" TValue="int">
                                 <Items>
                                     @foreach (var tag in tg.Tags)
                                     {
@@ -57,9 +57,31 @@
                                 </Items>
                             </RadzenCheckBoxList>
                         }
+                        else
+                        {
+                            <RadzenListBox Style="min-width: 250px" 
+                                           AllowFiltering="true" 
+                                           FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                           Multiple="true"
+                                           @bind-Value=@SelectedTags[tg.Id]
+                                           Data=@tg.Tags 
+                                           TextProperty="Name" 
+                                           ValueProperty="Id"/>
+                        }
                     } else if (!tg.Locked)
                     {
-                        
+                        @* <h5 class="tagCheckItem">@tg.Name</h5>
+                        <Autocomplete class="autocompleteTags"
+                                      TItem="Tag"
+                                      TValue="string"
+                                      Data="@tg.Tags"
+                                      TextField="@((item) => item.Name)"
+                                      Placeholder="Search..."
+                                      Multiple
+                                      FreeTyping
+                                      @bind-SelectedValues="_multipleSelectionTagsData"
+                                      @bind-SelectedTexts="_multipleSelectionTagsTexts">
+                        </Autocomplete>*@
                     }
                 }
             </div>
@@ -69,13 +91,12 @@
                 <RadzenLabel class="formLabelText" Text="Supervisors" />
             </div>
             <div class="col">
-                <RadzenListBox Style="min-width: 250px" AllowFiltering="true"
-                               FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                               Multiple="true"
-                               @bind-Value=@SupervisorIds
-                               Data=@Supervisors
-                               TextProperty="Name"
-                               ValueProperty="Id"/>
+                <RadzenListBox
+                    @bind-Value=@SupervisorIds
+                    Multiple="true"
+                    Data=@Supervisors 
+                    TextProperty="Name" 
+                    ValueProperty="Id"  />
             </div>
         </div>
     }
@@ -86,65 +107,48 @@
 
 @code {
 
-    public class NotLockedTags
-    {
-        public HashSet<TagCreateDTO> Tags { get; set; }
-    }
-    
-    private ProjectCreateDTO _project = new();
-    
-    
-    
-    
-    
-    
-    
-    
-
-
     private IEnumerable<TagGroup> TagGroups { get; set; } = new List<TagGroup>();
     private IEnumerable<Supervisor> Supervisors { get; set; } = new List<Supervisor>();
+    
     private Dictionary<int, IEnumerable<int>> SelectedTags = new();
-
-    private string Name { get; set; } = "";
-    private string Description { get; set; } = "";
-
+    
     private ISet<int> TagIds => SelectedTags.Aggregate(
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
         );
 
-    private IEnumerable<int> SupervisorIds { get; set; }
 
+
+    private IEnumerable<int> test = new List<int>();
+    private ProjectCreateDTO _project = new();
+    private IEnumerable<int> SupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
+    
     protected override async Task OnInitializedAsync()
     {
-    // TODO: Fetch TagGroups from API.
-    //TagGroups = await Http.GetFromJsonAsync<TagGroupDTO>("api/Project");
+        
+        // TODO: Fetch TagGroups from API.
+        //TagGroups = await Http.GetFromJsonAsync<TagGroupDTO>("api/Project");
         TagGroups = TagGroup.SampleTagGroups;
         foreach (var tg in TagGroups)
             SelectedTags.Add(tg.Id, new List<int>());
 
     // TODO: Fetch Supervisors from API.
+        // TODO: Automatically add current user to SupervisorIds.
         Supervisors = Supervisor.SampleSupervisors;
-    // TODO: Automatically add current user to SupervisorIds.
+        
+        _project.UserIds = new HashSet<int>();
+
+        await base.OnInitializedAsync();
     }
 
     private async void OnSubmit()
     {
-        ProjectCreateDTO project = new()
+        var response = await _http.PostAsJsonAsync("api/Project", _project);
+        if (response.IsSuccessStatusCode)
         {
-            Name = Name,
-            Description = Description,
-            ExistingTagIds = TagIds,
-            NewTagDTOs = new HashSet<TagCreateDTO>(), //TODO: Skal opdateres med eventualle nye tags
-            UserIds = SupervisorIds.ToHashSet(),
-        };
-
-        await _http.PostAsJsonAsync("api/Project", project);
-    // TODO: Redirect user to new Project Page.
+            Redirect();
+        }
     }
-
-    // TODO: Limit amount of tags chosen, accoring to TagGroup MaxCount.
 
     void Redirect()
     {
