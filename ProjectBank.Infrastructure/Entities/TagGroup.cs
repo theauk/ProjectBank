@@ -1,4 +1,4 @@
-namespace ProjectBank.Infrastructure
+namespace ProjectBank.Infrastructure.Entities
 {
     public class TagGroup
     {        
@@ -6,7 +6,7 @@ namespace ProjectBank.Infrastructure
         
         [Required]
         public string? Name { get; set; }
-        
+
         public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
 
         [Required]

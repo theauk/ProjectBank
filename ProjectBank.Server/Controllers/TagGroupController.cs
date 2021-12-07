@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
 using ProjectBank.Core.DTOs;
 using ProjectBank.Core.IRepositories;
+using ProjectBank.Server.Model;
 
 namespace ProjectBank.Server.Controllers;
 
@@ -14,11 +15,17 @@ public class TagGroupController : ControllerBase
 {
     private readonly ITagGroupRepository _repository;
 
+    public TagGroupController(ITagGroupRepository repository)
+    {
+        _repository = repository;
+    }
+
     [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<TagGroupDTO>> Get(int id)
     {
-        throw new NotImplementedException();
+        var tagGroupDto = await _repository.ReadAsync(id);
+        return tagGroupDto.ToActionResult();
     }
 
     [AllowAnonymous]
@@ -30,42 +37,26 @@ public class TagGroupController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    [ProducesResponseType(201)]
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
     {
-        var created = await _repository.CreateAsync(tagGroup);
-        return CreatedAtAction(nameof(Get), created);
+        var response = await _repository.CreateAsync(tagGroup);
+        return response.ToActionResult();
     }
 
     [Authorize(Roles = "Admin")] 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        throw new NotImplementedException();
+        var response = await _repository.DeleteAsync(id);
+        return response.ToActionResult();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] TagGroupUpdateDTO tagGroup)
     {
-        throw new NotImplementedException();
+        var response = await _repository.UpdateAsync(id, tagGroup);
+        return response.ToActionResult();
     }
-    
-    [Authorize(Roles = "Admin")] 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTag(int taggroupid, int tagid)
-    {
-        throw new NotImplementedException();
-    }
-
-    [Authorize(Roles = "Admin, Supervisor")]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PostTag(int taggroupid, [FromBody] TagCreateDTO tag)
-    {
-        throw new NotImplementedException();
-    }
-
-
-
 
 }

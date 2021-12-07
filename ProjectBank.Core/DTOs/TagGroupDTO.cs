@@ -2,50 +2,47 @@ namespace ProjectBank.Core.DTOs
 {
     public record TagGroupDTO
     {
-        public TagGroupDTO(int id, string? name, HashSet<TagDTO> tags, bool supervisorCanAddTag, bool requiredInProject, int tagLimit)
-        {
-            Id = id;
-            Name = name;
-            Tags   = tags;
-            SupervisorCanAddTag = supervisorCanAddTag;
-            RequiredInProject = requiredInProject;
-            TagLimit = tagLimit;
-        }
+        public int Id { get; init; }
 
-        public int Id { get; set; }
+        [Required] public string Name { get; init; }
 
-        [Required] 
-        public string? Name { get; set; }
+        public ISet<TagDTO> TagDTOs { get; init; }
 
-        public ISet<int>? deletedTagIds { get; set; }
+        [Required] public bool SupervisorCanAddTag { get; init; }
 
-        public ISet<TagCreateDTO>? newTags { get; set; }
-
-        [Required] 
-        public bool SupervisorCanAddTag { get; init; }
-
-        [Required] 
-        public bool RequiredInProject { get; init; }
+        [Required] public bool RequiredInProject { get; init; }
 
         public int TagLimit { get; init; }
-        public HashSet<TagDTO> Tags { get; set; } = new HashSet<TagDTO>();
     }
 
     public record TagGroupCreateDTO
     {
-        [Required] 
-        public string? Name { get; init; }
+        [Required] public string Name { get; set; }
 
-        public ISet<TagCreateDTO> Tags { get; init; } = new HashSet<TagCreateDTO>();
+        public ISet<TagCreateDTO> TagCreateDTOs { get; set; }
 
-        [Required] 
-        public bool SupervisorCanAddTag { get; init; }
+        [Required] public bool SupervisorCanAddTag { get; set; } = true;
 
-        [Required] 
-        public bool RequiredInProject { get; init; }
+        [Required] public bool RequiredInProject { get; set; } = false;
 
-        public int TagLimit { get; init; }
+        public int TagLimit { get; set; } = 999;
     }
 
-    public record TagGroupUpdateDTO : TagGroupCreateDTO {}
+    public record TagGroupUpdateDTO : TagCreateDTO
+    {
+        
+        [Required] public string Name { get; init; }
+
+        public ISet<TagDTO> TagDTOs { get; init; }
+
+        [Required] public bool SupervisorCanAddTag { get; init; }
+
+        [Required] public bool RequiredInProject { get; init; }
+
+        public int TagLimit { get; init; }
+
+        public ISet<int>? DeletedTagIds { get; set; } = new HashSet<int>();
+
+        public ISet<TagCreateDTO>? NewTags { get; set; } = new HashSet<TagCreateDTO>();
+    }
 }

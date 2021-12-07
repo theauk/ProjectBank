@@ -13,7 +13,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, ProjectDTO)> CreateAsync(ProjectCreateDTO project)
+        public async Task<Response> CreateAsync(ProjectCreateDTO project)
         {
             throw new NotImplementedException();
         }
@@ -23,17 +23,22 @@ namespace ProjectBank.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadAllAsync()
+        public async Task<IReadOnlyCollection<ProjectDTO>> ReadAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public async Task<(Response, ProjectDTO)> ReadAsync(int projectId)
+        public async Task<Option<ProjectDTO>> ReadAsync(int projectId)
         {
             throw new NotImplementedException();
         }
 
         public async Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds)
         {
             throw new NotImplementedException();
         }

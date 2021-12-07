@@ -1,70 +1,68 @@
 ﻿@page "/TagGroupCreation"
 @using System.Text.Json
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
 
-
-@*
-<div class="row">
-    <div class="col-xl-6">
-        <h3 style="margin-top: 2rem">Titel*</h3>
-        <RadzenTextBox Placeholder="Insert title here.." Change=@(args => SetTitle(args, "Title")) />
-
-        <h3 style="margin-top: 2rem">Tag Brug den her til at adde tags</h3>
-        <RadzenTextBox Placeholder="Insert tag name here.." Change=@(args => CreateAndAddTag(args, "Tag name")) />
-        
-        <h3 style="margin-top: 2rem">Set Tag limit</h3>
-        <RadzenTextBox Placeholder="Insert title here.." Change=@(args => SetTagLimit(args, "Title")) />
-        
-        <h3>Supervisors can add tag</h3>
-        <RadzenSelectBar @bind-Value=@canAddTag TValue="bool" Change=@(args => OnChange(args, "Supervisors can add tag"))>
-            <Items>
-                <RadzenSelectBarItem Text="Yes" Value="true" />
-                <RadzenSelectBarItem Text="No" Value="false" />
-            </Items>
-        </RadzenSelectBar>
-        
-        <h3>Tag Group is required in project</h3>
-        <RadzenSelectBar @bind-Value=@isRequiredInProject TValue="bool" Change=@(args => OnChange(args, "Tag Group is required in project"))>
-            <Items>
-                <RadzenSelectBarItem Text="Yes" Value="true" />
-                <RadzenSelectBarItem Text="No" Value="false" />
-            </Items>
-        </RadzenSelectBar>
-                
-        <div class="col-xl-6 mb-5">
-            <h3>Tags virker ikke pt (ListBox with multiple selection)</h3>
-            <RadzenListBox AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" @bind-Value=@multipleValues Multiple="true" Data=@tags
-                           
-                           ValueProperty="TagID" Change=@(args => OnChange(args, "ListBox with multiple selection")) Style="height:200px" />
-        </div>
-        
-        <RadzenButton Click=@(args => Submit()) Text="Publish" Icon="check_circle" ButtonStyle="ButtonStyle.Success" />
-    </div>
-</div>*@
+<h1 style="margin-bottom: 48px">Create Tag Group</h1>
 
 <div class="row">
     <div class="col-xl-6">
         <div class="row">
             <div class="col">
-                <RadzenTemplateForm TItem="TagGroup" Data=@_tagGroup Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+                <RadzenTemplateForm TItem="TagGroupCreateDTO" Data=@_tagGroup Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
                     <div class="row" style="margin-bottom: 48px">
-                            <div class="col-md-4 align-right">
-                                <RadzenLabel Text="Tag Group Name" />
-                            </div>
-                            <div class="col">
-                                <RadzenTextBox style="display: block" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
-                                <RadzenRequiredValidator Component="TagGroupName" Text="Tag group name is required" Popup=@popup Style="position: absolute"/>
-                            </div>
+                        <div class="col-md-4 align-right">
+                            <RadzenLabel Text="Name"/>
                         </div>
-                        <div class="row" style="margin-bottom: 48px">
-                            <div class="col-md-4">
-                                <RadzenLabel Text="Last Name" />
-                            </div>
-                            <div class="col">
-                                <RadzenTextBox style="display: block" Name="LastName" @bind-Value=@_tagGroup.LastName />
-                                <RadzenRequiredValidator Component="LastName" Text="Last name is required" Popup=@popup Style="position: absolute"/>
-                            </div>
+                        <div class="col">
+                            <RadzenTextBox style="display: block" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
+                            <RadzenRequiredValidator Component="TagGroupName" Text="Tag group name is required" />
                         </div>
-                        <RadzenButton ButtonType="ButtonType.Submit" Text="Submit" ></RadzenButton>
+                    </div>
+                    <div class="row" style="margin-bottom: 48px">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Predefined Tags"/>
+                        </div>
+                        <div class="col">
+                            <Autocomplete class="autocompleteTags" 
+                                          TItem="TagCreateDTO"
+                                          TValue="string"
+                                          Data="@_tagGroup.TagCreateDTOs"
+                                          TextField="@(( item ) => item.Value)"
+                                          ValueField="@(( item ) => item.Value)"
+                                          Placeholder="Search..."
+                                          Multiple
+                                          FreeTyping
+                                          @bind-SelectedValues="_multipleSelectionData"
+                                          @bind-SelectedTexts="_multipleSelectionTexts">
+                            </Autocomplete>
+                        </div>
+                    </div>
+                    <div class="row supervisorTagsLimit" style="margin-bottom: 48px">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Maximum Amount of Tags"/>
+                        </div>
+                        <div class="col">
+                            <RadzenNumeric @bind-Value=@MaxLimit TValue="int?" Placeholder="No Limit" Min="1" />
+                        </div>
+                    </div>
+                    <div class="row supervisorAddTags" style="margin-bottom: 48px">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Supervisors Can Add Tags"/>
+                        </div>
+                        <div class="col">
+                            <RadzenCheckBox @bind-Value=@_tagGroup.SupervisorCanAddTag Name="SupervisorCanAdd" TValue="bool" />
+                        </div>
+                    </div>
+                    <div class="row requiredInProject" style="margin-bottom: 48px">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Tag Group Required"/>
+                        </div>
+                        <div class="col">
+                            <RadzenCheckBox @bind-Value=@_tagGroup.RequiredInProject Name="RequiredInProject" TValue="bool" />
+                        </div>
+                    </div>
+                    <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Submit" class="createTagGroupSubmit"></RadzenButton>
                 </RadzenTemplateForm>
             </div>
         </div>
@@ -72,85 +70,39 @@
 </div>
 
 @code {
-    //Links
-    // ListBox https://blazor.radzen.com/listbox
-    
-    
-    //TagGroupDTO Importér tagGroup DTO og set values i stedet for nedenstående temp
-    // TagGroupCreateDTO createDTO;
-    /*string tagGroupTitle;
-    int tagLimit = 999;
-    HashSet<Tag> tagsTagGroup;
-    int idCounter;
-    bool canAddTag = false; // Skal tilføjes til TagGroupDTOen når vi sender den videre. Ændre @bind-Value=@canAddTag til  @bind-Value=@createDTO.canAddTag
-    bool isRequiredInProject = false; // Skal tilføjes til TagGroupDTOen når vi sender den videre. Ændre @bind-Value=@isRequiredInProject til  @bind-Value=@createDTO.isRequiredInProject
-    IEnumerable<string> multipleValues = new [] {"Tag 1", "Tag 2"};
-    IEnumerable<object> tags = new Tag[0];
+    // TODO: Fix enter tryk i tag søge feltet 
 
-    void SetTitle(string value, string name)
+    int? MaxLimit; // brug den her men hvis null skal den være 999
+    TagGroupCreateDTO _tagGroup = new(){TagCreateDTOs = new HashSet<TagCreateDTO>()};
+
+    List<String> _multipleSelectionData;
+    List<String> _multipleSelectionTexts = new List<string>();
+
+    protected override async Task OnInitializedAsync()
     {
-        //createDTO.Name = value;
-        tagGroupTitle = value;
-        OnChange(value, name);
-    }
-    
-    void SetTagLimit(string value, string name)
-    {
-        //createDTO.tagLimit = ToInt32(value);  
-        tagLimit = Convert.ToInt32(value); //Handle string inputs exceptions
-        OnChange(value, name);
+        // For the update page
+        // here we need to read in the existing tags for the current tag group – so we need to get the tag group ID somehow
+        _multipleSelectionData = new List<string>();
+        await base.OnInitializedAsync();
     }
 
-    void CreateAndAddTag(string value, string name)
+    async Task OnSubmit(TagGroupCreateDTO tagGroup)
     {
-         //createDTO.Tags.Add((new Tag() {Id = 1, Name = "Tag 1"} ) // Hvordan håndtere vi unikt id her??
-        tagsTagGroup.Add(new Tag() {Id = idCounter, Name = value});
-        idCounter++;
-    }
+        // here we should submit the _tagGroup 
+        // the "final" tags are in a list of strings. That needs to be turned into tags 
 
-    void OnChange(object value, string name) 
-    {
-        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
-    }
-    
-    protected override void OnInitialized()
-    {
-        //HashSet<Tag> tags = ProjectBankContext.Tags.ToList(); // Mangler at hente ProjectBankContext fra main til FrontEnd branch
-        
-        //Temp tags til testing. // Jeg kan ikke få den til at vise med test data
-        tags.Append(new Tag() {Id = 1, Name = "Tag 1"});
-        tags.Append(new Tag() {Id = 2, Name = "Tag 2"});
-        tags.Append(new Tag() {Id = 3, Name = "Tag 3"});
-        tags.Append(new Tag() {Id = 4, Name = "Tag 4"});
-        tags.Append(new Tag() {Id = 5, Name = "Tag 5"});
-        tags.Append(new Tag() {Id = 6, Name = "Tag 6"});
-        
-    }
+        var response = await Http.PostAsJsonAsync("api/TagGroup", _tagGroup);
 
-    void Submit()
-    {
-        
-    }*/
-    
-    class TagGroup
-    {
-        public string Name { get; set; }
-        public string LastName { get; set; }
-    }
-
-    bool popup;
-
-    TagGroup _tagGroup = new TagGroup();
-    EventConsole console;
-
-    void OnSubmit(TagGroup tagGroup)
-    {
-        Console.WriteLine($"Submit: {JsonSerializer.Serialize(tagGroup, new JsonSerializerOptions() {  WriteIndented = true })}");
+        if (response.IsSuccessStatusCode)
+        {
+            var uri = $"{NavigationManager.BaseUri}/admin";
+            NavigationManager.NavigateTo(uri);
+        }
     }
 
     void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
     {
-        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {WriteIndented = true})}");
     }
 
 }
