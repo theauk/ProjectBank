@@ -85,7 +85,6 @@ public class TagGroupRepositoryTest : IDisposable
         var autumn23 = new TagDTO() {Id = 15, Value = "Autumn 2023"};
         var tags = new HashSet<TagDTO>() {spring22, spring23, autumn22, autumn23};
 
-
         // Act
         var found = await _repository.ReadAsync(31);
         
@@ -127,11 +126,10 @@ public class TagGroupRepositoryTest : IDisposable
             TagLimit = 999,
         };
         
-        //act
+        //Act
         var created  = await _repository.CreateAsync(taggroup);
         var readAllTagGroups = await _repository.ReadAllAsync();
         var createdTagGroupDtO = readAllTagGroups.FirstOrDefault(tgDTO => tgDTO.Name == taggroup.Name); //TODO Need implementation: Kræver at vi checker efter duplicate tag groups for at være trolig
-        
         
         //Assert
         Assert.Equal(Response.Created, created);
@@ -140,7 +138,6 @@ public class TagGroupRepositoryTest : IDisposable
         Assert.Equal(taggroup.SupervisorCanAddTag, createdTagGroupDtO.SupervisorCanAddTag);
         Assert.Equal(taggroup.TagLimit, createdTagGroupDtO.TagLimit);
         Assert.Equal(taggroup.TagCreateDTOs.Count, createdTagGroupDtO.TagDTOs.Count);
-        
         foreach (var expected in taggroup.TagCreateDTOs)
         {
             Assert.True(createdTagGroupDtO.TagDTOs.Any(actual => actual.Value == expected.Value));   
@@ -157,8 +154,11 @@ public class TagGroupRepositoryTest : IDisposable
 */
     [Fact]
     public async Task DeleteAsync_deletes_tagGroup_with_Id_32()
-    {
+    {   
+        //Act
         var deleted = await _repository.DeleteAsync(32);
+            
+        //Assert
         Assert.Equal(Response.Deleted, deleted);
         Assert.Null( _context.TagGroups.Find(100));
     }
@@ -166,7 +166,10 @@ public class TagGroupRepositoryTest : IDisposable
     [Fact]
     public async Task DeleteAsync_delete_nonexistant_returns_NotFound()
     {
+        //Act
         var notFound = await _repository.DeleteAsync(-1);
+        
+        //Assert
         Assert.Equal(Response.NotFound, notFound);
     }
 
@@ -176,13 +179,11 @@ public class TagGroupRepositoryTest : IDisposable
     public async Task Update_TagGroup_31_with_required_bool_new_tags_new_name()
     {
         //Arrange
-
         var tagsToDelete = new HashSet<int>() {12};
         var spring23 = new TagCreateDTO() {Value = "spring 23"};
         var tagsToAdd = new HashSet<TagCreateDTO>() {spring23};
         var tagGroupUpdate = new TagGroupUpdateDTO()
             {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTags = tagsToAdd};
-
         
         // Act
         var update =  await _repository.UpdateAsync
@@ -213,6 +214,7 @@ public class TagGroupRepositoryTest : IDisposable
         var notFound =  await _repository.UpdateAsync
             (56, tagGroupUpdate);
         
+        //Assert
         Assert.Equal(Response.NotFound,notFound);
     }
 
