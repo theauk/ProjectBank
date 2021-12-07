@@ -1,5 +1,6 @@
 ﻿:root {
     --submitButton: #3c5ebe;
+    --cancelButton: #acb2b9;
     --tagBadgeColor: #7474ad;
 }
 
@@ -112,4 +113,9 @@
 
 .rz-button.rz-button-md.btn-primary.createTagGroupSubmit {
     background-color: var(--submitButton);
+    margin-right: 20px;
+}
+
+.rz-button.rz-button-md.btn-light.cancel {
+    background-color: var(--cancelButton);
 }

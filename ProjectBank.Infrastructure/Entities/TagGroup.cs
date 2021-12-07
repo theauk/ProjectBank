@@ -15,6 +15,6 @@ namespace ProjectBank.Infrastructure.Entities
         [Required]
         public bool RequiredInProject { get; set;}
 
-        public int TagLimit { get; set;} 
+        public int? TagLimit { get; set;} 
     }
 }

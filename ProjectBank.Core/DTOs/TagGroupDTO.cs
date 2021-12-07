@@ -12,7 +12,7 @@ namespace ProjectBank.Core.DTOs
 
         [Required] public bool RequiredInProject { get; init; }
 
-        public int TagLimit { get; init; }
+        public int? TagLimit { get; init; }
     }
 
     public record TagGroupCreateDTO
@@ -25,7 +25,7 @@ namespace ProjectBank.Core.DTOs
 
         [Required] public bool RequiredInProject { get; set; } = false;
 
-        public int TagLimit { get; set; } = 999;
+        public int? TagLimit { get; set; }
     }
 
     public record TagGroupUpdateDTO : TagCreateDTO
@@ -39,7 +39,7 @@ namespace ProjectBank.Core.DTOs
 
         [Required] public bool RequiredInProject { get; init; }
 
-        public int TagLimit { get; init; }
+        public int? TagLimit { get; init; }
 
         public ISet<int>? DeletedTagIds { get; set; } = new HashSet<int>();
 
