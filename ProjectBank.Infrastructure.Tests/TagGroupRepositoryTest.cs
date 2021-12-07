@@ -104,7 +104,7 @@ public class TagGroupRepositoryTest : IDisposable
     [Fact]
     public async Task ReadAsync_on_nonexistant_id_throws_InvalidOperationException()
     {
-            //TODO Fix/Spørgsmål: Hvordan fungere det med InvalidOperationException i Options?
+            //TODO Fix/Spørgsmål: Hvordan fungerer det med InvalidOperationException i Options?
         await Assert.ThrowsAsync<InvalidOperationException>(() => _repository.ReadAsync(56));
     }
 */
