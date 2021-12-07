@@ -73,7 +73,7 @@
     // TODO: Fix enter tryk i tag søge feltet 
 
     int? MaxLimit; // brug den her men hvis null skal den være 999
-    TagGroupCreateDTO _tagGroup = new();
+    TagGroupCreateDTO _tagGroup = new(){TagCreateDTOs = new HashSet<TagCreateDTO>()};
 
     List<String> _multipleSelectionData;
     List<String> _multipleSelectionTexts = new List<string>();
@@ -90,13 +90,12 @@
     {
         // here we should submit the _tagGroup 
         // the "final" tags are in a list of strings. That needs to be turned into tags 
-        
-        
-        var response = await Http.PostAsJsonAsync("api/TagGroupController", _tagGroup);
+
+        var response = await Http.PostAsJsonAsync("api/TagGroup", _tagGroup);
 
         if (response.IsSuccessStatusCode)
         {
-            var uri = $"{NavigationManager.BaseUri}characters/admin";
+            var uri = $"{NavigationManager.BaseUri}/admin";
             NavigationManager.NavigateTo(uri);
         }
     }

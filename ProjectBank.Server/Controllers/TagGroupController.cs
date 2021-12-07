@@ -33,6 +33,7 @@ public class TagGroupController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
     {
+        Console.WriteLine("im in post");
         var created = await _repository.CreateAsync(tagGroup);
 
         Console.WriteLine(tagGroup.Name);
