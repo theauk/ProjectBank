@@ -147,14 +147,14 @@ public class TagGroupRepositoryTest : IDisposable
         // Vi skal lave vores (I)TagGroupRepository om hvis vi skal teste createAsync ift. indholdet - men vi får ikke brug for det i praksis. - oli
         //TODO this - hvis vi laver repo om
     }
-
+/*
     [Fact]
     public async Task CreateAsync_create_duplicate_returns_error()
     {
         // Lidt uden for scope, men kunne være relevant - er ikke blevet implementeret endnu
         throw new NotImplementedException();
     }
-
+*/
     [Fact]
     public async Task DeleteAsync_deletes_tagGroup_with_Id_32()
     {
