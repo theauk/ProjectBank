@@ -22,6 +22,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<IReadOnlyCollection<UserDTO>> ReadAllAsync()
         {
+            
             var users = (await _context.Users.Select(u => new UserDTO
             {
                 Id = u.Id,
@@ -33,11 +34,20 @@ namespace ProjectBank.Infrastructure.Repositories
         
         public async Task<IReadOnlyCollection<UserDTO>> ReadAllAsync(string role)
         {
-            var users = (await _context.Users.Select(u => new UserDTO
-            {
-                Id = u.Id,
-                Name = u.Name
-            }).ToListAsync()).AsReadOnly();
+            //TODO Lave Azure API kald her
+            // var users = (await _context.Users.Where(u => u.Role == role ).Select(u => new UserDTO
+            // {
+            //     Id = u.Id,
+            //     Name = u.Name
+            // }).ToListAsync()).AsReadOnly();
+            
+            var marco = new User { Id = 1, Name = "Marco" };
+            var birgit = new User { Id = 2, Name = "Birgit" };
+            var bjorn = new User { Id = 3, Name = "Bjørn" };
+            var paolo = new User { Id = 4, Name = "Paolo" };
+            var rasmus = new User { Id = 5, Name = "Rasmus" };
+            
+            // var users = new List
 
             return users;
         }

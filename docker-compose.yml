@@ -19,12 +19,12 @@ services:
     environment:
       ConnectionStrings__ProjectBank:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: https://+:;http://+
+      ASPNETCORE_URLS: https://+:443/;http://+:80
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
       ASPNETCORE_Kestrel__Certificates__Default__Password: localhost
     ports:
       - '5077:80'
-      - '7207:443'
+      - '7807:443'
     depends_on:
       - db
     secrets:

@@ -93,7 +93,7 @@
 
         //Projects = Project.SampleProjects; //Lav rigtigt API kald når det er med ProjectBankContext
         _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
+            "api/Project");
         _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
 
         // Create a set of empty "selected" ids for each tag group.
