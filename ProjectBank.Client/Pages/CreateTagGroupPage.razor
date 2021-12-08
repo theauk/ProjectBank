@@ -1,4 +1,4 @@
-﻿@page "/TagGroupCreation"
+﻿@page "/tagGroupCreation"
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 
@@ -56,7 +56,7 @@
                                       Data="@_tagGroup.NewTagsDTOs"
                                       TextField="@((item) => item.Value)"
                                       ValueField="@((item) => item.Value)"
-                                      Placeholder="Search..."
+                                      Placeholder="Search or press enter to create new..."
                                       Multiple
                                       FreeTyping
                                       @bind-SelectedValues="_multipleSelectionTagsData"
@@ -109,7 +109,7 @@
 
     void Redirect()
     {
-        var uri = $"{_navigationManager.BaseUri}/admin";
+        var uri = $"{_navigationManager.BaseUri}admin";
         _navigationManager.NavigateTo(uri);
     }
 

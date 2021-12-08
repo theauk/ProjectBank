@@ -1,4 +1,4 @@
-﻿@page "/create"
+﻿@page "/projectCreation"
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 
@@ -131,7 +131,7 @@
     <div class="col-md-2 align-right"></div>
     <div class="col">
         <RadzenButton class="submitButton" form="@submitFormId" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
-        <RadzenButton class="cancelButton" Click="@Redirect" Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
+        <RadzenButton class="cancelButton" Click="@Cancel" Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
     </div>
 </div>
 
@@ -194,14 +194,14 @@
             var response = await _http.PostAsJsonAsync("api/Project", _project);
             if (response.IsSuccessStatusCode)
             {
-                Redirect();
+                _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
             }
         }
     }
 
-    void Redirect()
+    void Cancel()
     {
-        _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+        _navigationManager.NavigateTo($"{_navigationManager.BaseUri}supervisorOverview");
     }
 
 }
