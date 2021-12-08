@@ -7,9 +7,9 @@ namespace ProjectBank.Core.DTOs
         [Required] 
         public string DomainName { get; init; }
         
-        public ISet<UserDTO> UserIds { get; init; } = new HashSet<UserDTO>();
-        public ISet<ProjectDTO> ProjectIds { get; init; } = new HashSet<ProjectDTO>();
-        public ISet<TagGroupDTO> TagGroupIds { get; init; } = new HashSet<TagGroupDTO>();
+        public ISet<UserDTO> Users { get; init; } = new HashSet<UserDTO>();
+        public ISet<ProjectDTO> Projects { get; init; } = new HashSet<ProjectDTO>();
+        public ISet<TagGroupDTO> TagGroups { get; init; } = new HashSet<TagGroupDTO>();
     }
 
     public record UniversityCreateDTO

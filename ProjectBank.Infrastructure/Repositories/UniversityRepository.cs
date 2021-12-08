@@ -48,9 +48,24 @@ namespace ProjectBank.Infrastructure.Repositories
             {
                 Id = entity.Id,
                 DomainName = entity.DomainName,
-                UserIds = entity.Users.Select(u => u.Id).ToHashSet(),
-                ProjectIds = entity.Projects.Select(p => p.Id).ToHashSet(),
-                TagGroupIds = entity.TagGroups.Select(tg => tg.Id).ToHashSet()
+                Users = entity.Users.Select(u => new UserDTO{ Id = u.Id, Name = u.Name}).ToHashSet(),
+                Projects = entity.Projects.Select(p => new ProjectDTO
+                {
+                    Id = p.Id, 
+                    Name = p.Name, 
+                    Description = p.Description, 
+                    Supervisors = p.Supervisors.Select(u => new UserDTO{ Id = u.Id, Name = u.Name}).ToHashSet(), 
+                    Tags = p.Tags.Select(t => new TagDTO{ Id = t.Id, Value = t.Value }).ToHashSet()
+                }).ToHashSet(),
+                TagGroups = entity.TagGroups.Select(tg => new TagGroupDTO
+                { 
+                    Id = tg.Id,
+                    Name = tg.Name, 
+                    TagLimit = tg.TagLimit,
+                    SupervisorCanAddTag = tg.SupervisorCanAddTag,
+                    RequiredInProject = tg.RequiredInProject,
+                    TagDTOs = tg.Tags.Select(t => new TagDTO{ Id = t.Id, Value = t.Value }).ToHashSet()
+                }).ToHashSet()
             };
         }
     }

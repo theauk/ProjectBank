@@ -17,7 +17,7 @@ namespace ProjectBank.Infrastructure.Repositories
             {
                 Name = project.Name,
                 Description = project.Description,
-                Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync(),
+                Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync(), // TODO create new tags if not existing
                 Supervisors = await GetUsersAsync(project.UserIds).ToSetAsync()
             };
 
