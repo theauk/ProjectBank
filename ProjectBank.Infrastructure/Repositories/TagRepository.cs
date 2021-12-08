@@ -9,7 +9,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, TagDTO)> CreateAsync(TagCreateDTO tag)
+        public async Task<Response> CreateAsync(TagCreateDTO tag)
         {
             throw new NotImplementedException();
         }

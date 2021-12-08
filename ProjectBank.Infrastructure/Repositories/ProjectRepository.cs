@@ -9,7 +9,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, ProjectDTO?)> CreateAsync(ProjectCreateDTO project)
+        public async Task<Response> CreateAsync(ProjectCreateDTO project)
         {
             var entity = new Project
             {
@@ -21,21 +21,14 @@ namespace ProjectBank.Infrastructure.Repositories
 
             if (entity.Supervisors.Contains(null))
             {
-                return (Response.BadRequest, null);
+                return (Response.BadRequest);
             }
 
             _context.Projects.Add(entity);
 
             await _context.SaveChangesAsync();
 
-            return (Response.Created, new ProjectDTO
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Description = entity.Description,
-                Tags = entity.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
-                Supervisors = entity.Supervisors.Select(s => new UserDTO { Id = s.Id, Name = s.Name }).ToHashSet()
-            });
+            return Response.Created;
         }
 
         public async Task<Response> DeleteAsync(int projectId)
@@ -74,7 +67,9 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadFilteredAsync(IEnumerable<int> tagIds)
         {
-            throw new NotImplementedException();
+            var allProject = (await ReadAllAsync()).Item2;
+
+            return (Response.Success, null);
         }
 
         public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadAllAsync()

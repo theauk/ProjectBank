@@ -82,8 +82,8 @@ namespace ProjectBank.Infrastructure.Tests
             };
 
             var actual = await _repository.CreateAsync(project);
-            var actualResponse = actual.Item1;
-            var actualProject = actual.Item2;
+            var actualResponse = actual;
+            var actualProject = (await _repository.ReadAsync(5)).Item2;
 
             Assert.Equal(Response.Created, actualResponse);
             Assert.Equal(5, actualProject.Id);
@@ -111,7 +111,7 @@ namespace ProjectBank.Infrastructure.Tests
 
             var actual = await _repository.CreateAsync(project);
 
-            Assert.Equal((Response.BadRequest, null), actual);
+            Assert.Equal(Response.BadRequest, actual);
         }
 
         [Fact]
@@ -191,7 +191,7 @@ namespace ProjectBank.Infrastructure.Tests
             var mathProject = await _repository.ReadAsync(1);
             
             Assert.Equal(Response.Success, mathProject.Item1);
-            
+            Assert.NotNull(mathProject.Item2);
             Assert.Empty(mathProject.Item2.Tags);
         }
 

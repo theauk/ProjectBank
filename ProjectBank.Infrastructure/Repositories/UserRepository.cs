@@ -9,7 +9,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, UserDTO)> CreateAsync(UserCreateDTO user)
+        public async Task<Response> CreateAsync(UserCreateDTO user)
         {
             var entity = new User { Name = user.Name };
 
@@ -17,10 +17,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
             await _context.SaveChangesAsync();
 
-            return (Response.Created, new UserDTO {
-                Id = entity.Id,
-                Name = entity.Name
-            });
+            return Response.Created;
         }
 
         public async Task<(Response, IReadOnlyCollection<UserDTO>)> ReadAllAsync()

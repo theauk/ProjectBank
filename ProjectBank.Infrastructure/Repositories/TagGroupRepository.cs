@@ -9,7 +9,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, TagGroupDTO)> CreateAsync(TagGroupCreateDTO tagGroup)
+        public async Task<Response> CreateAsync(TagGroupCreateDTO tagGroup)
         {
             var entity = new TagGroup
             {
@@ -23,14 +23,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context.TagGroups.Add(entity);
             await _context.SaveChangesAsync();
 
-            return (Response.Created, new TagGroupDTO
-            {
-                Name = entity.Name,
-                TagDTOs = entity.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
-                SupervisorCanAddTag = entity.SupervisorCanAddTag,
-                RequiredInProject = entity.RequiredInProject,
-                TagLimit = entity.TagLimit
-            });
+            return Response.Created;
         }
 
         public async Task<Response> DeleteAsync(int tagGroupId)

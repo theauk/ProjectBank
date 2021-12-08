@@ -9,7 +9,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, UniversityDTO)> CreateAsync(UniversityCreateDTO university)
+        public async Task<Response> CreateAsync(UniversityCreateDTO university)
         {
             var entity = new University { DomainName = university.DomainName };
 
@@ -17,10 +17,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
             await _context.SaveChangesAsync();
 
-            return (Response.Created, new UniversityDTO {
-                Id = entity.Id,
-                DomainName = entity.DomainName
-            });
+            return Response.Created;
         }
 
         public async Task<Response> UpdateAsync(int universityId, UniversityUpdateDTO university)
