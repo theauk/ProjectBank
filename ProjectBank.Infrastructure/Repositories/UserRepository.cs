@@ -30,6 +30,17 @@ namespace ProjectBank.Infrastructure.Repositories
 
             return users;
         }
+        
+        public async Task<IReadOnlyCollection<UserDTO>> ReadAllAsync(string role)
+        {
+            var users = (await _context.Users.Select(u => new UserDTO
+            {
+                Id = u.Id,
+                Name = u.Name
+            }).ToListAsync()).AsReadOnly();
+
+            return users;
+        }
 
         public async Task<Option<UserDTO?>> ReadAsync(int userId)
         {
