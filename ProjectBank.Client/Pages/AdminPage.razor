@@ -1,36 +1,86 @@
 ﻿@page "/admin"
-@inject HttpClient Http
+@inject HttpClient _http
+@inject NavigationManager _nav
 
-<PageTitle>Admin Page</PageTitle>
+<PageTitle>Admin Overview</PageTitle>
 
 <div class="TagGroupContainer">
-    @foreach (var tg in TagGroups)
+    @if (!_loaded)
     {
-        <div class="TagGroupEntry">
-            <RadzenFieldset AllowCollapse="true" Collapsed="true">
-                <HeaderTemplate>
-                    <span>
-                        <b style="font-size: 30px">@tg.Name</b>
-                    </span>
-                </HeaderTemplate>
-                <ChildContent>
-                    <div class="flex-row">
-                        <RadzenCheckBox Name="Required" TValue="bool" /><RadzenLabel Text="Required" />
-                        <RadzenCheckBox Name="Supervisor can add" TValue="bool" /><RadzenLabel Text="Supervisor can add" />
-                        <RadzenNumeric TValue="int" style="width: 50px" /><RadzenLabel Text="Limit" />
-                    </div>
-                </ChildContent>
-            </RadzenFieldset>
-        </div>
+        <p style="text-align: center">Loading...</p>
     }
+    else
+    {
+        @foreach (var tg in _tagGroups)
+        {
+            <div class="TagGroupEntry">
+                <RadzenFieldset AllowCollapse="true" Collapsed="true">
+                    <HeaderTemplate>
+                        <span>
+                            @if (!_editingName[tg.Id])
+                            {
+                                <b style="font-size: 30px" @ondblclick=@(_ => _editingName[tg.Id] = true)>@tg.Name</b>
+                            }
+                            else
+                            {
+                                <RadzenTextBox @bind-Value=@tg.Name Change=@(_ => { _editingName[tg.Id] = false; _edited[tg.Id] = true; }) />
+                            }
+                        </span>
+                    </HeaderTemplate>
+                    <ChildContent>
+                        <div class="flex-row">
+                            <RadzenCheckBox @bind-Value=@tg.RequiredInProject TValue="bool" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Required" />
+                            <RadzenCheckBox @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Supervisor can add" />
+                            <RadzenNumeric  @bind-Value=@tg.TagLimit TValue="int" style="width: 50px" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Limit" />
+                        </div>
+                    </ChildContent>
+                </RadzenFieldset>
+            </div>
+        }
+    }
+</div>
+<div style="position: absolute; bottom: 20px; width: 14%; margin-left: 45%;">
+        <RadzenButton Text="Save" Icon="save" style="float: left;" Click=@Save />
+        <RadzenButton Text="Cancel" Icon="highlight_off" ButtonStyle="ButtonStyle.Warning" Style="float: right;" Click=@Cancel />
 </div>
 
 @code {
-    private IEnumerable<TagGroup> TagGroups = new List<TagGroup>();
+    private IEnumerable<TagGroup> _tagGroups = new List<TagGroup>();
+    private bool _loaded;
+    
+    private Dictionary<int, bool> _edited = new();
+    private Dictionary<int, bool> _editingName = new();
 
     protected override async Task OnInitializedAsync()
     {
-        TagGroups = TagGroup.SampleTagGroups;
-        //TagGroups = await Http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
+        _tagGroups = TagGroup.SampleTagGroups;
+        //_tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
+        // TODO: Make TagGroupUpdateDTO List and use for storing data.
+        
+        foreach (var tg in _tagGroups)
+        {
+            _edited.Add(tg.Id, false);
+            _editingName.Add(tg.Id, false);
+        }
+
+        _loaded = true;
+    }
+
+    private void Save()
+    {
+        foreach (var tg in _tagGroups)
+            if (tg.Id == -1)
+                // TODO: Depress TagGroupUpdateDTO to TagGroupCreateDTO and Put.
+                //_http.PostAsJsonAsync("api/TagGroup", tg.toCreateDTO())
+                throw new NotImplementedException();
+            else if (_edited[tg.Id])
+                // TODO: Put modified TagGroupUpdateDTO
+                //_http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
+                throw new NotImplementedException();
+    }
+
+    private void Cancel()
+    {
+        _nav.NavigateTo("");
     }
 }

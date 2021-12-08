@@ -13,7 +13,7 @@ namespace ProjectBank.Shared
         public string Name { get; set; }
         public IEnumerable<Tag> Tags { get; set; }
         public bool RequiredInProject { get; set; } = false;
-        public bool SupervisorCanAddTag { get; set; } = false;
+        public bool SupervisorCanAddTag { get; set; } = true;
         public int TagLimit { get; set; } = 0;
         public static IEnumerable<TagGroup> SampleTagGroups
         {
@@ -24,6 +24,7 @@ namespace ProjectBank.Shared
                     Id = 1,
                     Name = "Programme",
                     Tags = Tag.SampleTagsProgrammes,
+                    TagLimit = 2,
                 },
                 new TagGroup
                 {
@@ -36,12 +37,15 @@ namespace ProjectBank.Shared
                     Id = 3,
                     Name = "Topics",
                     Tags = Tag.SampleTagsTopics,
+                    RequiredInProject = true,
                 },
                 new TagGroup
                 {
                     Id = 4,
                     Name = "Semester",
                     Tags = Tag.SampleTagsSemesters,
+                    SupervisorCanAddTag = false,
+                    TagLimit = 2,
                 },
             };
         }
