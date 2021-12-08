@@ -78,7 +78,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public async Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)
