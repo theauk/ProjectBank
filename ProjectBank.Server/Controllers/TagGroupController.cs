@@ -34,7 +34,7 @@ public class TagGroupController : ControllerBase
     {
         var taggroupDtos = await _repository.ReadAllAsync();
         return taggroupDtos;
-    }{}
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]

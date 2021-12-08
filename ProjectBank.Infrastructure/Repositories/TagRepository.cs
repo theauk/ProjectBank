@@ -19,7 +19,7 @@ namespace ProjectBank.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<(Response, IReadOnlyCollection<TagDTO>)> ReadAllAsync()
+        public async Task<IReadOnlyCollection<TagDTO>> ReadAllAsync()
         {
             var tags = (await _context.Tags.Select(t => new TagDTO
             {
@@ -27,23 +27,18 @@ namespace ProjectBank.Infrastructure.Repositories
                 Value = t.Value
             }).ToListAsync()).AsReadOnly();
 
-            return (Response.Success, tags);
+            return tags;
         }
 
-        public async Task<(Response, TagDTO?)> ReadAsync(int tagId)
+        public async Task<Option<TagDTO?>> ReadAsync(int tagId)
         {
             var entity = await _context.Tags.FirstOrDefaultAsync(t => t.Id == tagId);
 
-            if (entity == null)
-            {
-                return (Response.NotFound, null);
-            }
-
-            return (Response.Success, new TagDTO
+            return entity == null ? null :  new TagDTO
             {
                 Id = entity.Id,
                 Value = entity.Value
-            });
+            };
         }
     }
 }

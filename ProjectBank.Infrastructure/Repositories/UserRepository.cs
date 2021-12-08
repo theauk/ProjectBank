@@ -22,7 +22,7 @@ namespace ProjectBank.Infrastructure.Repositories
             return Response.Created;
         }
 
-        public async Task<(Response, IReadOnlyCollection<UserDTO>)> ReadAllAsync()
+        public async Task<IReadOnlyCollection<UserDTO>> ReadAllAsync()
         {
             var users = (await _context.Users.Select(u => new UserDTO
             {
@@ -30,23 +30,18 @@ namespace ProjectBank.Infrastructure.Repositories
                 Name = u.Name
             }).ToListAsync()).AsReadOnly();
 
-            return (Response.Success, users);
+            return users;
         }
 
-        public async Task<(Response, UserDTO?)> ReadAsync(int userId)
+        public async Task<Option<UserDTO?>> ReadAsync(int userId)
         {
             var entity = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (entity == null)
-            {
-                return (Response.NotFound, null);
-            }
-
-            return (Response.Success, new UserDTO
+            return entity == null ? null : new UserDTO
             {
                 Id = entity.Id,
                 Name = entity.Name
-            });
+            };
         }
     }
 }

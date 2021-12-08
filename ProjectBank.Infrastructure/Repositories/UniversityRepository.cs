@@ -40,23 +40,18 @@ namespace ProjectBank.Infrastructure.Repositories
             return Response.Deleted;
         }
 
-        public async Task<(Response, UniversityDTO?)> ReadAsync(int universityId)
+        public async Task<Option<UniversityDTO?>> ReadAsync(int universityId)
         {
             var entity = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
 
-            if (entity == null)
-            {
-                return (Response.NotFound, null);
-            }
-
-            return (Response.Success, new UniversityDTO 
+            return entity == null ? null  : new UniversityDTO 
             {
                 Id = entity.Id,
                 DomainName = entity.DomainName,
                 UserIds = entity.Users.Select(u => u.Id).ToHashSet(),
                 ProjectIds = entity.Projects.Select(p => p.Id).ToHashSet(),
                 TagGroupIds = entity.TagGroups.Select(tg => tg.Id).ToHashSet()
-            });
+            };
         }
     }
 }

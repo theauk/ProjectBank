@@ -50,20 +50,15 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<Option<ProjectDTO?>> ReadAsync(int projectId)
         {
-            var entity = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
-
-            if (entity == null)
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+            
+            return project == null ? null : new ProjectDTO 
             {
-                return null;
-            }
-
-            return new ProjectDTO
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Description = entity.Description,
-                Tags = entity.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
-                Supervisors = entity.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                Tags = project.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                Supervisors = project.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
             };
         }
 
