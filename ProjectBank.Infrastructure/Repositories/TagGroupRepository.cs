@@ -1,8 +1,3 @@
-using System.Linq;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-using ProjectBank.Infrastructure.Entities;
-
 namespace ProjectBank.Infrastructure.Repositories
 {
     public class TagGroupRepository : ITagGroupRepository
