@@ -67,9 +67,18 @@
         <div class="row" style="margin-bottom: 48px">
             <div class="col-md-2 align-right">
                 <RadzenLabel class="formLabelText" Text="Tags"/>
-                <div>
-                    <p>@_tagValidationMessage</p>
-                </div>
+                @if (_missingTagsName.Any())
+                {
+                    <div>
+                        <p>Required tags missing:</p>
+                    </div>
+                    @foreach (var missingTag in _missingTagsName)
+                    {
+                        <div>
+                            <p>@missingTag</p>
+                        </div>    
+                    }    
+                }
             </div>
             <div class="col">
                 @foreach (var tg in TagGroups)
@@ -144,7 +153,7 @@
     Dictionary<int, List<string>> _multipleSelectionTagsText = new();
     
     private string submitFormId = "submitForm";
-    private string _tagValidationMessage = "";
+    private IEnumerable<string> _missingTagsName = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -177,21 +186,15 @@
     private async void OnSubmit()
     {
         Console.WriteLine("onsubmit");
-        var missingTags = CheckRequiredTags();
-
-        if (missingTags.Any())
-        {
-            Console.WriteLine("missing tags");
-            _tagValidationMessage = string.Join("\n", missingTags);
-            Console.WriteLine(_tagValidationMessage);
-        }
-        else
+        _missingTagsName = CheckRequiredTags();
+        
+        if (!_missingTagsName.Any())
         {
             var response = await _http.PostAsJsonAsync("api/Project", _project);
             if (response.IsSuccessStatusCode)
             {
                 Redirect();
-            }    
+            }
         }
     }
 
