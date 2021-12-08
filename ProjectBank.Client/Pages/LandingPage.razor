@@ -89,7 +89,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = await _http.GetFromJsonAsync<ProjectDTO[]>($"api/Project/"); //Lav rigtigt API kald når det er med ProjectBankContext
+        /*_projects = await _http.GetFromJsonAsync<ProjectDTO[]>($"api/Project/"); //Lav rigtigt API kald når det er med ProjectBankContext
         _tagGroups = await _http.GetFromJsonAsync<TagGroupDTO[]>($"api/TagGroup/"); //Lav rigtigt API kald når det er med ProjectBankContext
 
         if (_tagGroups != null) //TODO Ændre til at håndtere response hvis det er det vi går med - skal også ændres oppe i api kaldet
@@ -97,7 +97,7 @@
             // Create a set of empty "selected" ids for each tag group.
             foreach (var tg in _tagGroups)
                 _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
-        }
+        }*/
 
     }
 

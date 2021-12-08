@@ -18,6 +18,7 @@
                     Name = "Programme",
                     Tags = Tag.SampleTagsProgrammes,
                     Locked = true,
+                    IsRequired = true
                 },
                 new TagGroup
                 {
@@ -25,12 +26,14 @@
                     Name = "Level",
                     Tags = Tag.SampleTagsLevels,
                     Locked = true,
+                    IsRequired = true
                 },
                 new TagGroup
                 {
                     Id = 3,
                     Name = "Topics",
                     Tags = Tag.SampleTagsTopics,
+                    IsRequired = true
                 },
                 new TagGroup
                 {
