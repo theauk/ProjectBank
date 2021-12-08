@@ -8,5 +8,5 @@ public interface ITagGroupRepository
     Task<Response> UpdateAsync(int tagGroupId, TagGroupUpdateDTO tagGroup);
     Task<Response> DeleteAsync(int tagGroupId);
     Task<Option<TagGroupDTO?>> ReadAsync(int tagGroupId);
-    Task<(Response, IReadOnlyCollection<TagGroupDTO>)> ReadAllAsync(); //ToDo
+    Task<IReadOnlyCollection<TagGroupDTO>> ReadAllAsync();
 }

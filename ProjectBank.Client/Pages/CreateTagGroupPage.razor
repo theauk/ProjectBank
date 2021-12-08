@@ -53,7 +53,7 @@
                         <Autocomplete class="autocompleteTags"
                                       TItem="TagCreateDTO"
                                       TValue="string"
-                                      Data="@_tagGroup.TagCreateDTOs"
+                                      Data="@_tagGroup.NewTagsDTOs"
                                       TextField="@((item) => item.Value)"
                                       ValueField="@((item) => item.Value)"
                                       Placeholder="Search..."
@@ -101,7 +101,7 @@
     void CreateTags()
     {
         if (_multipleSelectionTagsTexts.Count > 0)
-            _tagGroup.TagCreateDTOs = _multipleSelectionTagsTexts.Select(tag => new TagCreateDTO() {Value = tag}).ToHashSet();
+            _tagGroup.NewTagsDTOs = _multipleSelectionTagsTexts.Select(tag => new TagCreateDTO() {Value = tag}).ToHashSet();
     }
 
     void Redirect()

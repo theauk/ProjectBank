@@ -32,7 +32,8 @@ public class TagGroupController : ControllerBase
     [HttpGet]
     public async Task<IReadOnlyCollection<TagGroupDTO>> Get()
     {
-        throw new NotImplementedException();
+        var taggroupDtos = await _repository.ReadAllAsync();
+        return taggroupDtos;
     }
 
     [Authorize(Roles = "Admin")]

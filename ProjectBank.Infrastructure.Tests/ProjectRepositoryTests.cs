@@ -81,13 +81,12 @@ namespace ProjectBank.Infrastructure.Tests
                 Name = "Bachelor Project",
                 Description = "The final project of SWU.",
                 ExistingTagIds = new HashSet<int>() { 1 },
-                NewTagDTOs = new HashSet<TagCreateDTO>(),
                 UserIds = new HashSet<int>() { 4, 5 }
             };
 
             var actual = await _repository.CreateAsync(project);
             var actualResponse = actual;
-            var actualProject = (await _repository.ReadAsync(5)).Item2;
+            var actualProject = (await _repository.ReadAsync(5)).Value;
 
             Assert.Equal(Response.Created, actualResponse);
             Assert.Equal(5, actualProject.Id);
@@ -110,7 +109,6 @@ namespace ProjectBank.Infrastructure.Tests
                 Name = "Bachelor Project",
                 Description = "The final project of SWU.",
                 ExistingTagIds = new HashSet<int>() { 1 },
-                NewTagDTOs = new HashSet<TagCreateDTO>(),
                 UserIds = new HashSet<int>() { 4, 6 }
             };
 
@@ -138,10 +136,8 @@ namespace ProjectBank.Infrastructure.Tests
         [Fact]
         public async Task ReadAsync_given_id_exists_returns_Project()
         {
-            var actual = await _repository.ReadAsync(4);
-            var project = actual.Item2;
+            var project = (await _repository.ReadAsync(4)).Value;
 
-            Assert.Equal(Response.Success, actual.Item1);
             Assert.Equal(4, project.Id);
             Assert.Equal("Second Year Project", project.Name);
             Assert.Equal("Group project in larger groups with a company.", project.Description);
@@ -158,9 +154,9 @@ namespace ProjectBank.Infrastructure.Tests
         [Fact]
         public async Task ReadAsync_given_non_existing_id_returns_NotFound()
         {
-            var actual = await _repository.ReadAsync(33);
+            var actual = (await _repository.ReadAsync(33)).Value;
 
-            Assert.Equal((Response.NotFound, null), actual);
+            Assert.Null(actual);
         }
 
         [Fact]
@@ -203,20 +199,18 @@ namespace ProjectBank.Infrastructure.Tests
             {
                   Name = "Extreme Math Project",
                   Description = "Prove even harder stuff.",
-                  ExistingTagIds = new HashSet<int>() { 1 },
-                  NewTagDTOs = new HashSet<TagCreateDTO>(),
+                  ExistingTagIds = new HashSet<int>(),
                   UserIds = new HashSet<int>() { 1, 2 }
             };
 
-            var actual = await _repository.UpdateAsync(1, project);
+            var response = await _repository.UpdateAsync(1, project);
 
-            Assert.Equal(Response.Updated, actual);
+            Assert.Equal(Response.Updated, response);
 
-            var mathProject = await _repository.ReadAsync(1);
+            var mathProject = (await _repository.ReadAsync(1)).Value;
             
-            Assert.Equal(Response.Success, mathProject.Item1);
-            Assert.NotNull(mathProject.Item2);
-            Assert.Empty(mathProject.Item2.Tags);
+            Assert.NotNull(mathProject);
+            Assert.Empty(mathProject.Tags);
         }
 
         [Fact]
@@ -226,8 +220,7 @@ namespace ProjectBank.Infrastructure.Tests
             {
                   Name = "Extreme Math Project",
                   Description = "Prove even harder stuff.",
-                  ExistingTagIds = new HashSet<int>() { 1 },
-                  NewTagDTOs = new HashSet<TagCreateDTO>(),
+                  ExistingTagIds = new HashSet<int>(){ 1 },
                   UserIds = new HashSet<int>() { 1, 2 }
             };
 
@@ -243,8 +236,7 @@ namespace ProjectBank.Infrastructure.Tests
             {
                   Name = "Extreme Math Project",
                   Description = "Prove even harder stuff.",
-                  ExistingTagIds = new HashSet<int>() { 1 },
-                  NewTagDTOs = new HashSet<TagCreateDTO>(),
+                  ExistingTagIds = new HashSet<int>(){ 1 },
                   UserIds = new HashSet<int>() { 1, 7 }
             };
 
