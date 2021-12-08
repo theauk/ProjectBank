@@ -6,6 +6,7 @@ using ProjectBank.Infrastructure.Repositories;
 using Microsoft.Data.Sqlite;
 using ProjectBank.Core;
 using ProjectBank.Core.DTOs;
+using ProjectBank.Infrastructure.Entities;
 using Xunit;
 
 namespace ProjectBank.Infrastructure.Tests
@@ -77,7 +78,7 @@ namespace ProjectBank.Infrastructure.Tests
             {
                 Name = "Bachelor Project",
                 Description = "The final project of SWU.",
-                TagIds = new HashSet<int>() { 1 },
+                TagIDs = new HashSet<int>() { 1 },
                 UserIds = new HashSet<int>() { 4, 5 }
             };
 

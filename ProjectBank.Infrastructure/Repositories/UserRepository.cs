@@ -1,3 +1,5 @@
+using ProjectBank.Infrastructure.Entities;
+
 namespace ProjectBank.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository

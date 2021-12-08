@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using ProjectBank.Infrastructure.Entities;
 using ProjectBank.Infrastructure.Repositories;
 
 namespace ProjectBank.Infrastructure.Tests

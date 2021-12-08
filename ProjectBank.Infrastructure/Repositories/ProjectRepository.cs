@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ProjectBank.Infrastructure;
 using ProjectBank.Core.DTOs;
 using ProjectBank.Core.IRepositories;
+using ProjectBank.Infrastructure.Entities;
 
 namespace ProjectBank.Infrastructure.Repositories
 {

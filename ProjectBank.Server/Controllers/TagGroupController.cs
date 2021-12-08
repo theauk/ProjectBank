@@ -58,5 +58,4 @@ public class TagGroupController : ControllerBase
         var response = await _repository.UpdateAsync(id, tagGroup);
         return response.ToActionResult();
     }
-
 }

@@ -92,10 +92,7 @@ public class TagGroupRepositoryTest : IDisposable
         Assert.Equal(31, found.Value.Id);
         Assert.Equal("Semester", found.Value.Name);
         Assert.Equal(tags.Count, found.Value.TagDTOs.Count); //Ser om de har samme længde
-        foreach (var expected in tags)
-        {
-            Assert.Contains(found.Value.TagDTOs, actual => actual.Value == expected.Value && actual.Id == expected.Id);   
-        }
+ 
         Assert.False(found.Value.SupervisorCanAddTag);
         Assert.False(found.Value.RequiredInProject);
         Assert.Equal(999, found.Value.TagLimit);
@@ -105,9 +102,12 @@ public class TagGroupRepositoryTest : IDisposable
     public async Task ReadAsync_on_nonexistant_id_throws_InvalidOperationException()
     {
             //TODO Fix/Spørgsmål: Hvordan fungerer det med InvalidOperationException i Options?
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _repository.ReadAsync(56));
+            //var notfound = await   _repository.ReadAsync(56)
+            //Assert.Equal(Response.NotFound, notfound);
+            //await Assert.ThrowsAsync<InvalidOperationException>(() => _repository.ReadAsync(56));
     }
-*/
+    */
+
     [Fact]
     public async Task CreateAsync_creates_new_TagGroup_with_generated_id()
     {
@@ -131,7 +131,7 @@ public class TagGroupRepositoryTest : IDisposable
         var readAllTagGroups = await _repository.ReadAllAsync();
         var createdTagGroupDtO = readAllTagGroups.FirstOrDefault(tgDTO => tgDTO.Name == taggroup.Name); //TODO Need implementation: Kræver at vi checker efter duplicate tag groups for at være trolig
         
-        //Assert
+        //Assert 
         Assert.Equal(Response.Created, created);
         Assert.Equal(taggroup.Name, createdTagGroupDtO.Name);
         Assert.Equal(taggroup.RequiredInProject, createdTagGroupDtO.RequiredInProject);
@@ -209,7 +209,7 @@ public class TagGroupRepositoryTest : IDisposable
         var tagsToAdd = new HashSet<TagCreateDTO>() {spring23};
         var tagGroupUpdate = new TagGroupUpdateDTO()
             {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTags = tagsToAdd};
-    
+     
         // Act
         var notFound =  await _repository.UpdateAsync
             (56, tagGroupUpdate);
