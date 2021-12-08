@@ -3,44 +3,41 @@
 @inject NavigationManager _navigationManager
 
 @*
-- Move check of name and description down
 - Need to get the right information together in a createProjectDTO and send that ahead
 - Need to switch to createDTOs generally all around
 - sæt supervisoren ind
-
-- <RadzenRequiredValidator Component="Supervisors" Text="Supervisors are required"/>
 *@
 
 <PageTitle>Create Project</PageTitle>
 
 <h1 style="margin-bottom: 48px">Create Project</h1>
 
-<RadzenTemplateForm TItem="ProjectCreateDTO" Data="@_project" Submit="@OnSubmit" id="@submitFormId">
+<RadzenTemplateForm TItem="ProjectCreateDTO" Data="@_project" Submit="@OnSubmit" InvalidSubmit="OnInvalidSubmit" id="@submitFormId">
     <div class="row" style="margin-bottom: 48px">
         <div class="col-md-2 align-right">
-            <RadzenLabel class="formLabelText" Text="Name"/>
+            <RadzenLabel class="formLabelTextCreateProject" Text="Name"/>
         </div>
         <div class="col">
-            <RadzenTextBox style="display: block; width: 40%" Name="ProjectName" @bind-Value=@_project.Name />
+            <RadzenTextBox style="display: block; width: 50%;" Name="ProjectName" @bind-Value="@_project.Name"/>
             <RadzenRequiredValidator Component="ProjectName" Text="Project name is required"/>
         </div>
     </div>
     <div class="row" style="margin-bottom: 48px">
         <div class="col-md-2 align-right">
-            <RadzenLabel class="formLabelText" Text="Description"/>
+            <RadzenLabel class="formLabelTextCreateProject" Text="Description"/>
         </div>
         <div class="col">
-            <RadzenTextArea style="display: block; width: 70%" Name="ProjectDescription" @bind-Value=@_project.Description></RadzenTextArea>
+            <RadzenTextArea style="display: block; width: 50%; height: 100px" Name="ProjectDescription" @bind-Value="@_project.Description"></RadzenTextArea>
             <RadzenRequiredValidator Component="ProjectDescription" Text="Description is required"/>
         </div>
     </div>
     <div class="row supervisors" style="margin-bottom: 48px">
         <div class="col-md-2">
-            <RadzenLabel class="formLabelText" Text="Additional Supervisors"/>
+            <RadzenLabel class="formLabelTextCreateProject" Text="Co-Supervisors"/>
         </div>
         <div class="col">
-            <RadzenListBox
-                @bind-Value=@SelectedSupervisorIds
+            <RadzenListBox class="tagDropDown"
+                @bind-Value="@SelectedSupervisorIds"
                 AllowFiltering="true"
                 Multiple="true"
                 Data="@Supervisors"
@@ -49,13 +46,12 @@
         </div>
     </div>
 </RadzenTemplateForm>
-
 <div>
     @if (!TagGroups.Any())
     {
         <div class="row" style="margin-bottom: 48px">
             <div class="col-md-2 align-right">
-                <RadzenLabel class="formLabelText" Text="Loading tags..."/>
+                <RadzenLabel class="formLabelTextCreateProject" Text="Loading tags..."/>
             </div>
         </div>
     }
@@ -63,18 +59,19 @@
     {
         <div class="row" style="margin-bottom: 48px">
             <div class="col-md-2 align-right">
-                <RadzenLabel class="formLabelText" Text="Tags"/>
+                <RadzenLabel class="formLabelTextCreateProject" Text="Tags"/>
                 @if (_missingTagsName.Any())
                 {
-                    <div>
+                    <div style="color: #f9777f; font-size: 0.85rem; margin-top: 10px">
+                        
                         <p>Required tags missing:</p>
-                    </div>
-                    @foreach (var missingTag in _missingTagsName)
-                    {
-                        <div>
+
+                        @foreach (var missingTag in _missingTagsName)
+                        {
                             <p>@missingTag</p>
-                        </div>    
-                    }    
+
+                        }
+                    </div>
                 }
             </div>
             <div class="col">
@@ -82,10 +79,10 @@
                 {
                     @if (tg.Locked && tg.Tags.Any())
                     {
-                        <h5 class="tagCheckItem">@tg.Name</h5>
+                        <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         @if (tg.Tags.Count() <= 5)
                         {
-                            <RadzenCheckBoxList style="margin-bottom: 20px" @bind-Value=@SelectedTags[tg.Id] TValue="int">
+                            <RadzenCheckBoxList class="tagCheckItem" style="margin-bottom: 20px" @bind-Value="@SelectedTags[tg.Id]" TValue="int">
                                 <Items>
                                     @foreach (var tag in tg.Tags)
                                     {
@@ -96,12 +93,12 @@
                         }
                         else
                         {
-                            <RadzenListBox
+                            <RadzenListBox class="tagCheckItem tagDropDown"
                                 Data=@tg.Tags
                                 AllowFiltering="true"
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 Multiple="true"
-                                @bind-Value=@SelectedTags[tg.Id]
+                                @bind-Value="@SelectedTags[tg.Id]"
                                 TextProperty="Name"
                                 Change=@(args => Console.WriteLine(args))
                                 ValueProperty="Id">
@@ -110,14 +107,14 @@
                     }
                     else if (!tg.Locked && tg.Tags.Any())
                     {
-                        <h5 class="tagCheckItem">@tg.Name</h5>
-                        <Autocomplete class="autocompleteTags" Style="max-width: 40%"
+                        <h5 class="tagCheckItemTitle">@tg.Name</h5>
+                        <Autocomplete class="autocompleteTags tagCheckItem" Style="max-width: 40%"
                                       TItem="Tag"
                                       TValue="Tag"
                                       Data="tg.Tags"
                                       TextField="@((item) => item.Name)"
                                       ValueField="@((item) => item)"
-                                      Placeholder="Search..."
+                                      Placeholder="Search or press enter to create new..."
                                       Multiple
                                       FreeTyping
                                       @bind-SelectedValues="_multipleSelectionTagsData[tg.Id]"
@@ -130,25 +127,29 @@
     }
 </div>
 
-<div>
-    <RadzenButton class="submitButton" form="@submitFormId" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
-    <RadzenButton class="cancelButton" Click=@Redirect Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
+<div class="row lowerSubmitCancelButtons">
+    <div class="col-md-2 align-right"></div>
+    <div class="col">
+        <RadzenButton class="submitButton" form="@submitFormId" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
+        <RadzenButton class="cancelButton" Click="@Redirect" Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
+    </div>
 </div>
+
 
 @code {
     private ProjectCreateDTO _project = new();
-    
+
     private IEnumerable<TagGroup> TagGroups { get; set; } = new List<TagGroup>();
     private Dictionary<int, TagGroup> RequiredTagGroups { get; set; } = new Dictionary<int, TagGroup>();
 
     private IEnumerable<Supervisor> Supervisors { get; set; } = new List<Supervisor>();
-    
+
     private Dictionary<int, IEnumerable<int>> SelectedTags = new();
     private IEnumerable<int> SelectedSupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
 
-    Dictionary<int, List<Tag>> _multipleSelectionTagsData = new();
+    Dictionary<int, List<Tag>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
     Dictionary<int, List<string>> _multipleSelectionTagsText = new();
-    
+
     private string submitFormId = "submitForm";
     private IEnumerable<string> _missingTagsName = new List<string>();
 
@@ -176,15 +177,18 @@
 
     private IEnumerable<string> CheckRequiredTags()
     {
-        Console.WriteLine("checking tags");
         return (from tg in RequiredTagGroups where !SelectedTags[tg.Key].Any() select tg.Value.Name).ToList();
     }
-    
+
+    void OnInvalidSubmit()
+    {
+        _missingTagsName = CheckRequiredTags();
+    }
+
     private async void OnSubmit()
     {
-        Console.WriteLine("onsubmit");
         _missingTagsName = CheckRequiredTags();
-        
+
         if (!_missingTagsName.Any())
         {
             var response = await _http.PostAsJsonAsync("api/Project", _project);

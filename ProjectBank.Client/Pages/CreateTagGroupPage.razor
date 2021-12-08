@@ -16,7 +16,7 @@
                             <RadzenLabel class="formLabelText" Text="Name"/>
                         </div>
                         <div class="col">
-                            <RadzenTextBox style="display: block" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
+                            <RadzenTextBox style="display: block; width: 100%" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
                             <RadzenRequiredValidator Component="TagGroupName" Text="Tag group name is required"/>
                         </div>
                     </div>
@@ -64,9 +64,12 @@
                         </Autocomplete>
                     </div>
                 </div>
-                <div>
-                    <RadzenButton ButtonType="Radzen.ButtonType.Submit" form="@submitFormId" Text="Submit" class="submitButton"></RadzenButton>
-                    <RadzenButton Click=@Redirect Text="Cancel" ButtonStyle="ButtonStyle.Light" class="cancel" />
+                <div class="row lowerSubmitCancelButtons">
+                    <div class="col-md-4"></div>
+                    <div class="col">
+                        <RadzenButton class="submitButton" form="@submitFormId" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
+                        <RadzenButton class="cancelButton" Click="@Redirect" Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
+                    </div>
                 </div>
             </div>
         </div>
