@@ -6,7 +6,7 @@ namespace ProjectBank.Core.DTOs
 
         [Required] public string Value { get; init; }
         
-        public int TagGroupId { get; init; }
+        public int TagGroupId { get; init; } //TODO Skal vi have den her med når den ikke er i entitien?
     }
 
     public record TagCreateDTO

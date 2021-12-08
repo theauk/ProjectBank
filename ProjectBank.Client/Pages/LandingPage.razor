@@ -9,9 +9,13 @@
 
     <div class="ProjectList">
     <h1>Projects</h1>
-        @if (!_projects.Any())
+        @if (!_loaded)
         {
-            <p>Loading projects...</p>
+            <p>Loading...</p>
+        }
+        else if (!_projects.Any())
+        {
+            <p>No results</p>
         }
         else
         {
@@ -80,6 +84,8 @@
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
     );
+
+    private bool _loaded = false;
 
     protected override async Task OnInitializedAsync()
     {

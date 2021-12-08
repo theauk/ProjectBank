@@ -6,20 +6,23 @@ namespace ProjectBank.Core.DTOs
 
         [Required] public string Name { get; init; }
 
-        public ISet<TagDTO> TagDTOs { get; init; }
+        public ISet<TagDTO> TagDTOs { get; init; } = new HashSet<TagDTO>();
 
-        [Required] public bool SupervisorCanAddTag { get; init; }
+        [Required]
+        public bool SupervisorCanAddTag { get; init; }
 
-        [Required] public bool RequiredInProject { get; init; }
+        [Required]
+        public bool RequiredInProject { get; init; }
 
         public int? TagLimit { get; init; }
     }
 
     public record TagGroupCreateDTO
     {
-        [Required] public string Name { get; set; }
+        [Required]
+        public string Name { get; set; }
 
-        public ISet<TagCreateDTO> TagCreateDTOs { get; set; }
+        public ISet<TagCreateDTO> NewTagsDTOs { get; set; } = new HashSet<TagCreateDTO>();
 
         [Required] public bool SupervisorCanAddTag { get; set; } = true;
 
@@ -28,21 +31,13 @@ namespace ProjectBank.Core.DTOs
         public int? TagLimit { get; set; }
     }
 
-    public record TagGroupUpdateDTO : TagCreateDTO
+
+
+    public record TagGroupUpdateDTO : TagGroupCreateDTO
     {
+        public int Id { get; init; }
         
-        [Required] public string Name { get; init; }
+        public ISet<int> DeletedTagIds { get; set; } = new HashSet<int>();
 
-        public ISet<TagDTO> TagDTOs { get; init; }
-
-        [Required] public bool SupervisorCanAddTag { get; init; }
-
-        [Required] public bool RequiredInProject { get; init; }
-
-        public int? TagLimit { get; init; }
-
-        public ISet<int>? DeletedTagIds { get; set; } = new HashSet<int>();
-
-        public ISet<TagCreateDTO>? NewTags { get; set; } = new HashSet<TagCreateDTO>();
     }
 }

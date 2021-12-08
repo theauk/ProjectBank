@@ -51,7 +51,7 @@ namespace ProjectBank.Infrastructure.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     SupervisorCanAddTag = table.Column<bool>(type: "boolean", nullable: false),
                     RequiredInProject = table.Column<bool>(type: "boolean", nullable: false),
-                    TagLimit = table.Column<int>(type: "integer", nullable: false),
+                    TagLimit = table.Column<int>(type: "integer", nullable: true),
                     UniversityId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -71,11 +71,17 @@ namespace ProjectBank.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    ProjectId = table.Column<int>(type: "integer", nullable: true),
                     UniversityId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Users_Universities_UniversityId",
                         column: x => x.UniversityId,
@@ -165,6 +171,11 @@ namespace ProjectBank.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_ProjectId",
+                table: "Users",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_UniversityId",
                 table: "Users",
                 column: "UniversityId");
@@ -179,10 +190,10 @@ namespace ProjectBank.Infrastructure.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Projects");
+                name: "TagGroups");
 
             migrationBuilder.DropTable(
-                name: "TagGroups");
+                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "Universities");
