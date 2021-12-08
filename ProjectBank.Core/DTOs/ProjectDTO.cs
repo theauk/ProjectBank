@@ -12,10 +12,10 @@ namespace ProjectBank.Core.DTOs
         public string Description { get; init; }
 
         [Required]
-        public ISet<TagDTO> Tags { get; init; }
+        public ISet<TagDTO> Tags { get; init; } = new HashSet<TagDTO>();
         
         [Required]
-        public ISet<UserDTO> Supervisors { get; set; }
+        public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
     }
 
     public record ProjectCreateDTO
@@ -36,5 +36,8 @@ namespace ProjectBank.Core.DTOs
         public ISet<int> UserIds { get; set; } = new HashSet<int>();
     }
 
-    public record ProjectUpdateDTO : ProjectCreateDTO { }
+    public record ProjectUpdateDTO : ProjectCreateDTO
+    {
+        public int Id { get; init; } //todo Overvej den her når vi har kigget nærmere på frontend
+    }
 }

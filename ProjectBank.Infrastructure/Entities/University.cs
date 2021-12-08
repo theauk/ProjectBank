@@ -1,15 +1,15 @@
 namespace ProjectBank.Infrastructure.Entities
 {
-    public class University 
+    public class University
     {
-        public int Id {get; set;}
+        public int Id { get; set; }
         [Required]
-        public string? DomainName {get;set;}
+        public string? DomainName { get; set; }
 
-        public ISet<User>? Users {get;set;}
+        public ISet<User> Users { get; set; } = new HashSet<User>();
 
-        public ISet<Project>? Projects {get; set;}
+        public ISet<Project> Projects { get; set; } = new HashSet<Project>();
 
-        public ISet<TagGroup>? TagGroup {get; set;}
+        public ISet<TagGroup> TagGroups { get; set; } = new HashSet<TagGroup>();
     }
 }

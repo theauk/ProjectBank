@@ -8,5 +8,5 @@ public enum Response
     NotFound,
     BadRequest,
     Conflict,
-    Success,
+    Success
 }

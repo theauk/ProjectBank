@@ -1,7 +1,3 @@
-using ProjectBank.Infrastructure;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-
 namespace ProjectBank.Infrastructure.Repositories
 {
     public class UniversityRepository : IUniversityRepository
@@ -13,29 +9,54 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, UniversityDTO)> CreateAsync(UniversityCreateDTO university)
+        public async Task<Response> CreateAsync(UniversityCreateDTO university)
+        {
+            var entity = new University { DomainName = university.DomainName };
+
+            _context.Universities.Add(entity);
+
+            await _context.SaveChangesAsync();
+
+            return Response.Created;
+        }
+
+        public async Task<Response> UpdateAsync(int universityId, UniversityUpdateDTO university)
         {
             throw new NotImplementedException();
         }
 
         public async Task<Response> DeleteAsync(int universityId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+
+            if (entity == null)
+            {
+                return Response.NotFound;
+            }
+
+            _context.Universities.Remove(entity);
+            await _context.SaveChangesAsync();
+
+            return Response.Deleted;
         }
 
-        public async Task<(Response, IReadOnlyCollection<UniversityDTO>)> ReadAllAsync()
+        public async Task<(Response, UniversityDTO?)> ReadAsync(int universityId)
         {
-            throw new NotImplementedException();
-        }
+            var entity = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
 
-        public async Task<(Response, UniversityDTO)> ReadAsync(int tagId)
-        {
-            throw new NotImplementedException();
-        }
+            if (entity == null)
+            {
+                return (Response.NotFound, null);
+            }
 
-        public async Task<Response> UpdateAsync(int universityId, UniversityUpdateDTO university)
-        {
-            throw new NotImplementedException();
+            return (Response.Success, new UniversityDTO 
+            {
+                Id = entity.Id,
+                DomainName = entity.DomainName,
+                UserIds = entity.Users.Select(u => u.Id).ToHashSet(),
+                ProjectIds = entity.Projects.Select(p => p.Id).ToHashSet(),
+                TagGroupIds = entity.TagGroups.Select(tg => tg.Id).ToHashSet()
+            });
         }
     }
 }

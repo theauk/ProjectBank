@@ -22,10 +22,10 @@ namespace ProjectBank.Infrastructure.Repositories
                 SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                 RequiredInProject = tagGroup.RequiredInProject,
                 TagLimit = tagGroup.TagLimit,
-                Tags = tagGroup.TagCreateDTOs.Select(t => new Tag(){Value = t.Value}).ToHashSet(),
+                Tags = tagGroup.TagCreateDTOs.Select(t => new Tag{Value = t.Value}).ToHashSet(),
             };
 
-            await _context.TagGroups.AddAsync(entity);
+            _context.TagGroups.Add(entity);
             await _context.SaveChangesAsync();
 
             return Response.Created;
@@ -48,11 +48,11 @@ namespace ProjectBank.Infrastructure.Repositories
             var tagGroup = await _context.TagGroups.FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
             return tagGroup == null
                 ? null
-                : new TagGroupDTO()
+                : new TagGroupDTO
                 {
                     Id = tagGroup.Id,
                     Name = tagGroup.Name,
-                    TagDTOs = tagGroup.Tags.Select(t => new TagDTO(){Value = t.Value, Id = t.Id}).ToHashSet(),
+                    TagDTOs = tagGroup.Tags.Select(t => new TagDTO{Value = t.Value, Id = t.Id}).ToHashSet(),
                     RequiredInProject = tagGroup.RequiredInProject,
                     SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                     TagLimit = tagGroup.TagLimit
@@ -61,11 +61,11 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<IReadOnlyCollection<TagGroupDTO>> ReadAllAsync()
         {
-            return (await _context.TagGroups.Select(tagGroup => new TagGroupDTO()
+            return (await _context.TagGroups.Select(tagGroup => new TagGroupDTO
                 {
                     Id = tagGroup.Id,
                     Name = tagGroup.Name,
-                    TagDTOs = tagGroup.Tags.Select(t => new TagDTO(){Value = t.Value, Id = t.Id}).ToHashSet(),
+                    TagDTOs = tagGroup.Tags.Select(t => new TagDTO{Value = t.Value, Id = t.Id}).ToHashSet(),
                     RequiredInProject = tagGroup.RequiredInProject,
                     SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                     TagLimit = tagGroup.TagLimit
@@ -95,7 +95,7 @@ namespace ProjectBank.Infrastructure.Repositories
             return Response.Updated;
         }
         
-        public async Task<Response> DeleteTagAsync(int tagGroupId, ISet<int> tagsToDelete)
+        private async Task<Response> DeleteTagAsync(int tagGroupId, ISet<int> tagsToDelete)
         {
             foreach (var id in tagsToDelete)
             {
@@ -111,7 +111,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
         }
         
-        public async Task<Response> AddTagAsync(int tagGroupId, ISet<TagCreateDTO> tagsToAdd)
+        private async Task<Response> AddTagAsync(int tagGroupId, ISet<TagCreateDTO> tagsToAdd)
         {
             var tagGroup = await _context.TagGroups.FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
             if (tagGroup == null) return Response.NotFound;

@@ -1,7 +1,3 @@
-using ProjectBank.Infrastructure;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-
 namespace ProjectBank.Infrastructure.Repositories
 {
     public class TagRepository : ITagRepository
@@ -13,7 +9,7 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, TagDTO)> CreateAsync(TagCreateDTO tag)
+        public async Task<Response> CreateAsync(TagCreateDTO tag)
         {
             throw new NotImplementedException();
         }
@@ -25,12 +21,29 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<(Response, IReadOnlyCollection<TagDTO>)> ReadAllAsync()
         {
-            throw new NotImplementedException();
+            var tags = (await _context.Tags.Select(t => new TagDTO
+            {
+                Id = t.Id,
+                Value = t.Value
+            }).ToListAsync()).AsReadOnly();
+
+            return (Response.Success, tags);
         }
 
-        public async Task<(Response, TagDTO)> ReadAsync(int tagId)
+        public async Task<(Response, TagDTO?)> ReadAsync(int tagId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Tags.FirstOrDefaultAsync(t => t.Id == tagId);
+
+            if (entity == null)
+            {
+                return (Response.NotFound, null);
+            }
+
+            return (Response.Success, new TagDTO
+            {
+                Id = entity.Id,
+                Value = entity.Value
+            });
         }
     }
 }
