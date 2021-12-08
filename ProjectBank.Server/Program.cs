@@ -66,3 +66,5 @@ if (!app.Environment.IsEnvironment("Integration"))
 }
 
 app.Run();
+
+public partial class Program { }
