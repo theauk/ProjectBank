@@ -11,11 +11,35 @@ using Xunit;
 
 namespace ProjectBank.Infrastructure.Tests
 {
+    
     public class ProjectRepositoryTests : IDisposable
     {
         private readonly ProjectBankContext _context;
         private readonly ProjectRepository _repository;
         private bool disposedValue;
+        
+        // --- Test data ---
+        // Supervisors
+        User marco = new User { Id = 1, Name = "Marco" };
+        User birgit = new User { Id = 2, Name = "Birgit" };
+        User bjorn = new User { Id = 3, Name = "Bjørn" };
+        User paolo = new User { Id = 4, Name = "Paolo" };
+        User rasmus = new User { Id = 5, Name = "Rasmus" };
+
+        // Tags
+        Tag math = new Tag { Id = 1, Value = "Math Theory" };
+        Tag sql = new Tag { Id = 2, Value = "SQL" };
+        Tag goLang = new Tag { Id = 3, Value = "GoLang" };
+        Tag secondYear = new Tag { Id = 4, Value = "2nd Year Project" };
+        Tag spring22 = new Tag { Id = 5, Value = "Spring 2022" };
+
+        // Projects
+        Project mathProject = new Project { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<Tag>() { math }, Supervisors = new HashSet<User>() { birgit } };
+        Project databaseProject = new Project { Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = new HashSet<Tag>() { sql, spring22 }, Supervisors = new HashSet<User>() { bjorn } };
+        Project goProject = new Project { Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = new HashSet<Tag>() { goLang }, Supervisors = new HashSet<User>() { marco } };
+        Project secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
+        // -------------------
+
 
         public ProjectRepositoryTests()
         {
@@ -28,28 +52,6 @@ namespace ProjectBank.Infrastructure.Tests
             var context = new ProjectBankContext(builder.Options);
             context.Database.EnsureCreated();
 
-            // --- Test data ---
-            // Supervisors
-            var marco = new User { Id = 1, Name = "Marco" };
-            var birgit = new User { Id = 2, Name = "Birgit" };
-            var bjorn = new User { Id = 3, Name = "Bjørn" };
-            var paolo = new User { Id = 4, Name = "Paolo" };
-            var rasmus = new User { Id = 5, Name = "Rasmus" };
-
-            // Tags
-            var math = new Tag { Id = 1, Value = "Math Theory" };
-            var sql = new Tag { Id = 2, Value = "SQL" };
-            var goLang = new Tag { Id = 3, Value = "GoLang" };
-            var secondYear = new Tag { Id = 4, Value = "2nd Year Project" };
-
-            var spring22 = new Tag { Id = 5, Value = "Spring 2022" };
-
-            // Projects
-            var mathProject = new Project { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<Tag>() { math }, Supervisors = new HashSet<User>() { birgit } };
-            var databaseProject = new Project { Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = new HashSet<Tag>() { sql, spring22 }, Supervisors = new HashSet<User>() { bjorn } };
-            var goProject = new Project { Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = new HashSet<Tag>() { goLang }, Supervisors = new HashSet<User>() { marco } };
-            var secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
-            // -------------------
 
             context.Projects.AddRange(
                 mathProject,
@@ -78,7 +80,8 @@ namespace ProjectBank.Infrastructure.Tests
             {
                 Name = "Bachelor Project",
                 Description = "The final project of SWU.",
-                TagIDs = new HashSet<int>() { 1 },
+                ExistingTagIds = new HashSet<int>() { 1 },
+                NewTagDTOs = new HashSet<TagCreateDTO>(),
                 UserIds = new HashSet<int>() { 4, 5 }
             };
 
@@ -106,7 +109,8 @@ namespace ProjectBank.Infrastructure.Tests
             {
                 Name = "Bachelor Project",
                 Description = "The final project of SWU.",
-                TagIds = new HashSet<int>() { 1 },
+                ExistingTagIds = new HashSet<int>() { 1 },
+                NewTagDTOs = new HashSet<TagCreateDTO>(),
                 UserIds = new HashSet<int>() { 4, 6 }
             };
 
@@ -159,20 +163,38 @@ namespace ProjectBank.Infrastructure.Tests
             Assert.Equal((Response.NotFound, null), actual);
         }
 
-        // [Fact]
-        // public async Task ReadAllAsync_returns_all_projects()
-        // {
-        //     var actual = await _repository.ReadAllAsync();
-        //     var projects = actual.Item2;
+        [Fact]
+        public async Task ReadAllAsync_returns_all_projects()
+        {
+            //Arrange 
+            var pList = new List<Project>();
+            pList.Add(mathProject);
+            pList.Add(databaseProject);
+            pList.Add(goProject);
+            pList.Add(secondYearProject);
+            
+            
+            var actual = await _repository.ReadAllAsync();
+            var projects = actual.Item2;
 
-        //     Assert.Equal(Response.Success, actual.Item1);
-        //     Assert.Collection(actual.Item2, 
-        //         project => Assert.Equal(new ProjectDTO { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 1, Value = "Math Theory" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 2, Name = "Birgit" } } }, project),
-        //         project => Assert.Equal(new ProjectDTO { Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 2, Value = "SQL" }, new TagDTO { Id = 5, Value = "Spring 2022" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 3, Name = "Bjørn" } } }, project),
-        //         project => Assert.Equal(new ProjectDTO { Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 3, Value = "GoLang" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 1, Name = "Marco" } } }, project),
-        //         project => Assert.Equal(new ProjectDTO { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 4, Value = "2nd Year Project" }, new TagDTO { Id = 5, Value = "Spring 2022" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 4, Name = "Paolo" }, new UserDTO { Id = 5, Name = "Rasmus" } } }, project)
-        //     );
-        // }
+            Assert.Equal(Response.Success, actual.Item1);
+            Assert.Equal(pList.Count, projects.Count);
+            foreach (var expectedProject in pList)
+            {
+                
+                Assert.Contains(projects, actual => actual.Id == expectedProject.Id && actual.Name == expectedProject.Name && actual.Description == expectedProject.Description);
+                var getProject = await _repository.ReadAsync(expectedProject.Id);
+                var actualProject = getProject.Item2; 
+                Assert.Equal(expectedProject.Tags.Count, actualProject.Tags.Count);
+                foreach (var expectedTag in expectedProject.Tags)
+                {
+                    Assert.Contains(actualProject.Tags, actualTag => actualTag.Id == expectedTag.Id && actualTag.Value == expectedTag.Value); 
+                }
+                Assert.Contains(projects, actual => actual.Name == expectedProject.Name);  
+                Assert.Contains(projects, actual => actual.Description == expectedProject.Description);  
+                Assert.Contains(projects, actual => actual.Id == expectedProject.Id);  
+            }
+        }
 
         [Fact]
         public async Task UpdateAsync_updates_existing_character()
@@ -181,7 +203,8 @@ namespace ProjectBank.Infrastructure.Tests
             {
                   Name = "Extreme Math Project",
                   Description = "Prove even harder stuff.",
-                  TagIds = new HashSet<int>(),
+                  ExistingTagIds = new HashSet<int>() { 1 },
+                  NewTagDTOs = new HashSet<TagCreateDTO>(),
                   UserIds = new HashSet<int>() { 1, 2 }
             };
 
@@ -203,7 +226,8 @@ namespace ProjectBank.Infrastructure.Tests
             {
                   Name = "Extreme Math Project",
                   Description = "Prove even harder stuff.",
-                  TagIds = new HashSet<int>(){ 1 },
+                  ExistingTagIds = new HashSet<int>() { 1 },
+                  NewTagDTOs = new HashSet<TagCreateDTO>(),
                   UserIds = new HashSet<int>() { 1, 2 }
             };
 
@@ -219,7 +243,8 @@ namespace ProjectBank.Infrastructure.Tests
             {
                   Name = "Extreme Math Project",
                   Description = "Prove even harder stuff.",
-                  TagIds = new HashSet<int>(){ 1 },
+                  ExistingTagIds = new HashSet<int>() { 1 },
+                  NewTagDTOs = new HashSet<TagCreateDTO>(),
                   UserIds = new HashSet<int>() { 1, 7 }
             };
 

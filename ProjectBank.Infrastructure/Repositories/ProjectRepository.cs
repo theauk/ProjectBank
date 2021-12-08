@@ -80,7 +80,7 @@ namespace ProjectBank.Infrastructure.Repositories
             return (Response.Success, null);
         }
 
-        public async Task<IReadOnlyCollection<ProjectDTO>> ReadAllAsync()
+        public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadAllAsync()
         {
             throw new NotImplementedException();
         }

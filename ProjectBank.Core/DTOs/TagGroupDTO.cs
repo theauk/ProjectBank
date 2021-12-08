@@ -33,7 +33,7 @@ namespace ProjectBank.Core.DTOs
 
 
 
-    public record TagGroupUpdateDTO : TagCreateDTO
+    public record TagGroupUpdateDTO : TagGroupCreateDTO
     {
         public int Id { get; init; }
         

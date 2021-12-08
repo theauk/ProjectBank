@@ -1,4 +1,4 @@
-namespace ProjectBank.Infrastructure.Entities 
+namespace ProjectBank.Infrastructure.Entities
 {
     public class Project
     {
