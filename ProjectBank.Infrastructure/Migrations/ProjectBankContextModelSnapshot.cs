@@ -22,7 +22,7 @@ namespace ProjectBank.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.Project", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +53,7 @@ namespace ProjectBank.Infrastructure.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.Tag", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -87,7 +87,7 @@ namespace ProjectBank.Infrastructure.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.TagGroup", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.TagGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,7 +105,7 @@ namespace ProjectBank.Infrastructure.Migrations
                     b.Property<bool>("SupervisorCanAddTag")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("TagLimit")
+                    b.Property<int?>("TagLimit")
                         .HasColumnType("integer");
 
                     b.Property<int?>("UniversityId")
@@ -121,7 +121,7 @@ namespace ProjectBank.Infrastructure.Migrations
                     b.ToTable("TagGroups");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.University", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.University", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -141,7 +141,7 @@ namespace ProjectBank.Infrastructure.Migrations
                     b.ToTable("Universities");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.User", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -153,6 +153,9 @@ namespace ProjectBank.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("UniversityId")
                         .HasColumnType("integer");
 
@@ -161,58 +164,66 @@ namespace ProjectBank.Infrastructure.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
+                    b.HasIndex("ProjectId");
+
                     b.HasIndex("UniversityId");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.Project", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Project", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.University", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
                         .WithMany("Projects")
                         .HasForeignKey("UniversityId");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.Tag", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Tag", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.Project", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.Project", null)
                         .WithMany("Tags")
                         .HasForeignKey("ProjectId");
 
-                    b.HasOne("ProjectBank.Infrastructure.TagGroup", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.TagGroup", null)
                         .WithMany("Tags")
                         .HasForeignKey("TagGroupId");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.TagGroup", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.TagGroup", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.University", null)
-                        .WithMany("TagGroup")
+                    b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
+                        .WithMany("TagGroups")
                         .HasForeignKey("UniversityId");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.User", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.User", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.University", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.Project", null)
+                        .WithMany("Supervisors")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
                         .WithMany("Users")
                         .HasForeignKey("UniversityId");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.Project", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Project", b =>
+                {
+                    b.Navigation("Supervisors");
+
+                    b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.TagGroup", b =>
                 {
                     b.Navigation("Tags");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.TagGroup", b =>
-                {
-                    b.Navigation("Tags");
-                });
-
-            modelBuilder.Entity("ProjectBank.Infrastructure.University", b =>
+            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.University", b =>
                 {
                     b.Navigation("Projects");
 
-                    b.Navigation("TagGroup");
+                    b.Navigation("TagGroups");
 
                     b.Navigation("Users");
                 });
