@@ -5,12 +5,12 @@ namespace ProjectBank.Core.DTOs
         public int Id { get; init; }
 
         [Required] 
-        public string? Name { get; init; }
+        public string Name { get; init; }
     }
 
     public record UserCreateDTO
     {
         [Required] 
-        public string? Name { get; init; }
+        public string Name { get; set; }
     }
 }

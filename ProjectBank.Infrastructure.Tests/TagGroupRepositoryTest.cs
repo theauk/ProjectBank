@@ -115,7 +115,7 @@ public class TagGroupRepositoryTest : IDisposable
         var taggroup = new TagGroupCreateDTO()
         {
             Name = "Level",
-            TagCreateDTOs = new HashSet<TagCreateDTO>()
+            NewTagsDTOs = new HashSet<TagCreateDTO>()
             {
                 new TagCreateDTO() {Value = "Bachelor"},
                 new TagCreateDTO() {Value = "Master"},
@@ -127,18 +127,18 @@ public class TagGroupRepositoryTest : IDisposable
         };
         
         //Act
-        var created  = await _repository.CreateAsync(taggroup);
+        var response  = await _repository.CreateAsync(taggroup);
         var readAllTagGroups = await _repository.ReadAllAsync();
         var createdTagGroupDtO = readAllTagGroups.FirstOrDefault(tgDTO => tgDTO.Name == taggroup.Name); //TODO Need implementation: Kræver at vi checker efter duplicate tag groups for at være trolig
         
         //Assert 
-        Assert.Equal(Response.Created, created);
+        Assert.Equal(Response.Created, response);
         Assert.Equal(taggroup.Name, createdTagGroupDtO.Name);
         Assert.Equal(taggroup.RequiredInProject, createdTagGroupDtO.RequiredInProject);
         Assert.Equal(taggroup.SupervisorCanAddTag, createdTagGroupDtO.SupervisorCanAddTag);
         Assert.Equal(taggroup.TagLimit, createdTagGroupDtO.TagLimit);
-        Assert.Equal(taggroup.TagCreateDTOs.Count, createdTagGroupDtO.TagDTOs.Count);
-        foreach (var expected in taggroup.TagCreateDTOs)
+        Assert.Equal(taggroup.NewTagsDTOs.Count, createdTagGroupDtO.TagDTOs.Count);
+        foreach (var expected in taggroup.NewTagsDTOs)
         {
             Assert.Contains(createdTagGroupDtO.TagDTOs, actual => actual.Value == expected.Value);   
         }
@@ -183,7 +183,7 @@ public class TagGroupRepositoryTest : IDisposable
         var spring23 = new TagCreateDTO() {Value = "spring 23"};
         var tagsToAdd = new HashSet<TagCreateDTO>() {spring23};
         var tagGroupUpdate = new TagGroupUpdateDTO()
-            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTags = tagsToAdd};
+            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTagsDTOs = tagsToAdd};
         
         // Act
         var update =  await _repository.UpdateAsync
@@ -208,7 +208,7 @@ public class TagGroupRepositoryTest : IDisposable
         var spring23 = new TagCreateDTO() {Value = "spring 23"};
         var tagsToAdd = new HashSet<TagCreateDTO>() {spring23};
         var tagGroupUpdate = new TagGroupUpdateDTO()
-            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTags = tagsToAdd};
+            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTagsDTOs = tagsToAdd};
      
         // Act
         var notFound =  await _repository.UpdateAsync

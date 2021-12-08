@@ -22,7 +22,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                 RequiredInProject = tagGroup.RequiredInProject,
                 TagLimit = tagGroup.TagLimit,
-                Tags = tagGroup.TagCreateDTOs.Select(t => new Tag{Value = t.Value}).ToHashSet(),
+                Tags = tagGroup.NewTagsDTOs.Select(t => new Tag{Value = t.Value}).ToHashSet(),
             };
 
             _context.TagGroups.Add(entity);
@@ -87,7 +87,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
             //TODO Corner Case/Spørgsmål (Måske - skal lige snakke med jer :))): Hvis 2 brugere ændre på en tag groups tags samtidig, kan det skabe problemer, medmindre at vi sammenligner tags lige inden kaldet.
             await DeleteTagAsync(tagGroupId, tagGroup.DeletedTagIds);
-            await AddTagAsync(tagGroupId, tagGroup.NewTags);
+            await AddTagAsync(tagGroupId, tagGroup.NewTagsDTOs);
             
             //TODO : handle responses from delete tag and add tag
             await _context.SaveChangesAsync();
