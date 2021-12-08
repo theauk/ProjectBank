@@ -77,16 +77,16 @@
             <div class="col">
                 @foreach (var tg in TagGroups)
                 {
-                    @if (tg.Locked && tg.Tags.Any())
+                    @if (!tg.SupervisorCanAddTag && tg.TagDTOs.Any())
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
-                        @if (tg.Tags.Count() <= 5)
+                        @if (tg.TagDTOs.Count() <= 5)
                         {
                             <RadzenCheckBoxList class="tagCheckItem" style="margin-bottom: 20px" @bind-Value="@SelectedTags[tg.Id]" TValue="int">
                                 <Items>
-                                    @foreach (var tag in tg.Tags)
+                                    @foreach (var tag in tg.TagDTOs)
                                     {
-                                        <RadzenCheckBoxListItem Style="min-width: 160px; max-width: 160px" Text=@tag.Name Value=@tag.Id/>
+                                        <RadzenCheckBoxListItem Style="min-width: 160px; max-width: 160px" Text=@tag.Value Value=@tag.Id/>
                                     }
                                 </Items>
                             </RadzenCheckBoxList>
@@ -94,7 +94,7 @@
                         else
                         {
                             <RadzenListBox class="tagCheckItem tagDropDown"
-                                Data=@tg.Tags
+                                Data=@tg.TagDTOs
                                 AllowFiltering="true"
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 Multiple="true"
@@ -105,14 +105,14 @@
                             </RadzenListBox>
                         }
                     }
-                    else if (!tg.Locked && tg.Tags.Any())
+                    else if (tg.SupervisorCanAddTag && tg.TagDTOs.Any())
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         <Autocomplete class="autocompleteTags tagCheckItem" Style="max-width: 40%"
-                                      TItem="Tag"
-                                      TValue="Tag"
-                                      Data="tg.Tags"
-                                      TextField="@((item) => item.Name)"
+                                      TItem="TagDTO"
+                                      TValue="TagDTO"
+                                      Data="tg.TagDTOs"
+                                      TextField="@((item) => item.Value)"
                                       ValueField="@((item) => item)"
                                       Placeholder="Search or press enter to create new..."
                                       Multiple
@@ -139,15 +139,15 @@
 @code {
     private ProjectCreateDTO _project = new();
 
-    private IEnumerable<TagGroup> TagGroups { get; set; } = new List<TagGroup>();
-    private Dictionary<int, TagGroup> RequiredTagGroups { get; set; } = new Dictionary<int, TagGroup>();
+    private IEnumerable<TagGroupDTO> TagGroups { get; set; } = new List<TagGroupDTO>();
+    private Dictionary<int, TagGroupDTO> RequiredTagGroups { get; set; } = new Dictionary<int, TagGroupDTO>();
 
-    private IEnumerable<Supervisor> Supervisors { get; set; } = new List<Supervisor>();
+    private IEnumerable<UserDTO> Supervisors { get; set; } = new List<UserDTO>();
 
     private Dictionary<int, IEnumerable<int>> SelectedTags = new();
     private IEnumerable<int> SelectedSupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
 
-    Dictionary<int, List<Tag>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
+    Dictionary<int, List<TagDTO>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
     Dictionary<int, List<string>> _multipleSelectionTagsText = new();
 
     private string submitFormId = "submitForm";
@@ -156,20 +156,21 @@
     protected override async Task OnInitializedAsync()
     {
     // TODO: Fetch TagGroups from API.
-    //TagGroups = await Http.GetFromJsonAsync<TagGroupDTO>("api/Project");
-        TagGroups = TagGroup.SampleTagGroups;
+        TagGroups = new[] {await _http.GetFromJsonAsync<TagGroupDTO>("api/Project")}; // todo: fix
+        //TagGroups = TagGroup.SampleTagGroups;
         foreach (var tg in TagGroups)
         {
-            _multipleSelectionTagsData[tg.Id] = new List<Tag>();
+            _multipleSelectionTagsData[tg.Id] = new List<TagDTO>();
             _multipleSelectionTagsText[tg.Id] = new List<string>();
             SelectedTags.Add(tg.Id, new List<int>());
-            if (tg.IsRequired) RequiredTagGroups.Add(tg.Id, tg);
+            if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
         }
 
 
     // TODO: Fetch Supervisors from API.
     // TODO: Automatically add current user to SupervisorIds.
-        Supervisors = Supervisor.SampleSupervisors;
+        //Supervisors = Supervisor.SampleSupervisors;
+        Supervisors = new List<UserDTO>(); // todo: get actual supervisors
 
         _project.UserIds = new HashSet<int>();
         await base.OnInitializedAsync();
