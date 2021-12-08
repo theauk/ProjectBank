@@ -1,4 +1,6 @@
-﻿@page "/admin"
+﻿@inject HttpClient _http
+
+@page "/admin"
 
 <PageTitle>Admin Page</PageTitle>
 
@@ -16,6 +18,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _tagGroups = TagGroup.SampleTagGroups;
+        var _tagGroups = await _http.GetFromJsonAsync<TagGroupDTO[]>($"api/TagGroup/");
     }
 }

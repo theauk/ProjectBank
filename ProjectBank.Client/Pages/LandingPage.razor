@@ -15,12 +15,12 @@
         }
         else
         {
-            @foreach (Project p in _projects)
+            @foreach (ProjectDTO p in _projects)
             {
                 <div class="ProjectEntry">
                     <a href="index/@p.Id">
                         <h2>@p.Id: @p.Name</h2>
-                        <p style="text-align: right">@p.TagString()</p>
+                        <p style="text-align: right">@string.Join(", ", p.Tags.Select(t => t.Value))</p> 
                     </a>
                 </div>
             }
@@ -35,7 +35,7 @@
             }
             else
             {
-                @foreach (TagGroup tg in _tagGroups)
+                @foreach (TagGroupDTO tg in _tagGroups)
                 {
                     <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
                         <HeaderTemplate>
@@ -44,13 +44,13 @@
                             </span>
                         </HeaderTemplate>
                         <ChildContent>
-                            @if (tg.Tags.Count() <= 8)
+                            @if (tg.TagDTOs.Count() <= 8)
                             {
                                 <RadzenCheckBoxList @bind-Value=@_selectedTagsOfTagGroup[tg.Id] TValue="int" Orientation="Radzen.Orientation.Vertical" Change=@ApplyFilter>
                                     <Items>
-                                        @foreach (var t in tg.Tags)
+                                        @foreach (var t in tg.TagDTOs)
                                         {
-                                            <RadzenCheckBoxListItem Text=@t.Name Value=@t.Id />
+                                            <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id />
                                         }
                                     </Items>
                                 </RadzenCheckBoxList>
@@ -59,7 +59,7 @@
                             {
                                 <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                             @bind-Value=@_selectedTagsOfTagGroup[tg.Id] Multiple="true" Placeholder="Select..."
-                                            Data=@tg.Tags TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
+                                            Data=@tg.TagDTOs TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
                             }
                         </ChildContent>
                     </RadzenFieldset>
@@ -72,8 +72,8 @@
 
 
 @code {
-    private IEnumerable<Project> _projects = new List<Project>();
-    private IEnumerable<TagGroup> _tagGroups = new List<TagGroup>();
+    private IEnumerable<ProjectDTO> _projects = new List<ProjectDTO>();
+    private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new Dictionary<int, IEnumerable<int>>();
     // All selected tags, across all TagGroups.
     private IEnumerable<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate(
@@ -83,12 +83,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = Project.SampleProjects; //Lav rigtigt API kald når det er med ProjectBankContext
-        _tagGroups = TagGroup.SampleTagGroups; //Lav rigtigt API kald når det er med ProjectBankContext
+        _projects = await _http.GetFromJsonAsync<ProjectDTO[]>($"api/Project/"); //Lav rigtigt API kald når det er med ProjectBankContext
+        _tagGroups = await _http.GetFromJsonAsync<TagGroupDTO[]>($"api/TagGroup/"); //Lav rigtigt API kald når det er med ProjectBankContext
 
-        // Create a set of empty "selected" ids for each tag group.
-        foreach (var tg in _tagGroups)
-            _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
+        if (_tagGroups != null) //TODO Ændre til at håndtere response hvis det er det vi går med - skal også ændres oppe i api kaldet
+        {
+            // Create a set of empty "selected" ids for each tag group.
+            foreach (var tg in _tagGroups)
+                _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
+        }
+
     }
 
     private async Task ApplyFilter()
