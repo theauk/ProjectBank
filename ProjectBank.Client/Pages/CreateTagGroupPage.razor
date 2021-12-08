@@ -87,6 +87,7 @@
 
     async Task OnSubmit(TagGroupCreateDTO tagGroup)
     {
+        Console.WriteLine("HEY");
         CreateTags();
         
         var response = await _http.PostAsJsonAsync("api/TagGroup", _tagGroup);

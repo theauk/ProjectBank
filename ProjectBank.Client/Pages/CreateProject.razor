@@ -2,6 +2,15 @@
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 
+@*
+- Fix enter – I would have to somehow store the ones which needs tag groups multipselector, move the submit out and make the multiple ones outside too
+- Can actually just check for !locked outside and make them there – so seems like quite easy fix
+- Fix the greater than 8 listbox problem...
+- Add required checks. Can do if required make radzenRequiredvalidator ellers ik
+- Need to get the right information together in a createProjectDTO and send that ahead
+- Need to switch to createDTOs generally all around
+*@
+
 <PageTitle>Create Project</PageTitle>
 
 <h1 style="margin-bottom: 48px">Create Project</h1>
@@ -59,29 +68,25 @@
                         }
                         else
                         {
-                            <RadzenListBox Style="min-width: 250px" 
-                                           AllowFiltering="true" 
-                                           FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
-                                           Multiple="true"
-                                           @bind-Value=@SelectedTags[tg.Id]
-                                           Data=@tg.Tags 
-                                           TextProperty="Name" 
-                                           ValueProperty="Id"/>
+                            @*<RadzenListBox AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" 
+                                                    @bind-Value=@SelectedTags[tg.Id] Data=@tg.Tags TextProperty="Name" ValueProperty="Id" />*@
                         }
-                    } else if (!tg.Locked)
+                    } else if (!tg.Locked && tg.Tags.Any())
                     {
-                        @* <h5 class="tagCheckItem">@tg.Name</h5>
-                        <Autocomplete class="autocompleteTags"
+                        Console.WriteLine(tg.Id);
+                        <h5 class="tagCheckItem">@tg.Name</h5>
+                        <Autocomplete class="autocompleteTags" Style="max-width: 40%"
                                       TItem="Tag"
-                                      TValue="string"
-                                      Data="@tg.Tags"
+                                      TValue="Tag"
+                                      Data="tg.Tags"
                                       TextField="@((item) => item.Name)"
+                                      ValueField="@((item) => item)"
                                       Placeholder="Search..."
                                       Multiple
-                                      FreeTyping
-                                      @bind-SelectedValues="_multipleSelectionTagsData"
-                                      @bind-SelectedTexts="_multipleSelectionTagsTexts">
-                        </Autocomplete>*@
+                                      FreeTyping  
+                                      @bind-SelectedValues="_multipleSelectionTagsData[tg.Id]"
+                                      @bind-SelectedTexts="_multipleSelectionTagsText[tg.Id]">
+                        </Autocomplete>
                     }
                 }
             </div>
@@ -116,13 +121,13 @@
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
         );
-
-
-
-    private IEnumerable<int> test = new List<int>();
+    
     private ProjectCreateDTO _project = new();
     private IEnumerable<int> SupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
-    
+
+    Dictionary<int, List<Tag>> _multipleSelectionTagsData = new();
+    Dictionary<int, List<string>> _multipleSelectionTagsText = new();
+
     protected override async Task OnInitializedAsync()
     {
         
@@ -130,8 +135,13 @@
         //TagGroups = await Http.GetFromJsonAsync<TagGroupDTO>("api/Project");
         TagGroups = TagGroup.SampleTagGroups;
         foreach (var tg in TagGroups)
+        {
+            _multipleSelectionTagsData[tg.Id] = new List<Tag>();
+            _multipleSelectionTagsText[tg.Id] = new List<string>();
             SelectedTags.Add(tg.Id, new List<int>());
-
+        }
+        
+        
     // TODO: Fetch Supervisors from API.
         // TODO: Automatically add current user to SupervisorIds.
         Supervisors = Supervisor.SampleSupervisors;
@@ -143,11 +153,25 @@
 
     private async void OnSubmit()
     {
+     
+        // delete
+        foreach(var v in _multipleSelectionTagsText)
+        {
+            if (v.Value.Any())
+            {
+                foreach(var t in v.Value)
+                {
+                    Console.WriteLine(t);
+                }
+            }
+        }
+        
         var response = await _http.PostAsJsonAsync("api/Project", _project);
         if (response.IsSuccessStatusCode)
         {
             Redirect();
         }
+
     }
 
     void Redirect()
