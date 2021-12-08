@@ -49,13 +49,13 @@
                             </span>
                         </HeaderTemplate>
                         <ChildContent>
-                            @if (tg.Tags.Count() <= 8)
+                            @if (tg.TagDTOs.Count() <= 8)
                             {
                                 <RadzenCheckBoxList @bind-Value=@_selectedTagsOfTagGroup[tg.Id] TValue="int" Orientation="Radzen.Orientation.Vertical" Change=@ApplyFilter>
                                     <Items>
-                                        @foreach (var t in tg.Tags)
+                                        @foreach (var t in tg.TagDTOs)
                                         {
-                                            <RadzenCheckBoxListItem Text=@t.Name Value=@t.Id />
+                                            <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id />
                                         }
                                     </Items>
                                 </RadzenCheckBoxList>
@@ -64,7 +64,7 @@
                             {
                                 <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                             @bind-Value=@_selectedTagsOfTagGroup[tg.Id] Multiple="true" Placeholder="Select..."
-                                            Data=@tg.Tags TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
+                                            Data=@tg.TagDTOs TextProperty="Value" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
                             }
                         </ChildContent>
                     </RadzenFieldset>
@@ -78,7 +78,7 @@
 
 @code {
     private IEnumerable<ProjectDTO> _projects = new List<ProjectDTO>();
-    private IEnumerable<TagGroup> _tagGroups = new List<TagGroup>();
+    private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new Dictionary<int, IEnumerable<int>>();
     // All selected tags, across all TagGroups.
     private IEnumerable<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate(
@@ -94,7 +94,7 @@
         //Projects = Project.SampleProjects; //Lav rigtigt API kald når det er med ProjectBankContext
         _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
             "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
-        _tagGroups = TagGroup.SampleTagGroups; //Lav rigtigt API kald når det er med ProjectBankContext
+        _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
 
         // Create a set of empty "selected" ids for each tag group.
         foreach (var tg in _tagGroups)

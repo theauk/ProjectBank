@@ -192,13 +192,17 @@ namespace ProjectBank.Infrastructure.Tests
             {
                 
                 Assert.Contains(projects, actual => actual.Id == expectedProject.Id && actual.Name == expectedProject.Name && actual.Description == expectedProject.Description);
-                var getProject = (await _repository.ReadAsync(expectedProject.Id));
-                var actualProject = getProject.Value; 
-                Assert.Equal(expectedProject.Tags.Count, actualProject.Tags.Count);
+                var actualProject = (await _repository.ReadAsync(expectedProject.Id)).Value;
+                if (actualProject != null)
+                {
+                    Assert.Equal(expectedProject.Tags.Count, actualProject.Tags.Count);
+                    
+                }
                 foreach (var expectedTag in expectedProject.Tags)
                 {
                     Assert.Contains(actualProject.Tags, actualTag => actualTag.Id == expectedTag.Id && actualTag.Value == expectedTag.Value); 
                 }
+                
                 Assert.Contains(projects, actual => actual.Name == expectedProject.Name);  
                 Assert.Contains(projects, actual => actual.Description == expectedProject.Description);  
                 Assert.Contains(projects, actual => actual.Id == expectedProject.Id);  
