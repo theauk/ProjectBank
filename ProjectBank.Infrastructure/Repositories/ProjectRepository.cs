@@ -1,5 +1,3 @@
-
-
 namespace ProjectBank.Infrastructure.Repositories
 {
     public class ProjectRepository : IProjectRepository
@@ -51,8 +49,8 @@ namespace ProjectBank.Infrastructure.Repositories
         public async Task<Option<ProjectDTO?>> ReadAsync(int projectId)
         {
             var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
-            
-            return project == null ? null : new ProjectDTO 
+
+            return project == null ? null : new ProjectDTO
             {
                 Id = project.Id,
                 Name = project.Name,
@@ -62,7 +60,7 @@ namespace ProjectBank.Infrastructure.Repositories
             };
         }
 
-        
+
 
         public async Task<IReadOnlyCollection<ProjectDTO>> ReadAllAsync()
         {

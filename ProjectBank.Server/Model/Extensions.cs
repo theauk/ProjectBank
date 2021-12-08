@@ -1,6 +1,4 @@
-﻿
-
-namespace ProjectBank.Server.Model;
+﻿namespace ProjectBank.Server.Model;
 // Modified code from Rasmus Lystrøm
 public static class Extensions
 {

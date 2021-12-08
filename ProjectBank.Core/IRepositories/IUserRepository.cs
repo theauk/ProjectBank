@@ -1,5 +1,3 @@
-
-
 namespace ProjectBank.Core.IRepositories;
 
 public interface IUserRepository 

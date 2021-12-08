@@ -1,11 +1,4 @@
 using Blazorise.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
 using ProjectBank.Core.DTOs;
 using ProjectBank.Core.IRepositories;
 using ProjectBank.Server.Model;

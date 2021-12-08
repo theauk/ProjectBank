@@ -4,7 +4,7 @@ namespace ProjectBank.Infrastructure.Entities
     {
         public int Id { get; set; }
         [Required]
-        public string? DomainName { get; set; }
+        public string DomainName { get; set; }
 
         public ISet<User> Users { get; set; } = new HashSet<User>();
 
