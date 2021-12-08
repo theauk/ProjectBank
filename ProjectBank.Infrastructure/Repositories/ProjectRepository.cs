@@ -64,7 +64,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
         
 
-        public async Task<(Response, IReadOnlyCollection<ProjectDTO>)> ReadAllAsync()
+        public async Task<IReadOnlyCollection<ProjectDTO>> ReadAllAsync()
         {
             var projects = (await _context.Projects.Select(p => new ProjectDTO
             {

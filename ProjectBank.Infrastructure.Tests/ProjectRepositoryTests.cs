@@ -18,28 +18,23 @@ namespace ProjectBank.Infrastructure.Tests
         private readonly ProjectRepository _repository;
         private bool disposedValue;
         
-        // --- Test data ---
-        // Supervisors
-        User marco = new User { Id = 1, Name = "Marco" };
-        User birgit = new User { Id = 2, Name = "Birgit" };
-        User bjorn = new User { Id = 3, Name = "Bjørn" };
-        User paolo = new User { Id = 4, Name = "Paolo" };
-        User rasmus = new User { Id = 5, Name = "Rasmus" };
+        private User marco;
+        private User birgit;
+        private User bjorn;
+        private User paolo;
+        private User rasmus;
 
-        // Tags
-        Tag math = new Tag { Id = 1, Value = "Math Theory" };
-        Tag sql = new Tag { Id = 2, Value = "SQL" };
-        Tag goLang = new Tag { Id = 3, Value = "GoLang" };
-        Tag secondYear = new Tag { Id = 4, Value = "2nd Year Project" };
-        Tag spring22 = new Tag { Id = 5, Value = "Spring 2022" };
+        private Tag math;
+        private Tag sql;
+        private Tag goLang;
+        private Tag secondYear;
+        private Tag spring22;
 
-        // Projects
-        Project mathProject = new Project { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<Tag>() { math }, Supervisors = new HashSet<User>() { birgit } };
-        Project databaseProject = new Project { Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = new HashSet<Tag>() { sql, spring22 }, Supervisors = new HashSet<User>() { bjorn } };
-        Project goProject = new Project { Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = new HashSet<Tag>() { goLang }, Supervisors = new HashSet<User>() { marco } };
-        Project secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
-        // -------------------
-
+        private Project mathProject;
+        private Project databaseProject;
+        private Project goProject;
+        private Project secondYearProject; 
+        
 
         public ProjectRepositoryTests()
         {
@@ -51,6 +46,27 @@ namespace ProjectBank.Infrastructure.Tests
 
             var context = new ProjectBankContext(builder.Options);
             context.Database.EnsureCreated();
+// --- Test data ---
+            // Supervisors
+            User marco = new User { Id = 1, Name = "Marco" };
+            User birgit = new User { Id = 2, Name = "Birgit" };
+            User bjorn = new User { Id = 3, Name = "Bjørn" };
+            User paolo = new User { Id = 4, Name = "Paolo" };
+            User rasmus = new User { Id = 5, Name = "Rasmus" };
+
+            // Tags
+            Tag math = new Tag { Id = 1, Value = "Math Theory" };
+            Tag sql = new Tag { Id = 2, Value = "SQL" };
+            Tag goLang = new Tag { Id = 3, Value = "GoLang" };
+            Tag secondYear = new Tag { Id = 4, Value = "2nd Year Project" };
+            Tag spring22 = new Tag { Id = 5, Value = "Spring 2022" };
+
+            // Projects
+            Project mathProject = new Project { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<Tag>() { math }, Supervisors = new HashSet<User>() { birgit } };
+            Project databaseProject = new Project { Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = new HashSet<Tag>() { sql, spring22 }, Supervisors = new HashSet<User>() { bjorn } };
+            Project goProject = new Project { Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = new HashSet<Tag>() { goLang }, Supervisors = new HashSet<User>() { marco } };
+            Project secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
+            // -------------------
 
 
             context.Projects.AddRange(
@@ -170,17 +186,14 @@ namespace ProjectBank.Infrastructure.Tests
             pList.Add(secondYearProject);
             
             
-            var actual = await _repository.ReadAllAsync();
-            var projects = actual.Item2;
-
-            Assert.Equal(Response.Success, actual.Item1);
+            var projects = await _repository.ReadAllAsync();
             Assert.Equal(pList.Count, projects.Count);
             foreach (var expectedProject in pList)
             {
                 
                 Assert.Contains(projects, actual => actual.Id == expectedProject.Id && actual.Name == expectedProject.Name && actual.Description == expectedProject.Description);
-                var getProject = await _repository.ReadAsync(expectedProject.Id);
-                var actualProject = getProject.Item2; 
+                var getProject = (await _repository.ReadAsync(expectedProject.Id));
+                var actualProject = getProject.Value; 
                 Assert.Equal(expectedProject.Tags.Count, actualProject.Tags.Count);
                 foreach (var expectedTag in expectedProject.Tags)
                 {
