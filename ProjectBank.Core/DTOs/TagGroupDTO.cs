@@ -33,12 +33,12 @@ namespace ProjectBank.Core.DTOs
 
 
 
-    public record TagGroupUpdateDTO : TagCreateDTO
+    public record TagGroupUpdateDTO : TagGroupCreateDTO
     {
         public int Id { get; init; }
         
-        public ISet<int>? DeletedTagIds { get; set; } = new HashSet<int>();
+        public ISet<int> DeletedTagIds { get; set; } = new HashSet<int>();
 
-        public ISet<TagCreateDTO>? NewTags { get; set; } = new HashSet<TagCreateDTO>();
+        public ISet<TagCreateDTO> NewTags { get; set; } = new HashSet<TagCreateDTO>();
     }
 }
