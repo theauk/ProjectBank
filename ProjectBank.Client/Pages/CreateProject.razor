@@ -6,7 +6,7 @@
 
 <h1 style="margin-bottom: 48px">Create Project</h1>
 
-<RadzenTemplateForm TItem="ProjectCreateDTO" Data="@_project" Submit="@OnSubmit" InvalidSubmit="OnInvalidSubmit" id="@submitFormId">
+<RadzenTemplateForm TItem="ProjectCreateDTO" Data="@_project" Submit="@OnSubmit" InvalidSubmit="OnInvalidSubmit" id="@_submitFormId">
     <div class="row" style="margin-bottom: 48px">
         <div class="col-md-2 align-right">
             <RadzenLabel class="formLabelTextCreateProject" Text="Name"/>
@@ -124,7 +124,7 @@
 <div class="row lowerSubmitCancelButtons">
     <div class="col-md-2 align-right"></div>
     <div class="col">
-        <RadzenButton class="submitButton" form="@submitFormId" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
+        <RadzenButton class="submitButton" form="@_submitFormId" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
         <RadzenButton class="cancelButton" Click="@Cancel" Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
     </div>
 </div>
@@ -144,14 +144,12 @@
     Dictionary<int, List<TagDTO>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
     Dictionary<int, List<string>> _multipleSelectionTagsText = new();
 
-    private string submitFormId = "submitForm";
+    private string _submitFormId = "submitForm";
     private IEnumerable<string> _missingTagsName = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
-    // TODO: Fetch TagGroups from API.
-        TagGroups = new[] {await _http.GetFromJsonAsync<TagGroupDTO>("api/Project")}; // todo: fix
-        //TagGroups = TagGroup.SampleTagGroups;
+        TagGroups = new[] {await _http.GetFromJsonAsync<TagGroupDTO>("api/TagGroup")}; // todo: fix
         foreach (var tg in TagGroups)
         {
             _multipleSelectionTagsData[tg.Id] = new List<TagDTO>();
@@ -159,10 +157,9 @@
             SelectedTags.Add(tg.Id, new List<int>());
             if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
         }
-
-
-    // TODO: Fetch Supervisors from API.
-    // TODO: Automatically add current user to SupervisorIds.
+        
+        // TODO: Fetch Supervisors from API.
+        // TODO: Automatically add current user to SupervisorIds.
         //Supervisors = Supervisor.SampleSupervisors;
         Supervisors = new List<UserDTO>(); // todo: get actual supervisors
 
