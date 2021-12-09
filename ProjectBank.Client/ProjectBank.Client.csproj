@@ -11,6 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.2" />
+    <PackageReference Include="Blazorise.Components" Version="0.9.5.2" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="6.0.0" />
@@ -28,7 +31,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectBank.Core\ProjectBank.Core.csproj" />
-    <ProjectReference Include="..\ProjectBank.Shared\ProjectBank.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\Counter.razor" />
   </ItemGroup>
 
 </Project>
