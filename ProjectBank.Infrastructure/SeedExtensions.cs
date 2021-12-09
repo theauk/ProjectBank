@@ -95,7 +95,7 @@ namespace ProjectBank.Infrastructure
             // Topics
             var dbTopic = new Tag { Value = "Databases" };
 
-            // TagGroups
+            // TAGGROUPS
             if (!await context.TagGroups.AnyAsync())
             {
                 context.TagGroups.AddRange(
@@ -159,7 +159,7 @@ namespace ProjectBank.Infrastructure
                 );
             }
 
-            // Create users
+            // USERS
             if (!await context.Users.AnyAsync())
             {
                 context.Users.AddRange(
@@ -180,7 +180,7 @@ namespace ProjectBank.Infrastructure
                 );
             }
 
-            // Create Projects
+            // PROJECTS
             if (!await context.Projects.AnyAsync())
             {
                 context.Projects.AddRange(
@@ -257,7 +257,7 @@ namespace ProjectBank.Infrastructure
                 );
             }
 
-            // Create universities
+            // UNIVERSITIES
             if (!await context.Universities.AnyAsync())
             {
                 context.Universities.Add(new University { DomainName = "itu.dk", TagGroups = context.TagGroups.Select(tg => tg).ToHashSet(), Users = context.Users.Select(u => u).ToHashSet(), Projects = context.Projects.Select(p => p).ToHashSet()});
