@@ -18,16 +18,16 @@
                             <RadzenLabel class="formLabelText" Text="Name"/>
                         </div>
                         <div class="col">
-                            <RadzenTextBox style="display: block; width: 100%" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
+                            <RadzenTextBox style="display: block; width: 100%" Name="TagGroupName" @bind-Value=@_tagGroup.Name/>
                             <RadzenRequiredValidator Component="TagGroupName" Text="Tag group name is required"/>
                         </div>
                     </div>
-                    <div class="row supervisorTagsLimit" style="margin-bottom: 48px">
+                    <div class="row requiredInProject" style="margin-bottom: 48px">
                         <div class="col-md-4">
-                            <RadzenLabel class="formLabelText" Text="Maximum Amount of Tags"/>
+                            <RadzenLabel class="formLabelText" Text="Tag Group Required"/>
                         </div>
                         <div class="col">
-                            <RadzenNumeric @bind-Value=@_tagGroup.TagLimit TValue="int?" Placeholder="No Limit" Min="1"/>
+                            <RadzenCheckBox @bind-Value=@_tagGroup.RequiredInProject Name="RequiredInProject" TValue="bool"/>
                         </div>
                     </div>
                     <div class="row supervisorAddTags" style="margin-bottom: 48px">
@@ -38,12 +38,12 @@
                             <RadzenCheckBox @bind-Value=@_tagGroup.SupervisorCanAddTag Name="SupervisorCanAdd" TValue="bool"/>
                         </div>
                     </div>
-                    <div class="row requiredInProject" style="margin-bottom: 48px">
+                    <div class="row supervisorTagsLimit" style="margin-bottom: 48px">
                         <div class="col-md-4">
-                            <RadzenLabel class="formLabelText" Text="Tag Group Required"/>
+                            <RadzenLabel class="formLabelText" Text="Maximum Amount of Tags"/>
                         </div>
                         <div class="col">
-                            <RadzenCheckBox @bind-Value=@_tagGroup.RequiredInProject Name="RequiredInProject" TValue="bool"/>
+                            <RadzenNumeric @bind-Value=@_tagGroup.TagLimit TValue="int?" Placeholder="No Limit" Min="1"/>
                         </div>
                     </div>
                 </RadzenTemplateForm>
@@ -93,7 +93,7 @@
     async Task OnSubmit(TagGroupCreateDTO tagGroup)
     {
         CreateTags();
-        
+
         var response = await _http.PostAsJsonAsync("api/TagGroup", _tagGroup);
 
         if (response.IsSuccessStatusCode)

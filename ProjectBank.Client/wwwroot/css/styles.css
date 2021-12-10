@@ -91,6 +91,36 @@
 .adminPageTopBar {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.adminPageButtonContainer {
+    display: flex;
+    align-items: center;
+}
+
+.tagGroupSelections {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tagGroupChecks {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rz-spinner {
+    width: 100px !important;
+}
+
+.tgCard {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.selectLeftItem {
+    margin-right: 5px;
 }
 
 /* Create Tag Group */
@@ -135,4 +165,8 @@
 .tagFieldSet, .tagGroupFieldSet {
     border: none !important;
     overflow-wrap: break-word;
+}
+
+.rz-paginator-last, .rz-paginator-next {
+    background-color: var(--submitButton) !important;
 }
