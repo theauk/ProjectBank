@@ -8,5 +8,8 @@ namespace ProjectBank.Infrastructure.Entities
         [StringLength(100)]
         public string Value { get; set; }
 
+        public TagGroup TagGroup { get; set; }
+
+        public ICollection<Project> Projects { get; set; } = new List<Project>();
     }
 }

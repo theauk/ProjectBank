@@ -11,14 +11,11 @@ using Xunit;
 
 namespace ProjectBank.Infrastructure.Tests
 {
-    
     public class ProjectRepositoryTests : IDisposable
     {
         private readonly ProjectBankContext _context;
         private readonly ProjectRepository _repository;
         private bool disposedValue;
-        
-        
 
         public ProjectRepositoryTests()
         {
@@ -30,6 +27,7 @@ namespace ProjectBank.Infrastructure.Tests
 
             var context = new ProjectBankContext(builder.Options);
             context.Database.EnsureCreated();
+
             // --- Test data ---
             // Supervisors
             var marco = new User { Id = 1, Name = "Marco" };
@@ -38,12 +36,49 @@ namespace ProjectBank.Infrastructure.Tests
             var paolo = new User { Id = 4, Name = "Paolo" };
             var rasmus = new User { Id = 5, Name = "Rasmus" };
 
+            // TagGroups
+            var semesterTG = new TagGroup
+            {
+                Id = 1,
+                Name = "Semester",
+                RequiredInProject = true,
+                SupervisorCanAddTag = false,
+                TagLimit = 2,
+            };
+
+            var programmingLanguageTG = new TagGroup
+            {
+                Id = 2,
+                Name = "Programming Language",
+                RequiredInProject = false,
+                SupervisorCanAddTag = true,
+                TagLimit = 10,
+            };
+
+            var mandatoryProjectsTG = new TagGroup
+            {
+                Id = 3,
+                Name = "Mandatory Project",
+                RequiredInProject = false,
+                SupervisorCanAddTag = false,
+                TagLimit = 1,
+            };
+
+            var topicTG = new TagGroup
+            {
+                Id = 4,
+                Name = "Topic",
+                RequiredInProject = false,
+                SupervisorCanAddTag = true,
+                TagLimit = 10,
+            };
+
             // Tags
-            var math = new Tag { Id = 1, Value = "Math Theory" };
-            var sql = new Tag { Id = 2, Value = "SQL" };
-            var goLang = new Tag { Id = 3, Value = "GoLang" };
-            var secondYear = new Tag { Id = 4, Value = "2nd Year Project" };
-            var spring22 = new Tag { Id = 5, Value = "Spring 2022" };
+            var math = new Tag { Id = 1, Value = "Math Theory", TagGroup = topicTG };
+            var sql = new Tag { Id = 2, Value = "SQL", TagGroup = programmingLanguageTG };
+            var goLang = new Tag { Id = 3, Value = "GoLang", TagGroup = programmingLanguageTG };
+            var secondYear = new Tag { Id = 4, Value = "2nd Year Project", TagGroup = mandatoryProjectsTG };
+            var spring22 = new Tag { Id = 5, Value = "Spring 2022", TagGroup = semesterTG };
 
             // Projects
             var mathProject = new Project { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<Tag>() { math }, Supervisors = new HashSet<User>() { birgit } };
@@ -52,21 +87,16 @@ namespace ProjectBank.Infrastructure.Tests
             var secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
             // -------------------
 
+            // Univertities
+            var ituUni = new University
+            { 
+                DomainName = "itu.dk",
+                Projects = new HashSet<Project>() { mathProject, databaseProject, goProject, secondYearProject },
+                TagGroups = new HashSet<TagGroup>() { semesterTG, programmingLanguageTG, mandatoryProjectsTG, topicTG },
+                Users = new HashSet<User>() { marco, birgit, bjorn, paolo, rasmus } 
+            };
 
-            context.Projects.AddRange(
-                mathProject,
-                databaseProject,
-                goProject,
-                secondYearProject
-            );
-
-            context.Users.AddRange(
-                marco,
-                birgit,
-                bjorn,
-                paolo,
-                rasmus
-            );
+            context.Universities.Add(ituUni);
 
             context.SaveChanges();
             _context = context;
@@ -162,57 +192,14 @@ namespace ProjectBank.Infrastructure.Tests
         [Fact]
         public async Task ReadAllAsync_returns_all_projects()
         {
-            //Arrange 
-            // --- Test data ---
-            // Supervisors
-            var marco = new User { Id = 1, Name = "Marco" };
-            var birgit = new User { Id = 2, Name = "Birgit" };
-            var bjorn = new User { Id = 3, Name = "Bjørn" };
-            var paolo = new User { Id = 4, Name = "Paolo" };
-            var rasmus = new User { Id = 5, Name = "Rasmus" };
-
-            // Tags
-            var math = new Tag { Id = 1, Value = "Math Theory" };
-            var sql = new Tag { Id = 2, Value = "SQL" };
-            var goLang = new Tag { Id = 3, Value = "GoLang" };
-            var secondYear = new Tag { Id = 4, Value = "2nd Year Project" };
-            var spring22 = new Tag { Id = 5, Value = "Spring 2022" };
-
-            //TagSets
-            var mpTags = new HashSet<Tag>() {math};
-            var dpTags = new HashSet<Tag>() {sql, spring22 };
-            var gpTags = new HashSet<Tag>() {goLang};
-            var sypTags = new HashSet<Tag>() {secondYear, spring22};
-            
-            // Projects
-            var mathProject = new Project { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = mpTags, Supervisors = new HashSet<User>() { birgit } };
-            var databaseProject = new Project { Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = dpTags, Supervisors = new HashSet<User>() { bjorn } };
-            var goProject = new Project { Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = gpTags, Supervisors = new HashSet<User>() { marco } };
-            var secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = sypTags, Supervisors = new HashSet<User>() { paolo, rasmus } };
-            // -------------------
-            var pList = new List<Project>();
-            pList.Add(mathProject);
-            pList.Add(databaseProject);
-            pList.Add(goProject);
-            pList.Add(secondYearProject);
-            
-            
             var projects = await _repository.ReadAllAsync();
-            Assert.Equal(pList.Count, projects.Count);
-            foreach (var expectedProject in pList)
-            {
-                
-                Assert.Contains(projects, actual => actual.Id == expectedProject.Id && actual.Name == expectedProject.Name && actual.Description == expectedProject.Description);
-                var actualProject = (await _repository.ReadAsync(expectedProject.Id)).Value;
-                Assert.Equal(expectedProject.Tags.Count, actualProject.Tags.Count); // TODO der er noget med at spring22 ikke kan findes i actual.databaseProject
-                foreach (var expectedTag in expectedProject.Tags)
-                {
-                    Assert.Contains(actualProject.Tags, actualTag => actualTag.Id == expectedTag.Id && actualTag.Value == expectedTag.Value); 
-                }
-                Assert.Contains(projects, actual => actual.Name == expectedProject.Name);  
-                Assert.Contains(projects, actual => actual.Description == expectedProject.Description);  
-                Assert.Contains(projects, actual => actual.Id == expectedProject.Id);  
-            }
+
+            Assert.Collection(projects,
+                project => Assert.Equal(new ProjectDTO{ Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<TagDTO>() { new TagDTO{ Id = 1, Value = "Math Theory" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 2, Name = "Birgit" } }}, project),
+                project => Assert.Equal(new ProjectDTO{ Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 2, Value = "SQL", }, new TagDTO { Id = 5, Value = "Spring 2022" }}, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 3, Name = "Bjørn" } }}, project),
+                project => Assert.Equal(new ProjectDTO{ Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 3, Value = "GoLang" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 1, Name = "Marco" } }}, project),
+                project => Assert.Equal(new ProjectDTO{ Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 4, Value = "2nd Year Project" }, new TagDTO { Id = 5, Value = "Spring 2022" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 4, Name = "Paolo" }, new UserDTO { Id = 5, Name = "Rasmus" }}}, project)
+            );
         }
 
         [Fact]
@@ -220,10 +207,10 @@ namespace ProjectBank.Infrastructure.Tests
         {
             var project = new ProjectUpdateDTO
             {
-                  Name = "Extreme Math Project",
-                  Description = "Prove even harder stuff.",
-                  ExistingTagIds = new HashSet<int>(),
-                  UserIds = new HashSet<int>() { 1, 2 }
+                Name = "Extreme Math Project",
+                Description = "Prove even harder stuff.",
+                ExistingTagIds = new HashSet<int>(),
+                UserIds = new HashSet<int>() { 1, 2 }
             };
 
             var response = await _repository.UpdateAsync(1, project);
@@ -231,7 +218,7 @@ namespace ProjectBank.Infrastructure.Tests
             Assert.Equal(Response.Updated, response);
 
             var mathProject = (await _repository.ReadAsync(1)).Value;
-            
+
             Assert.NotNull(mathProject);
             Assert.Empty(mathProject.Tags);
         }
@@ -241,10 +228,10 @@ namespace ProjectBank.Infrastructure.Tests
         {
             var project = new ProjectUpdateDTO
             {
-                  Name = "Extreme Math Project",
-                  Description = "Prove even harder stuff.",
-                  ExistingTagIds = new HashSet<int>(){ 1 },
-                  UserIds = new HashSet<int>() { 1, 2 }
+                Name = "Extreme Math Project",
+                Description = "Prove even harder stuff.",
+                ExistingTagIds = new HashSet<int>() { 1 },
+                UserIds = new HashSet<int>() { 1, 2 }
             };
 
             var actual = await _repository.UpdateAsync(33, project);
@@ -257,17 +244,17 @@ namespace ProjectBank.Infrastructure.Tests
         {
             var project = new ProjectUpdateDTO
             {
-                  Name = "Extreme Math Project",
-                  Description = "Prove even harder stuff.",
-                  ExistingTagIds = new HashSet<int>(){ 1 },
-                  UserIds = new HashSet<int>() { 1, 7 }
+                Name = "Extreme Math Project",
+                Description = "Prove even harder stuff.",
+                ExistingTagIds = new HashSet<int>() { 1 },
+                UserIds = new HashSet<int>() { 1, 7 }
             };
 
             var actual = await _repository.UpdateAsync(1, project);
 
             Assert.Equal(Response.BadRequest, actual);
         }
-            
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)

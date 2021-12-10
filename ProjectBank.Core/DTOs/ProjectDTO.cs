@@ -16,6 +16,22 @@ namespace ProjectBank.Core.DTOs
         
         [Required]
         public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
+
+        public virtual bool Equals(ProjectDTO p)
+        {
+            return (
+                Id.Equals(p.Id) &&
+                Name.Equals(p.Name) &&
+                Description.Equals(p.Description) &&
+                Tags.SetEquals(p.Tags) &&
+                Supervisors.SetEquals(p.Supervisors)
+            );
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
     public record ProjectCreateDTO
@@ -30,7 +46,8 @@ namespace ProjectBank.Core.DTOs
         [Required]
         public ISet<int> ExistingTagIds { get; set; } = new HashSet<int>();
 
-        [Required] public ISet<TagCreateDTO> NewTagDTOs { get; set; } = new HashSet<TagCreateDTO>();
+        [Required] 
+        public ISet<TagCreateDTO> NewTagDTOs { get; set; } = new HashSet<TagCreateDTO>();
 
         [Required]
         public ISet<int> UserIds { get; set; } = new HashSet<int>();
