@@ -178,11 +178,17 @@ namespace ProjectBank.Infrastructure.Tests
             var secondYear = new Tag { Id = 4, Value = "2nd Year Project" };
             var spring22 = new Tag { Id = 5, Value = "Spring 2022" };
 
+            //TagSets
+            var mpTags = new HashSet<Tag>() {math};
+            var dpTags = new HashSet<Tag>() {sql, spring22 };
+            var gpTags = new HashSet<Tag>() {goLang};
+            var sypTags = new HashSet<Tag>() {secondYear, spring22};
+            
             // Projects
-            var mathProject = new Project { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<Tag>() { math }, Supervisors = new HashSet<User>() { birgit } };
-            var databaseProject = new Project { Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = new HashSet<Tag>() { sql, spring22 }, Supervisors = new HashSet<User>() { bjorn } };
-            var goProject = new Project { Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = new HashSet<Tag>() { goLang }, Supervisors = new HashSet<User>() { marco } };
-            var secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
+            var mathProject = new Project { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = mpTags, Supervisors = new HashSet<User>() { birgit } };
+            var databaseProject = new Project { Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = dpTags, Supervisors = new HashSet<User>() { bjorn } };
+            var goProject = new Project { Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = gpTags, Supervisors = new HashSet<User>() { marco } };
+            var secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = sypTags, Supervisors = new HashSet<User>() { paolo, rasmus } };
             // -------------------
             var pList = new List<Project>();
             pList.Add(mathProject);
