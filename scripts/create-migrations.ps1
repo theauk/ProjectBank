@@ -3,5 +3,4 @@
 # Migrations
 Write-Host "CREATING MIGRATIONS..."
 dotnet ef --startup-project ..\ProjectBank.Server\ migrations add InitialCreate --project ..\ProjectBank.InfraStructure
-Set-Location ..
 Write-Host "DONE."
