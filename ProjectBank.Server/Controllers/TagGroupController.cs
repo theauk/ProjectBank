@@ -20,7 +20,7 @@ public class TagGroupController : ControllerBase
         _repository = repository;
     }
 
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<TagGroupDTO>> Get(int id)
     {
@@ -28,7 +28,7 @@ public class TagGroupController : ControllerBase
         return tagGroupDto.ToActionResult();
     }
 
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet]
     public async Task<IReadOnlyCollection<TagGroupDTO>> Get()
     {
