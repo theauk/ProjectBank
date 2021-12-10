@@ -1,4 +1,4 @@
-﻿@page "/TagGroupCreation"
+﻿@page "/tagGroupCreation"
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 
@@ -10,13 +10,13 @@
     <div class="col-xl-6">
         <div class="row">
             <div class="col">
-                <RadzenTemplateForm id="@submitFormId" TItem="TagGroupCreateDTO" Data=@_tagGroup Submit=@OnSubmit>
+                <RadzenTemplateForm id="@submitFormId" TItem="TagGroupCreateDTO" Data="@_tagGroup" Submit="@OnSubmit">
                     <div class="row" style="margin-bottom: 48px">
                         <div class="col-md-4 align-right">
                             <RadzenLabel class="formLabelText" Text="Name"/>
                         </div>
                         <div class="col">
-                            <RadzenTextBox style="display: block" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
+                            <RadzenTextBox style="display: block; width: 100%" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
                             <RadzenRequiredValidator Component="TagGroupName" Text="Tag group name is required"/>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                                       Data="@_tagGroup.NewTagsDTOs"
                                       TextField="@((item) => item.Value)"
                                       ValueField="@((item) => item.Value)"
-                                      Placeholder="Search..."
+                                      Placeholder="Search or press enter to create new..."
                                       Multiple
                                       FreeTyping
                                       @bind-SelectedValues="_multipleSelectionTagsData"
@@ -64,9 +64,12 @@
                         </Autocomplete>
                     </div>
                 </div>
-                <div>
-                    <RadzenButton ButtonType="Radzen.ButtonType.Submit" form="@submitFormId" Text="Submit" class="submitButton"></RadzenButton>
-                    <RadzenButton Click=@Redirect Text="Cancel" ButtonStyle="ButtonStyle.Light" class="cancel" />
+                <div class="row lowerSubmitCancelButtons">
+                    <div class="col-md-4"></div>
+                    <div class="col">
+                        <RadzenButton class="submitButton" form="@submitFormId" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
+                        <RadzenButton class="cancelButton" Click="@Redirect" Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,7 +90,6 @@
 
     async Task OnSubmit(TagGroupCreateDTO tagGroup)
     {
-        Console.WriteLine("HEY");
         CreateTags();
         
         var response = await _http.PostAsJsonAsync("api/TagGroup", _tagGroup);
@@ -106,7 +108,7 @@
 
     void Redirect()
     {
-        var uri = $"{_navigationManager.BaseUri}/admin";
+        var uri = $"{_navigationManager.BaseUri}admin";
         _navigationManager.NavigateTo(uri);
     }
 

@@ -7,5 +7,5 @@ public interface IProjectRepository
     Task<Response> DeleteAsync(int projectId);
     Task<Option<ProjectDTO?>> ReadAsync(int projectId);
     Task<IReadOnlyCollection<ProjectDTO>> ReadAllAsync();
-    Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds);
+    Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds, IEnumerable<int> supervisorIds);
 }

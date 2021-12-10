@@ -33,16 +33,25 @@ public class ProjectController : ControllerBase
         var response = await _repository.CreateAsync(project);
         return response.ToActionResult();
     }
-
+    
     [Authorize]
     [HttpGet]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IEnumerable<int> tagIds)
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get() 
+    {
+        var projects = await _repository.ReadAllAsync();
+        if (projects.IsNullOrEmpty()) return new List<ProjectDTO>();
+        return projects;
+    }
+
+    [Authorize]
+    [HttpGet("{tagIds}/{supervisorIds}")]
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IEnumerable<int> tagIds, [FromQuery] IEnumerable<int> supervisorIds) //Todo Spørgsmål - hvad gør FromQuery?
     {
         IReadOnlyCollection<ProjectDTO> resp;
-        if (!tagIds.Any())
+        if (!tagIds.Any() && !supervisorIds.Any())
             resp = await _repository.ReadAllAsync();
         else
-            resp = await _repository.ReadFilteredAsync(tagIds);
+            resp = await _repository.ReadFilteredAsync(tagIds, supervisorIds);
 
         if (resp.IsNullOrEmpty()) return new List<ProjectDTO>();
         return resp;

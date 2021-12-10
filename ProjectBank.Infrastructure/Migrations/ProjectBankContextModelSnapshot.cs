@@ -40,15 +40,15 @@ namespace ProjectBank.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<int?>("UniversityId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UniversityDomainName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.HasIndex("UniversityId");
+                    b.HasIndex("UniversityDomainName");
 
                     b.ToTable("Projects");
                 });
@@ -61,10 +61,7 @@ namespace ProjectBank.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("TagGroupId")
+                    b.Property<int>("TagGroupId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Value")
@@ -76,8 +73,6 @@ namespace ProjectBank.Infrastructure.Migrations
 
                     b.HasIndex("Id")
                         .IsUnique();
-
-                    b.HasIndex("ProjectId");
 
                     b.HasIndex("TagGroupId");
 
@@ -108,34 +103,27 @@ namespace ProjectBank.Infrastructure.Migrations
                     b.Property<int?>("TagLimit")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("UniversityId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UniversityDomainName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.HasIndex("UniversityId");
+                    b.HasIndex("UniversityDomainName");
 
                     b.ToTable("TagGroups");
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.University", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<string>("DomainName")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("DomainName");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("DomainName")
                         .IsUnique();
 
                     b.ToTable("Universities");
@@ -153,65 +141,114 @@ namespace ProjectBank.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("UniversityId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UniversityDomainName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("UniversityId");
+                    b.HasIndex("UniversityDomainName");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ProjectTag", b =>
+                {
+                    b.Property<int>("ProjectsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TagsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProjectsId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("ProjectTag");
+                });
+
+            modelBuilder.Entity("ProjectUser", b =>
+                {
+                    b.Property<int>("ProjectsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SupervisorsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProjectsId", "SupervisorsId");
+
+                    b.HasIndex("SupervisorsId");
+
+                    b.ToTable("ProjectUser");
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Project", b =>
                 {
                     b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
                         .WithMany("Projects")
-                        .HasForeignKey("UniversityId");
+                        .HasForeignKey("UniversityDomainName");
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Tag", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.Entities.Project", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.TagGroup", "TagGroup")
                         .WithMany("Tags")
-                        .HasForeignKey("ProjectId");
+                        .HasForeignKey("TagGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("ProjectBank.Infrastructure.Entities.TagGroup", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("TagGroupId");
+                    b.Navigation("TagGroup");
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.TagGroup", b =>
                 {
                     b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
                         .WithMany("TagGroups")
-                        .HasForeignKey("UniversityId");
+                        .HasForeignKey("UniversityDomainName");
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.User", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.Entities.Project", null)
-                        .WithMany("Supervisors")
-                        .HasForeignKey("ProjectId");
-
-                    b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.University", "University")
                         .WithMany("Users")
-                        .HasForeignKey("UniversityId");
+                        .HasForeignKey("UniversityDomainName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("University");
                 });
 
-            modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Project", b =>
+            modelBuilder.Entity("ProjectTag", b =>
                 {
-                    b.Navigation("Supervisors");
+                    b.HasOne("ProjectBank.Infrastructure.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Tags");
+                    b.HasOne("ProjectBank.Infrastructure.Entities.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectUser", b =>
+                {
+                    b.HasOne("ProjectBank.Infrastructure.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectBank.Infrastructure.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("SupervisorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.TagGroup", b =>

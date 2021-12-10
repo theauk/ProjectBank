@@ -4,24 +4,24 @@
 
 @if (Id != -1)
 {
-    @if (project == null)
+    @if (_project == null)
     {
         <h1>Loading...</h1>
     }
     else
     {
-        <h1>@project.Name</h1>
+        <h1>@_project.Name</h1>
         <div>
             <h2>Description</h2>
-            <p>Just pretend there's a description here.</p>
+            <p>@_project.Description</p>
         </div>
         <div>
             <h2>Supervisors</h2>
-            <p>Prof. P. Professorson</p>
+            <p>@string.Join(", ", _project.Supervisors.Select(s => s.Name))</p>
         </div>
         <div>
             <h2>Tags</h2>
-            <p>@string.Join(", ", project.Tags.Select((t => t.Value)))</p>
+            <p>@string.Join(", ", _project.Tags.Select((t => t.Value)))</p>
         </div>
     }
 }
@@ -33,13 +33,15 @@ else
 @code {
     [Parameter]
     public int Id { get; set; }
-    private ProjectDTO? project = null;
+    private ProjectDTO? _project = null;
     
     protected override async void OnParametersSet()
     {
         try
         {
-            project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
+            _project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
+            if (_project == null)
+                Id = -1;
         }
         catch
         {
