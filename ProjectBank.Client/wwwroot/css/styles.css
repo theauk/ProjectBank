@@ -1,10 +1,4 @@
-﻿:root {
-    --submitButton: #3c5ebe;
-    --cancelButton: #acb2b9;
-    --tagBadgeColor: #7474ad;
-}
-
-/* Project Overview */
+﻿/* Project Overview */
 
 .ProjectContainer {
     margin-right: 15%;
@@ -80,13 +74,17 @@
     margin: auto;
     border: solid 2px lightgrey;
     border-radius: 8px;
-    bottom: 50px;
+    bottom: 70px;
     top: 75px;
     left: 20%;
     right: 20%;
     overflow: scroll;
     overflow-x: hidden;
     padding: 1%;
+}
+
+.TagGroupEntry {
+    margin-bottom: 10px;
 }
 
 .autocompleteTags {
