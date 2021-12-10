@@ -21,7 +21,7 @@
                                 <b class="tagFieldTitle">@tg.Name.ToUpper()</b>
                             </HeaderTemplate>
                             <ChildContent>
-                                @if (tg.TagDTOs.Count() <= 8)
+                                @if (tg.TagDTOs.Count() > 8)
                                 {
                                     <RadzenCheckBoxList class="checkBoxList"
                                                         @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
@@ -43,8 +43,9 @@
                                                     Multiple="true" 
                                                     Placeholder="Select..."
                                                     Data=@tg.TagDTOs 
-                                                    TextProperty="Name"
-                                                    ValueProperty="Id" style="width: 100%;"
+                                                    TextProperty="Value"
+                                                    ValueProperty="Id" 
+                                                    style="width: 100%;"
                                                     Change=@ApplyFilter/>
                                 }
                             </ChildContent>
