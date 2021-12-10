@@ -23,7 +23,7 @@
                                 <b class="tagFieldTitle">@tg.Name.ToUpper()</b>
                             </HeaderTemplate>
                             <ChildContent>
-                                @if (tg.TagDTOs.Count() >= 8)
+                                @if (tg.TagDTOs.Count() <= 8)
                                 {
                                     <RadzenCheckBoxList class="checkBoxList"
                                                         @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
@@ -76,13 +76,13 @@
         <div class="col">
             <h1 class="landingPageTitle">Projects</h1>
             <div class="projectList">
-                @if (!_projects.Any())
+                @if (!_allProjects.Any())
                 {
                     <p>Loading projects...</p>
                 }
                 else
                 {
-                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@_projects" TItem="ProjectDTO">
+                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@_visibleProjects" TItem="ProjectDTO">
                         <Template Context="project">
                             <RadzenCard Style="width:300px; margin: 0;">
                                 <a href="index/@project.Id">
@@ -107,7 +107,8 @@
     int _pageSize = 10;
     int _count;
 
-    private IEnumerable<ProjectDTO> _projects = new List<ProjectDTO>();
+    private IEnumerable<ProjectDTO> _allProjects = new List<ProjectDTO>();
+    private IEnumerable<ProjectDTO> _visibleProjects = new List<ProjectDTO>();
     private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new();
 
@@ -121,34 +122,40 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>(); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
-
-        var initialProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project") ?? new List<ProjectDTO>();
-        if (initialProjects.Any())
-        {
-            _count = _projects.Count();
-            _projects = initialProjects.Skip(0).Take(_pageSize);
-        }
-
+        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>();
+        
         _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
         if (_tagGroups.Any())
         {
             foreach (var tg in _tagGroups)
                 _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
         }
+
+        _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project") ?? new List<ProjectDTO>();
+        if (_allProjects.Any())
+        {
+            _count = _allProjects.Count();
+            _visibleProjects = _allProjects.Skip(0).Take(_pageSize).ToList();
+            
+        }
+        
+        await base.OnInitializedAsync();
     }
 
     void UpdateVisibleProjects(PagerEventArgs args)
     {
-        _projects = _projects.Skip(args.Skip).Take(args.Top).ToList();
+        _visibleProjects = _allProjects.Skip(args.Skip).Take(args.Top).ToList();
     }
 
     async Task ApplyFilter()
     {
-        var filteredProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
+        _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
             "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")) + "&" + string.Join("&", _selectedSupervisors.Select(s => $"supervisorIds={s}"))) ?? new List<ProjectDTO>(); //todo hilfen mit filtering ples
-        _count = filteredProjects.Count();
-        _projects = filteredProjects.Skip(0).Take(_pageSize);
+        if (_allProjects.Any())
+        {
+            _count = _allProjects.Count();
+            _visibleProjects =  _allProjects.Skip(0).Take(_pageSize).ToList();
+        }
     }
 
 }

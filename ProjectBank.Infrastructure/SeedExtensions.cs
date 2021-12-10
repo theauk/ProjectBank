@@ -284,7 +284,7 @@ namespace ProjectBank.Infrastructure
 
                 var coqP = new Project
                 {
-                    Name = "Coq Proofer",
+                    Name = "Coq Proof Service",
                     Description = "You will implement a program from scratch in Java using Coq to prove mathematical theorems.",
                     Tags = new HashSet<Tag>() { firstSemester, fall, danishLanguage, javaProLang, discMathSubject, teamComSubject },
                     Supervisors = new HashSet<User>() { sille, josefine }
@@ -301,7 +301,7 @@ namespace ProjectBank.Infrastructure
                 var bachelorP = new Project
                 {
                     Name = "Bachelor Project",
-                    Description = "This is your official bachelor project.",
+                    Description = "This is your official bachelor's project.",
                     Tags = new HashSet<Tag>() { sixthSemester, spring, englishLanguage, bachelorLevel, reflecItSubject },
                     Supervisors = new HashSet<User>() { morten }
                 };
@@ -309,7 +309,7 @@ namespace ProjectBank.Infrastructure
                 var masterP = new Project
                 {
                     Name = "Master Project",
-                    Description = "This master wil discuss the problems associeret with interface and userbility. Aswell as presending a possible solution to the problem. ",
+                    Description = "This project wil discuss the problems associate with interface and usability. As well as presenting a possible solution to the problem. ",
                     Tags = new HashSet<Tag>() { fall, spring, englishLanguage, masterLevel, pythonProLang },
                     Supervisors = new HashSet<User>() { kasper }
                 };
@@ -324,7 +324,7 @@ namespace ProjectBank.Infrastructure
 
                 var EHRP = new Project
                 {
-                    Name = "EHR system ",
+                    Name = "EHR System ",
                     Description = "In this project you aretasked with making an electronic health record for a small clinic with minimal security.",
                     Tags = new HashSet<Tag>() { fifthSemester, fall, englishLanguage, javaProLang, jsProLang, sqlProLang },
                     Supervisors = new HashSet<User>() { carl }
@@ -340,17 +340,17 @@ namespace ProjectBank.Infrastructure
                 
                 var ituAlgorithms = new Project
                 {
-                    Name = "New great algorithm",
-                    Description = "You will have to implement, test and maintain a new great algorithm.",
+                    Name = "Kattis Problems",
+                    Description = "You will have to develop various new Kattis exercises for different programming levels.",
                     Tags = new HashSet<Tag>() { },
-                    Supervisors = new HashSet<User>() { rasmus }
+                    Supervisors = new HashSet<User>() { cecilie }
                 };
                 
                 var ituMoonServers = new Project
                 {
-                    Name = "Moon serves",
-                    Description = "Investigate the potential of servers on the moon.",
-                    Tags = new HashSet<Tag>() { sixthSemester, danishLanguage },
+                    Name = "Space Servers",
+                    Description = "This project focuses on exploring the advantages and possible drawbacks of placing servers on the moon.",
+                    Tags = new HashSet<Tag>() { sixthSemester, englishLanguage },
                     Supervisors = new HashSet<User>() { carl }
                 };
 
