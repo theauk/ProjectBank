@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using ProjectBank.Infrastructure;
 using ProjectBank.Infrastructure.Entities;
@@ -37,7 +39,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 options.DefaultChallengeScheme = "Test";
                 options.DefaultScheme = "Test";
             })
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => {  });
 
             var connection = new SqliteConnection("Filename=:memory:");
 
@@ -96,5 +98,34 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         context.TagGroups.AddRange(semester, topic);
 
         context.SaveChanges();
+    }
+}
+
+public static class WebApplicationFactoryExtensions
+{
+    public static WebApplicationFactory<T> WithAuthentication<T>(this WebApplicationFactory<T> factory, TestClaimsProvider claimsProvider) where T : class
+    {
+        return factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureTestServices(services =>
+            {
+                services.AddAuthentication("Test")
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });
+ 
+                services.AddScoped<TestClaimsProvider>(_ => claimsProvider);
+            });
+        });
+    }
+ 
+    public static HttpClient CreateClientWithTestAuth<T>(this WebApplicationFactory<T> factory, TestClaimsProvider claimsProvider) where T : class
+    {
+        var client = factory.WithAuthentication(claimsProvider).CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false
+        });
+ 
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
+ 
+        return client;
     }
 }
