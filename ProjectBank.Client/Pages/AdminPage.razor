@@ -11,7 +11,7 @@
     }
     else
     {
-        @foreach (var tg in _tagGroups)
+        @foreach (var tg in TagGroups)
         {
             <div class="TagGroupEntry">
                 <RadzenFieldset AllowCollapse="true" Collapsed="true">
@@ -31,12 +31,13 @@
                         <div class="flex-row">
                             <RadzenCheckBox @bind-Value=@tg.RequiredInProject TValue="bool" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Required" />
                             <RadzenCheckBox @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Supervisor can add" />
-                            <RadzenNumeric  @bind-Value=@tg.TagLimit TValue="int" style="width: 50px" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Limit" />
+                            <RadzenNumeric  @bind-Value=@tg.TagLimit TValue="int?" style="width: 50px" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Limit" />
                         </div>
                     </ChildContent>
                 </RadzenFieldset>
             </div>
         }
+        <RadzenButton Text="Add" Icon="plus" ButtonStyle="ButtonStyle.Success" Click=@AddTagGroup />
     }
 </div>
 <div style="position: absolute; bottom: 20px; width: 14%; margin-left: 45%;">
@@ -45,7 +46,8 @@
 </div>
 
 @code {
-    private IEnumerable<TagGroup> _tagGroups = new List<TagGroup>();
+    private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
+    private IEnumerable<TagGroupUpdateDTO> TagGroups { get; set; } = new List<TagGroupUpdateDTO>();
     private bool _loaded;
     
     private Dictionary<int, bool> _edited = new();
@@ -53,11 +55,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _tagGroups = TagGroup.SampleTagGroups;
-        //_tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
+        _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
         // TODO: Make TagGroupUpdateDTO List and use for storing data.
-        
-        foreach (var tg in _tagGroups)
+
+        TagGroups = _tagGroups.Select(tg => tg.ToUpdateDTO());
+        foreach (var tg in TagGroups)
         {
             _edited.Add(tg.Id, false);
             _editingName.Add(tg.Id, false);
@@ -66,21 +68,27 @@
         _loaded = true;
     }
 
-    private void Save()
+    private async void Save()
     {
-        foreach (var tg in _tagGroups)
+        foreach (var tg in TagGroups)
             if (tg.Id == -1)
-                // TODO: Depress TagGroupUpdateDTO to TagGroupCreateDTO and Put.
-                //_http.PostAsJsonAsync("api/TagGroup", tg.toCreateDTO())
-                throw new NotImplementedException();
+                await _http.PostAsJsonAsync("api/TagGroup", tg.Depress());
             else if (_edited[tg.Id])
-                // TODO: Put modified TagGroupUpdateDTO
-                //_http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
-                throw new NotImplementedException();
+                await _http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
+        _nav.NavigateTo("/admin");
     }
 
     private void Cancel()
     {
         _nav.NavigateTo("");
+    }
+
+    private void AddTagGroup()
+    {
+        TagGroups.Append(
+            new TagGroupUpdateDTO()
+            {
+                Id = -1,
+            });
     }
 }
