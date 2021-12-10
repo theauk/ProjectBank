@@ -35,6 +35,7 @@ To run the project in production mode write:
 When the project is up will be the message:
 
 > ``projectbank_db_1       docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp``
+
 > ``projectbank_server_1   dotnet ProjectBank.Server.dll   Up      0.0.0.0:7207->443/tcp, 0.0.0.0:5077->80/tcp``
 
 ---
