@@ -11,6 +11,9 @@ if ($production) {
 
 docker-compose -f $file up -d --build
 Write-Host "DONE."
+Write-Host
+
+docker-compose -f $file ps
 Write-Host "------------------------------------------------------------------------------------"
 Write-Host "TO STOP THE PROJECT WRITE:"
 
