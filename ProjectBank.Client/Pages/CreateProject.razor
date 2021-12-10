@@ -1,46 +1,51 @@
-﻿@page "/create"
+﻿@page "/projectCreation"
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
-
-
-@*
-- Fix enter – I would have to somehow store the ones which needs tag groups multipselector, move the submit out and make the multiple ones outside too
-- Can actually just check for !locked outside and make them there – so seems like quite easy fix
-- Fix the greater than 8 listbox problem...
-- Add required checks. Can do if required make radzenRequiredvalidator ellers ik
-- Need to get the right information together in a createProjectDTO and send that ahead
-- Need to switch to createDTOs generally all around
-*@
 
 <PageTitle>Create Project</PageTitle>
 
 <h1 style="margin-bottom: 48px">Create Project</h1>
 
-<RadzenTemplateForm TItem="ProjectCreateDTO" Data=@_project Submit=@OnSubmit>
+<RadzenTemplateForm TItem="ProjectCreateDTO" Data="@_project" Submit="@OnSubmit" InvalidSubmit="OnInvalidSubmit" id="@_submitFormId">
     <div class="row" style="margin-bottom: 48px">
         <div class="col-md-2 align-right">
-            <RadzenLabel class="formLabelText" Text="Name"/>
+            <RadzenLabel class="formLabelTextCreateProject" Text="Name"/>
         </div>
         <div class="col">
-            <RadzenTextBox style="display: block; width: 40%" Name="ProjectName" @bind-Value=@_project.Name />
+            <RadzenTextBox style="display: block; width: 50%;" Name="ProjectName" @bind-Value="@_project.Name"/>
             <RadzenRequiredValidator Component="ProjectName" Text="Project name is required"/>
         </div>
     </div>
     <div class="row" style="margin-bottom: 48px">
         <div class="col-md-2 align-right">
-            <RadzenLabel class="formLabelText" Text="Description"/>
+            <RadzenLabel class="formLabelTextCreateProject" Text="Description"/>
         </div>
         <div class="col">
-            <RadzenTextArea style="display: block; width: 70%" Name="ProjectDescription" @bind-Value=@_project.Description></RadzenTextArea>
-            <RadzenRequiredValidator Component="ProjectDescription" Text="Description is required" />
+            <RadzenTextArea style="display: block; width: 50%; height: 100px" Name="ProjectDescription" @bind-Value="@_project.Description"></RadzenTextArea>
+            <RadzenRequiredValidator Component="ProjectDescription" Text="Description is required"/>
         </div>
     </div>
-
+    <div class="row supervisors" style="margin-bottom: 48px">
+        <div class="col-md-2">
+            <RadzenLabel class="formLabelTextCreateProject" Text="Co-Supervisors"/>
+        </div>
+        <div class="col">
+            <RadzenListBox class="tagDropDown"
+                @bind-Value="@SelectedSupervisorIds"
+                AllowFiltering="true"
+                Multiple="true"
+                Data="@Supervisors"
+                TextProperty="Name"
+                ValueProperty="Id"/>
+        </div>
+    </div>
+</RadzenTemplateForm>
+<div>
     @if (!TagGroups.Any())
     {
         <div class="row" style="margin-bottom: 48px">
             <div class="col-md-2 align-right">
-                <RadzenLabel class="formLabelText" Text="Loading tags..." />
+                <RadzenLabel class="formLabelTextCreateProject" Text="Loading tags..."/>
             </div>
         </div>
     }
@@ -48,43 +53,64 @@
     {
         <div class="row" style="margin-bottom: 48px">
             <div class="col-md-2 align-right">
-                <RadzenLabel class="formLabelText" Text="Tags"/>
+                <RadzenLabel class="formLabelTextCreateProject" Text="Tags"/>
+                @if (_missingTagsName.Any())
+                {
+                    <div style="color: #f9777f; font-size: 0.85rem; margin-top: 10px">
+                        
+                        <p>Required tags missing:</p>
+
+                        @foreach (var missingTag in _missingTagsName)
+                        {
+                            <p>@missingTag</p>
+
+                        }
+                    </div>
+                }
             </div>
             <div class="col">
                 @foreach (var tg in TagGroups)
                 {
-                    @if (tg.TagDTOs.Any()) 
+                    @if (!tg.SupervisorCanAddTag && tg.TagDTOs.Any())
                     {
-                        <h5 class="tagCheckItem">@tg.Name</h5>
+                        <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         @if (tg.TagDTOs.Count() <= 5)
                         {
-                            <RadzenCheckBoxList style="margin-bottom: 20px" TValue="int">
+                            <RadzenCheckBoxList class="tagCheckItem" style="margin-bottom: 20px" @bind-Value="@SelectedTags[tg.Id]" TValue="int">
                                 <Items>
                                     @foreach (var tag in tg.TagDTOs)
                                     {
-                                        <RadzenCheckBoxListItem Style="min-width: 160px; max-width: 160px" Text=@tag.Value Value=@tag.Id />
+                                        <RadzenCheckBoxListItem Style="min-width: 160px; max-width: 160px" Text=@tag.Value Value=@tag.Id/>
                                     }
                                 </Items>
                             </RadzenCheckBoxList>
                         }
                         else
                         {
-                            @*<RadzenListBox AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" 
-                                                    @bind-Value=@SelectedTags[tg.Id] Data=@tg.Tags TextProperty="Name" ValueProperty="Id" />*@
+                            <RadzenListBox class="tagCheckItem tagDropDown"
+                                Data=@tg.TagDTOs
+                                AllowFiltering="true"
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                Multiple="true"
+                                @bind-Value="@SelectedTags[tg.Id]"
+                                TextProperty="Name"
+                                Change=@(args => Console.WriteLine(args))
+                                ValueProperty="Id">
+                            </RadzenListBox>
                         }
-                    } else if (tg.TagDTOs.Any())
+                    }
+                    else if (tg.SupervisorCanAddTag && tg.TagDTOs.Any())
                     {
-                        
-                        <h5 class="tagCheckItem">@tg.Name</h5>
-                        <Autocomplete class="autocompleteTags" Style="max-width: 40%"
+                        <h5 class="tagCheckItemTitle">@tg.Name</h5>
+                        <Autocomplete class="autocompleteTags tagCheckItem" Style="max-width: 40%"
                                       TItem="TagDTO"
                                       TValue="TagDTO"
                                       Data="tg.TagDTOs"
                                       TextField="@((item) => item.Value)"
                                       ValueField="@((item) => item)"
-                                      Placeholder="Search..."
+                                      Placeholder="Search or press enter to create new..."
                                       Multiple
-                                      FreeTyping  
+                                      FreeTyping
                                       @bind-SelectedValues="_multipleSelectionTagsData[tg.Id]"
                                       @bind-SelectedTexts="_multipleSelectionTagsText[tg.Id]">
                         </Autocomplete>
@@ -92,79 +118,83 @@
                 }
             </div>
         </div>
-        <div class="row supervisors" style="margin-bottom: 48px">
-            <div class="col-md-2">
-                <RadzenLabel class="formLabelText" Text="Supervisors" />
-            </div>
-            <div class="col">
-                <RadzenListBox
-                    @bind-Value=@SupervisorIds
-                    Multiple="true"
-                    Data=@Supervisors 
-                    TextProperty="Name" 
-                    ValueProperty="Id"  />
-            </div>
-        </div>
     }
+</div>
 
-    <RadzenButton class="submitButton" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
-    <RadzenButton class="cancelButton" Click=@Redirect Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
-</RadzenTemplateForm>
+<div class="row lowerSubmitCancelButtons">
+    <div class="col-md-2 align-right"></div>
+    <div class="col">
+        <RadzenButton class="submitButton" form="@_submitFormId" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
+        <RadzenButton class="cancelButton" Click="@Cancel" Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
+    </div>
+</div>
+
 
 @code {
+    private ProjectCreateDTO _project = new();
 
     private IEnumerable<TagGroupDTO> TagGroups { get; set; } = new List<TagGroupDTO>();
+    private Dictionary<int, TagGroupDTO> RequiredTagGroups { get; set; } = new Dictionary<int, TagGroupDTO>();
+
     private IEnumerable<UserDTO> Supervisors { get; set; } = new List<UserDTO>();
-    
+
     private Dictionary<int, IEnumerable<int>> SelectedTags = new();
+    private IEnumerable<int> SelectedSupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
 
-
-    
-    private ISet<int> TagIds => SelectedTags.Aggregate(
-        new HashSet<int>(),
-        (collection, item) => collection.Concat(item.Value).ToHashSet()
-        );
-    
-    private ProjectCreateDTO _project = new();
-    private IEnumerable<int> SupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
-
-    Dictionary<int, List<TagDTO>> _multipleSelectionTagsData = new();
+    Dictionary<int, List<TagDTO>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
     Dictionary<int, List<string>> _multipleSelectionTagsText = new();
+
+    private string _submitFormId = "submitForm";
+    private IEnumerable<string> _missingTagsName = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
-        TagGroups = await _http.GetFromJsonAsync<IEnumerable<TagGroupDTO>>("api/TagGroup");
+        TagGroups = new[] {await _http.GetFromJsonAsync<TagGroupDTO>("api/TagGroup")}; // todo: fix
         
         foreach (var tg in TagGroups)
         {
             _multipleSelectionTagsData[tg.Id] = new List<TagDTO>();
             _multipleSelectionTagsText[tg.Id] = new List<string>();
             SelectedTags.Add(tg.Id, new List<int>());
+            if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
         }
         
-        
+        // TODO: Fetch Supervisors from API.
         // TODO: Automatically add current user to SupervisorIds.
-        string role = "supervisor"; //todo den her skal nok sættes et andet sted? -oli
-        Supervisors = await _http.GetFromJsonAsync<IEnumerable<UserDTO>>($"api/User/{role}");
-        
-        _project.UserIds = new HashSet<int>();
+        //Supervisors = Supervisor.SampleSupervisors;
+        Supervisors = new List<UserDTO>(); // todo: get actual supervisors
 
+        _project.UserIds = new HashSet<int>();
         await base.OnInitializedAsync();
     }
-    
-    private async void OnSubmit()
-    {
-        var response = await _http.PostAsJsonAsync("api/Project", _project);
-        if (response.IsSuccessStatusCode)
-        {
-            Redirect();
-        }
 
+    private IEnumerable<string> CheckRequiredTags()
+    {
+        return (from tg in RequiredTagGroups where !SelectedTags[tg.Key].Any() select tg.Value.Name).ToList();
     }
 
-    void Redirect()
+    void OnInvalidSubmit()
     {
-        _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+        _missingTagsName = CheckRequiredTags();
+    }
+
+    private async void OnSubmit()
+    {
+        _missingTagsName = CheckRequiredTags();
+
+        if (!_missingTagsName.Any())
+        {
+            var response = await _http.PostAsJsonAsync("api/Project", _project);
+            if (response.IsSuccessStatusCode)
+            {
+                _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+            }
+        }
+    }
+
+    void Cancel()
+    {
+        _navigationManager.NavigateTo($"{_navigationManager.BaseUri}supervisorOverview");
     }
 
 }

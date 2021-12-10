@@ -17,9 +17,4 @@ docker-compose -f $file ps
 Write-Host
 Write-Host "------------------------------------------------------------------------------------"
 Write-Host "TO STOP THE PROJECT WRITE:"
-
-if ($production) {
-    Write-Host "docker-compose -f docker-compose.prod.yml stop"
-} else {
-    Write-Host "docker-compose -f docker-compose.dev.yml stop"
-}
+Write-Host "docker-compose -f $file stop"
