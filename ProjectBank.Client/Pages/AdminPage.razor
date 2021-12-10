@@ -6,51 +6,64 @@
 
 <PageTitle>Admin Overview</PageTitle>
 
-<div class="TagGroupContainer">
-    @if (!_loaded)
-    {
-        <p style="text-align: center">Loading...</p>
-    }
-    else
-    {
-        @foreach (var tg in TagGroups)
-        {
-            <div class="TagGroupEntry">
-                <RadzenFieldset AllowCollapse="true" Collapsed="true" style="padding-bottom: 10px">
-                    <HeaderTemplate>
-                            @if (!_editingName[tg.Id])
-                            {
-                                <b style="font-size: 30px" @ondblclick=@(_ => _editingName[tg.Id] = true)>@tg.Name</b>
-                            }
-                            else
-                            {
-                                <RadzenTextBox @bind-Value=@tg.Name Change=@(_ => { _editingName[tg.Id] = false; _edited[tg.Id] = true; }) />
-                            }
-                    </HeaderTemplate>
-                    <ChildContent>
-                        <div class="flex-row">
-                            <RadzenCheckBox @bind-Value=@tg.RequiredInProject TValue="bool" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Required" />
-                            <RadzenCheckBox @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Supervisor can add" />
-                            <RadzenNumeric  @bind-Value=@tg.TagLimit TValue="int?" Placeholder="No limit" Min="1" style="width: 200px" Change=@(_ => _edited[tg.Id] = true) /><RadzenLabel Text="Limit" />
-                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="highlight_off" style="float: right" Click=@(_ => RemoveTagGroup(tg)) />
-                        </div>
-                    </ChildContent>
-                </RadzenFieldset>
-            </div>
-        }
-        @*<RadzenButton Text="Add" Icon="plus" ButtonStyle="ButtonStyle.Success" Click=@AddTagGroup />*@
-    }
-</div>
-<div style="position: absolute; bottom: 20px; width: 14%; margin-left: 45%;">
-        <RadzenButton Text="Save" Icon="save" style="float: left;" Click=@Save />
-        <RadzenButton Text="Cancel" Icon="highlight_off" ButtonStyle="ButtonStyle.Warning" Style="float: right;" Click=@Cancel />
+<div class="adminPageContainer">
+    <div class="adminPageTopBar">
+        <h1 style="margin-bottom: 48px">Manage Tag Groups</h1>
+        <div>
+            <RadzenButton class="submitButton" Text="Save" Icon="save" style="float: left;" Click="@Save"/>
+            <RadzenButton class="cancelButton" Text="Cancel" Icon="highlight_off" ButtonStyle="ButtonStyle.Warning" Style="float: right;" Click="@Cancel"/>
+        </div>
+    </div>
+
+    <div class="row tagGroupContainer" style="margin-bottom: 20px">
+        <div class="col">
+            @if (!_tagGroups.Any())
+            {
+                <p>Loading...</p>
+            }
+            else
+            {
+                <RadzenDataList class="tgCards" WrapItems="true" AllowPaging="true" Data="@_visibleTagGroups" TItem="TagGroupUpdateDTO">
+                    <Template Context="tg">
+                        <RadzenCard class="tgCard">
+                            <RadzenFieldset class="tagGroupFieldSet" AllowCollapse="true" Collapsed="true">
+                                <HeaderTemplate>
+                                    @if (!_editingName[tg.Id])
+                                    {
+                                        <b class="tagFieldTitle" @ondblclick=@(_ => _editingName[tg.Id] = true)>@tg.Name</b>
+                                    }
+                                    else
+                                    {
+                                        <RadzenTextBox @bind-Value=@tg.Name Change=@(_ => { _editingName[tg.Id] = false; _edited[tg.Id] = true; })/>
+                                    }
+                                </HeaderTemplate>
+                                <ChildContent>
+                                    <div class="flex-row">
+                                        <RadzenCheckBox @bind-Value=@tg.RequiredInProject TValue="bool" Change=@(_ => _edited[tg.Id] = true)/><RadzenLabel Text="Required"/>
+                                        <RadzenCheckBox @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ => _edited[tg.Id] = true)/><RadzenLabel Text="Supervisor can add"/>
+                                        <RadzenNumeric @bind-Value=@tg.TagLimit TValue="int?" Placeholder="No limit" Min="1" style="width: 200px" Change=@(_ => _edited[tg.Id] = true)/><RadzenLabel Text="Limit"/>
+                                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="highlight_off" style="float: right" Click=@(_ => RemoveTagGroup(tg))/>
+                                    </div>
+                                </ChildContent>
+                            </RadzenFieldset>
+                        </RadzenCard>
+                    </Template>
+                </RadzenDataList>
+                <RadzenPager class="landingPagePager" ShowPagingSummary="true" PagingSummaryFormat="@PagingSummaryFormat" Count="@_count" PageSize="@PageSize" PageChanged="@UpdateVisibleTgs"/>
+            }
+        </div>
+    </div>
 </div>
 
 @code {
+        private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} tag groups)";
+        private const int PageSize = 3;
+    int _count;
+
     private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
-    private IEnumerable<TagGroupUpdateDTO> TagGroups { get; set; } = new List<TagGroupUpdateDTO>();
-    private bool _loaded;
+    private IEnumerable<TagGroupUpdateDTO> TagGroupsUpdateDtos { get; set; } = new List<TagGroupUpdateDTO>();
     private List<int> _deletedTgs = new();
+    private IEnumerable<TagGroupUpdateDTO> _visibleTagGroups = new List<TagGroupUpdateDTO>();
 
     private Dictionary<int, bool> _edited = new();
     private Dictionary<int, bool> _editingName = new();
@@ -59,21 +72,49 @@
     {
         _edited.Add(-1, true);
         _editingName.Add(-1, true);
-        _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
 
-        TagGroups = _tagGroups.Select(tg => tg.ToUpdateDTO()).ToList();
-        foreach (var tg in TagGroups)
+    //_tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
+
+        var tags = new HashSet<TagDTO>();
+        tags.Add(new TagDTO() {Id = 1, TagGroupId = 1, Value = "SWU"});
+
+        var tg1 = new TagGroupDTO {Id = 1, Name = "Programme", SupervisorCanAddTag = false, RequiredInProject = false, TagDTOs = tags, TagLimit = 1};
+        var tg2 = new TagGroupDTO {Id = 2, Name = "Programme", SupervisorCanAddTag = false, RequiredInProject = false, TagDTOs = tags, TagLimit = 2};
+        var tg3 = new TagGroupDTO {Id = 3, Name = "Programme", SupervisorCanAddTag = true, RequiredInProject = true, TagDTOs = tags, TagLimit = 3};
+        var tg4 = new TagGroupDTO {Id = 4, Name = "Programme", SupervisorCanAddTag = true, RequiredInProject = false, TagDTOs = tags, TagLimit = 4};
+        var tg5 = new TagGroupDTO {Id = 5, Name = "Programme", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 5};
+
+        var tgs = new List<TagGroupDTO>();
+        tgs.Add(tg1);
+        tgs.Add(tg2);
+        tgs.Add(tg3);
+        tgs.Add(tg4);
+        tgs.Add(tg5);
+        _tagGroups = tgs;
+
+
+        TagGroupsUpdateDtos = _tagGroups.Select(tg => tg.ToUpdateDTO()).ToList();
+
+        foreach (var tg in TagGroupsUpdateDtos)
         {
             _edited.Add(tg.Id, false);
             _editingName.Add(tg.Id, false);
         }
 
-        _loaded = true;
+        _count = TagGroupsUpdateDtos.Count();
+        _visibleTagGroups = TagGroupsUpdateDtos.Skip(0).Take(PageSize).ToList();
+
+        await base.OnInitializedAsync();
+    }
+
+    void UpdateVisibleTgs(PagerEventArgs args)
+    {
+        _visibleTagGroups = TagGroupsUpdateDtos.Skip(args.Skip).Take(args.Top).ToList();
     }
 
     private async void Save()
     {
-        foreach (var tg in TagGroups)
+        foreach (var tg in TagGroupsUpdateDtos)
             if (tg.Id == -1)
                 await _http.PostAsJsonAsync("api/TagGroup", tg.Depress());
             else if (_edited[tg.Id])
@@ -81,29 +122,21 @@
 
         foreach (var id in _deletedTgs)
             await _http.DeleteAsync($"api/TagGroup/{id}");
-        
+
         _nav.NavigateTo(_nav.Uri, forceLoad: true);
     }
 
     private void Cancel()
     {
-        _nav.NavigateTo("");
-    }
-
-    private void AddTagGroup()
-    {
-        TagGroups.Append(
-            new TagGroupUpdateDTO()
-            {
-                Id = -1,
-            });
+        _nav.NavigateTo($"{_nav.BaseUri}/index");
     }
 
     private void RemoveTagGroup(TagGroupUpdateDTO tg)
     {
         _deletedTgs.Add(tg.Id);
-        // Can't remove directly from an IEnumerable, apparently.
-        TagGroups = TagGroups.Where(t => t.Id != tg.Id).ToList();
-        Console.WriteLine(string.Join(", ", _deletedTgs.Select(id => id.ToString())));
+        TagGroupsUpdateDtos = TagGroupsUpdateDtos.Where(t => t.Id != tg.Id).ToList();
+        _visibleTagGroups = TagGroupsUpdateDtos;
+        _count = TagGroupsUpdateDtos.Count();
     }
+
 }

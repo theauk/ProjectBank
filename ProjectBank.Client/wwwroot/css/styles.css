@@ -33,12 +33,7 @@
     padding: 7px 0 7px;
 }
 
-.tagFieldSet {
-    border: none !important;
-    overflow-wrap: break-word;
-}
-
-.projectCardsFlex > .rz-g {
+.projectCards > .rz-g {
     gap: 25px;
 }
 
@@ -60,8 +55,6 @@
 .landingPagePager {
     margin-top: 25px;
 }
-
-/* Project Page */
 
 /* Project Creation */
 
@@ -87,22 +80,17 @@
 
 /* Admin Page */
 
-.TagGroupContainer, .CreateProjectContainer {
-    position: absolute;
-    margin: auto;
-    border: solid 2px lightgrey;
-    border-radius: 8px;
-    bottom: 70px;
-    top: 75px;
-    left: 20%;
-    right: 20%;
-    overflow: scroll;
-    overflow-x: hidden;
-    padding: 1%;
+.adminPageContainer {
+    width: 70%;
 }
 
-.TagGroupEntry {
-    padding-bottom: 10px;
+.tgCard {
+    width: 100%;
+}
+
+.adminPageTopBar {
+    display: flex;
+    justify-content: space-between;
 }
 
 /* Create Tag Group */
@@ -142,4 +130,9 @@
 .form-control {
     width: 100% !important;
     max-width: none !important;
+}
+
+.tagFieldSet, .tagGroupFieldSet {
+    border: none !important;
+    overflow-wrap: break-word;
 }

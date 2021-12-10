@@ -82,7 +82,7 @@
                 }
                 else
                 {
-                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@_visibleProjects" TItem="ProjectDTO">
+                    <RadzenDataList WrapItems="true" AllowPaging="true" Data="@_visibleProjects" TItem="ProjectDTO">
                         <Template Context="project">
                             <RadzenCard Style="width:300px; margin: 0;">
                                 <a href="index/@project.Id">
