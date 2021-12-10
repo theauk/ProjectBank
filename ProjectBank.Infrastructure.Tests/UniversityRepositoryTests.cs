@@ -54,9 +54,9 @@ namespace ProjectBank.Infrastructure.Tests
             var secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
 
             // Universities
-            //var itu = new University { Id = 1, DomainName = "itu", Users = new HashSet<User>(){ marco, birgit }, Projects =  };
-            //var dtu = new University { Id = 2, DomainName = "dtu" };
-            //var sdu = new University { Id = 3, DomainName = "sdu" };
+            // var itu = new University { DomainName = "itu", Users = new HashSet<User>(){ marco, birgit }};
+            // var dtu = new University { DomainName = "dtu" };
+            // var sdu = new University { DomainName = "sdu" };
             // -------------------
 
 

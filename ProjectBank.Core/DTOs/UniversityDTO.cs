@@ -2,8 +2,6 @@ namespace ProjectBank.Core.DTOs
 {
     public record UniversityDTO
     {
-        public int Id { get; init; }
-
         [Required] 
         public string DomainName { get; init; }
         

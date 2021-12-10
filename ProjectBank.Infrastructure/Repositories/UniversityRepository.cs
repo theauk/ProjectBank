@@ -20,14 +20,14 @@ namespace ProjectBank.Infrastructure.Repositories
             return Response.Created;
         }
 
-        public async Task<Response> UpdateAsync(int universityId, UniversityUpdateDTO university)
+        public async Task<Response> UpdateAsync(string universityDomain, UniversityUpdateDTO university)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Response> DeleteAsync(int universityId)
+        public async Task<Response> DeleteAsync(string universityDomain)
         {
-            var entity = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            var entity = await _context.Universities.FirstOrDefaultAsync(u => u.DomainName == universityDomain);
 
             if (entity == null)
             {
@@ -40,13 +40,12 @@ namespace ProjectBank.Infrastructure.Repositories
             return Response.Deleted;
         }
 
-        public async Task<Option<UniversityDTO?>> ReadAsync(int universityId)
+        public async Task<Option<UniversityDTO?>> ReadAsync(string universityDomain)
         {
-            var entity = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            var entity = await _context.Universities.FirstOrDefaultAsync(u => u.DomainName == universityDomain);
 
             return entity == null ? null  : new UniversityDTO 
             {
-                Id = entity.Id,
                 DomainName = entity.DomainName,
                 Users = entity.Users.Select(u => new UserDTO{ Id = u.Id, Name = u.Name}).ToHashSet(),
                 Projects = entity.Projects.Select(p => new ProjectDTO

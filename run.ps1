@@ -1,6 +1,7 @@
 param([bool]$production)
 
-Write-Host "STARTING PROJECTBANK VIA DOCKER-COMPOSE IN PRODUCTION MODE = $production"
+Write-Host "STARTING PROJECTBANK VIA DOCKER-COMPOSE"
+Write-Host "PRODUCTION MODE = $production"
 Write-Host
 $file = "docker-compose.dev.yml"
 
