@@ -12,4 +12,10 @@ if ($production) {
 docker-compose -f $file up -d
 Write-Host "DONE."
 Write-Host "------------------------------------------------------------------------------------"
-Write-Host "TO STOP THE PROJECT WRITE: docker-compose stop"
+Write-Host "TO STOP THE PROJECT WRITE:"
+
+if ($production) {
+    Write-Host "docker-compose -f docker-compose.prod.yml stop"
+} else {
+    Write-Host "docker-compose -f docker-compose.dev.yml stop"
+}
