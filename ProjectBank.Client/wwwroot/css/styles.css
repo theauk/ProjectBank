@@ -101,6 +101,10 @@
     padding: 1%;
 }
 
+.TagGroupEntry {
+    padding-bottom: 10px;
+}
+
 /* Create Tag Group */
 
 .formLabelText {
