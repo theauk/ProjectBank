@@ -1,7 +1,3 @@
-using ProjectBank.Infrastructure;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-
 namespace ProjectBank.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
@@ -13,19 +9,37 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(Response, UserDTO)> CreateAsync(UserCreateDTO user)
+        public async Task<Response> CreateAsync(UserCreateDTO user)
         {
-            throw new NotImplementedException();
+            var entity = new User { Name = user.Name };
+
+            _context.Users.Add(entity);
+
+            await _context.SaveChangesAsync();
+
+            return Response.Created;
         }
 
-        public async Task<(Response, IReadOnlyCollection<UserDTO>)> ReadAllAsync()
+        public async Task<IReadOnlyCollection<UserDTO>> ReadAllAsync()
         {
-            throw new NotImplementedException();
+            var users = (await _context.Users.Select(u => new UserDTO
+            {
+                Id = u.Id,
+                Name = u.Name
+            }).ToListAsync()).AsReadOnly();
+
+            return users;
         }
 
-        public async Task<(Response, UserDTO)> ReadAsync(int userId)
+        public async Task<Option<UserDTO?>> ReadAsync(int userId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            return entity == null ? null : new UserDTO
+            {
+                Id = entity.Id,
+                Name = entity.Name
+            };
         }
     }
 }

@@ -1,4 +1,10 @@
-﻿/* Project Overview */
+﻿:root {
+    --submitButton: #3c5ebe;
+    --cancelButton: #acb2b9;
+    --tagBadgeColor: #7474ad;
+}
+
+/* Project Overview */
 
 .ProjectContainer {
     margin-right: 15%;
@@ -63,13 +69,8 @@
 
 /* Project Creation */
 
-.ProjectTitle {
-    width: 100%;
-}
-
-.CreateTagContainer {
-    margin: auto;
-    width: 70%;
+.tagCheckItem {
+    text-decoration: underline;
 }
 
 /* Admin Page */
@@ -86,4 +87,32 @@
     overflow: scroll;
     overflow-x: hidden;
     padding: 1%;
+}
+
+.autocompleteTags {
+    background-color: white;
+    font-size: 18px;
+}
+
+.badge.badge-primary.ml-2, .rz-chkbox-box.rz-state-active {
+    background-color: var(--tagBadgeColor);
+}
+
+.rz-spinner-button-icon.rzi.rzi-caret-up, .rz-spinner-button-icon.rzi.rzi-caret-down {
+    background-color: #b1b4b6;
+}
+
+/* General */
+
+.formLabelText {
+    font-weight: bold;
+}
+
+.submitButton {
+    background-color: var(--submitButton) !important;
+    margin-right: 20px;
+}
+
+.cancelButton {
+    background-color: var(--cancelButton) !important;
 }

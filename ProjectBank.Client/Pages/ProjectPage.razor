@@ -1,5 +1,5 @@
 ﻿@page "/index/{Id:int}"
-
+@inject HttpClient _http
 <PageTitle>Project Page</PageTitle>
 
 @if (Id != -1)
@@ -21,7 +21,7 @@
         </div>
         <div>
             <h2>Tags</h2>
-            <p>@project.TagString()</p>
+            <p>@string.Join(", ", project.Tags.Select((t => t.Value)))</p>
         </div>
     }
 }
@@ -33,13 +33,13 @@ else
 @code {
     [Parameter]
     public int Id { get; set; }
-    private Project? project = null;
-
-    protected override void OnParametersSet()
+    private ProjectDTO? project = null;
+    
+    protected override async void OnParametersSet()
     {
         try
         {
-            project = Project.GetProject(Id);
+            project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
         }
         catch
         {

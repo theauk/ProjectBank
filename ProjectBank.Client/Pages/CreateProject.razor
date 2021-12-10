@@ -1,88 +1,170 @@
 ﻿@page "/create"
-@inject HttpClient Http
+@inject HttpClient _http
+@inject NavigationManager _navigationManager
 
-<PageTitle>Create Project Page</PageTitle>
 
-<div class="CreateProjectContainer">
-    <h3 style="text-align: center">Title</h3>
-    <RadzenTextBox class="ProjectTitle" Change=@(args => Name = args) />
-    <h3 style="text-align: center">Description</h3>
-    <RadzenTextArea class="ProjectTitle" Change=@(args => Description = args) />
-    @if (TagGroups.Count() == 0)
+@*
+- Fix enter – I would have to somehow store the ones which needs tag groups multipselector, move the submit out and make the multiple ones outside too
+- Can actually just check for !locked outside and make them there – so seems like quite easy fix
+- Fix the greater than 8 listbox problem...
+- Add required checks. Can do if required make radzenRequiredvalidator ellers ik
+- Need to get the right information together in a createProjectDTO and send that ahead
+- Need to switch to createDTOs generally all around
+*@
+
+<PageTitle>Create Project</PageTitle>
+
+<h1 style="margin-bottom: 48px">Create Project</h1>
+
+<RadzenTemplateForm TItem="ProjectCreateDTO" Data=@_project Submit=@OnSubmit>
+    <div class="row" style="margin-bottom: 48px">
+        <div class="col-md-2 align-right">
+            <RadzenLabel class="formLabelText" Text="Name"/>
+        </div>
+        <div class="col">
+            <RadzenTextBox style="display: block; width: 40%" Name="ProjectName" @bind-Value=@_project.Name />
+            <RadzenRequiredValidator Component="ProjectName" Text="Project name is required"/>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 48px">
+        <div class="col-md-2 align-right">
+            <RadzenLabel class="formLabelText" Text="Description"/>
+        </div>
+        <div class="col">
+            <RadzenTextArea style="display: block; width: 70%" Name="ProjectDescription" @bind-Value=@_project.Description></RadzenTextArea>
+            <RadzenRequiredValidator Component="ProjectDescription" Text="Description is required" />
+        </div>
+    </div>
+
+    @if (!TagGroups.Any())
     {
-        <h3 style="text-align: center">Loading tags...</h3>
+        <div class="row" style="margin-bottom: 48px">
+            <div class="col-md-2 align-right">
+                <RadzenLabel class="formLabelText" Text="Loading tags..." />
+            </div>
+        </div>
     }
     else
     {
-        foreach (var tg in TagGroups)
-        {
-            <div class="CreateTagContainer">
-                <h4 style="text-align: center">@tg.Name</h4>
-                @if (tg.Tags.Count() <= 8)
+        <div class="row" style="margin-bottom: 48px">
+            <div class="col-md-2 align-right">
+                <RadzenLabel class="formLabelText" Text="Tags"/>
+            </div>
+            <div class="col">
+                @foreach (var tg in TagGroups)
                 {
-                    <RadzenCheckBoxList @bind-Value=@SelectedTags[tg.Id] TValue="int">
-                        <Items>
-                            @foreach (var tag in tg.Tags)
-                            {
-                                <RadzenCheckBoxListItem Text=@tag.Name Value=@tag.Id />
-                            }
-                        </Items>
-                    </RadzenCheckBoxList>
-                }
-                else
-                {
-                    <RadzenListBox AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true"
-                        @bind-Value=@SelectedTags[tg.Id] Data=@tg.Tags TextProperty="Name" ValueProperty="Id" style="height: 200px; width: 30%; margin-right: 35%; margin-left: 35%;"/>
+                    @if (tg.TagDTOs.Any()) 
+                    {
+                        <h5 class="tagCheckItem">@tg.Name</h5>
+                        @if (tg.TagDTOs.Count() <= 5)
+                        {
+                            <RadzenCheckBoxList style="margin-bottom: 20px" TValue="int">
+                                <Items>
+                                    @foreach (var tag in tg.TagDTOs)
+                                    {
+                                        <RadzenCheckBoxListItem Style="min-width: 160px; max-width: 160px" Text=@tag.Value Value=@tag.Id />
+                                    }
+                                </Items>
+                            </RadzenCheckBoxList>
+                        }
+                        else
+                        {
+                            @*<RadzenListBox AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" 
+                                                    @bind-Value=@SelectedTags[tg.Id] Data=@tg.Tags TextProperty="Name" ValueProperty="Id" />*@
+                        }
+                    } else if (tg.TagDTOs.Any())
+                    {
+                        
+                        <h5 class="tagCheckItem">@tg.Name</h5>
+                        <Autocomplete class="autocompleteTags" Style="max-width: 40%"
+                                      TItem="TagDTO"
+                                      TValue="TagDTO"
+                                      Data="tg.TagDTOs"
+                                      TextField="@((item) => item.Value)"
+                                      ValueField="@((item) => item)"
+                                      Placeholder="Search..."
+                                      Multiple
+                                      FreeTyping  
+                                      @bind-SelectedValues="_multipleSelectionTagsData[tg.Id]"
+                                      @bind-SelectedTexts="_multipleSelectionTagsText[tg.Id]">
+                        </Autocomplete>
+                    }
                 }
             </div>
-        }
-        <h4 style="text-align: center">Supervisors</h4>
-        <RadzenListBox AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true"
-            @bind-Value=@SupervisorIds Data=@Supervisors TextProperty="Name" ValueProperty="Id" Style="height: 200px;width: 30%; margin-left:35%; margin-right: 35%;"/>
+        </div>
+        <div class="row supervisors" style="margin-bottom: 48px">
+            <div class="col-md-2">
+                <RadzenLabel class="formLabelText" Text="Supervisors" />
+            </div>
+            <div class="col">
+                <RadzenListBox
+                    @bind-Value=@SupervisorIds
+                    Multiple="true"
+                    Data=@Supervisors 
+                    TextProperty="Name" 
+                    ValueProperty="Id"  />
+            </div>
+        </div>
     }
-    <RadzenButton Click=@Submit Text="Publish" Icon="check_circle" ButtonStyle="ButtonStyle.Success" />
-    </div>
+
+    <RadzenButton class="submitButton" ButtonType="Radzen.ButtonType.Submit" Text="Submit"></RadzenButton>
+    <RadzenButton class="cancelButton" Click=@Redirect Text="Cancel" ButtonStyle="ButtonStyle.Light"/>
+</RadzenTemplateForm>
 
 @code {
-    private IEnumerable<TagGroup> TagGroups { get; set; } = new List<TagGroup>();
-    private IEnumerable<Supervisor> Supervisors { get; set; } = new List<Supervisor>();
-    private Dictionary<int, IEnumerable<int>> SelectedTags = new();
 
-    private string Name { get; set; } = "";
-    private string Description { get; set; } = "";
+    private IEnumerable<TagGroupDTO> TagGroups { get; set; } = new List<TagGroupDTO>();
+    private IEnumerable<UserDTO> Supervisors { get; set; } = new List<UserDTO>();
+    
+    private Dictionary<int, IEnumerable<int>> SelectedTags = new();
+    
     private ISet<int> TagIds => SelectedTags.Aggregate(
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
-    );
-    private IEnumerable<int> SupervisorIds { get; set; }
+        );
+    
+    private ProjectCreateDTO _project = new();
+    private IEnumerable<int> SupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
+
+    Dictionary<int, List<TagDTO>> _multipleSelectionTagsData = new();
+    Dictionary<int, List<string>> _multipleSelectionTagsText = new();
 
     protected override async Task OnInitializedAsync()
     {
+        
         // TODO: Fetch TagGroups from API.
-        //TagGroups = await Http.GetFromJsonAsync<TagGroupDTO>("api/Project");
-        TagGroups = TagGroup.SampleTagGroups;
-
+        TagGroups = await _http.GetFromJsonAsync<IEnumerable<TagGroupDTO>>("api/TagGroup");
+        
         foreach (var tg in TagGroups)
-            SelectedTags.Add(tg.Id, new List<int>());
-
-        // TODO: Fetch Supervisors from API.
-        Supervisors = Supervisor.SampleSupervisors;
-        // TODO: Automatically add current user to SupervisorIds.
-    }
-
-    private async void Submit()
-    {
-        ProjectCreateDTO project = new()
         {
-            Name = Name,
-            Description = Description,
-            TagIds = TagIds,
-            UserIds = SupervisorIds.ToHashSet(),
-        };
+            _multipleSelectionTagsData[tg.Id] = new List<TagDTO>();
+            _multipleSelectionTagsText[tg.Id] = new List<string>();
+            SelectedTags.Add(tg.Id, new List<int>());
+        }
+        
+        
+    // TODO: Fetch Supervisors from API.
+        // TODO: Automatically add current user to SupervisorIds.
+        Supervisors = await _http.GetFromJsonAsync<IEnumerable<UserDTO>>("api/User/Supervisor");
+        
+        _project.UserIds = new HashSet<int>();
 
-        await Http.PostAsJsonAsync("api/Project", project);
-        // TODO: Redirect user to new Project Page.
+        await base.OnInitializedAsync();
+    }
+    
+    private async void OnSubmit()
+    {
+        var response = await _http.PostAsJsonAsync("api/Project", _project);
+        if (response.IsSuccessStatusCode)
+        {
+            Redirect();
+        }
+
     }
 
-    // TODO: Limit amount of tags chosen, accoring to TagGroup MaxCount.
+    void Redirect()
+    {
+        _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+    }
+
 }
