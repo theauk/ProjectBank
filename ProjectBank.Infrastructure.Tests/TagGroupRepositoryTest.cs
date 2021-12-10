@@ -99,7 +99,7 @@ public class TagGroupRepositoryTest : IDisposable
     }
 
     [Fact]
-    public async Task ReadAsync_on_nonexistant_id_throws_InvalidOperationException()
+    public async Task ReadAsync_on_nonexistant_id_returns_null()
     {
         var actual = await _repository.ReadAsync(56);
         Assert.Null(actual.Value);
