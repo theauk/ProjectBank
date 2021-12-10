@@ -8,6 +8,7 @@
 **/.toolstarget
 **/.vs
 **/.vscode
+**/scripts
 **/.idea
 **/*.*proj.user
 **/*.dbmdl
@@ -23,3 +24,4 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 README.md
+run.ps1

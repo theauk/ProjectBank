@@ -15,7 +15,8 @@ namespace ProjectBank.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<University>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasKey(e => e.DomainName);
+                e.HasIndex(e => e.DomainName)
                 .IsUnique();
             });
 
