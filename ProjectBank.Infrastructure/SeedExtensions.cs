@@ -337,6 +337,22 @@ namespace ProjectBank.Infrastructure
                     Tags = new HashSet<Tag>() { cSharpProLang, sixthSemester, mDigiProgramme, danishLanguage },
                     Supervisors = new HashSet<User>() { rasmus }
                 };
+                
+                var ituAlgorithms = new Project
+                {
+                    Name = "New great algorithm",
+                    Description = "You will have to implement, test and maintain a new great algorithm.",
+                    Tags = new HashSet<Tag>() { },
+                    Supervisors = new HashSet<User>() { rasmus }
+                };
+                
+                var ituMoonServers = new Project
+                {
+                    Name = "Moon serves",
+                    Description = "Investigate the potential of servers on the moon.",
+                    Tags = new HashSet<Tag>() { sixthSemester, danishLanguage },
+                    Supervisors = new HashSet<User>() { carl }
+                };
 
                 var projectsSet = new HashSet<Project>()
                 {
@@ -349,7 +365,9 @@ namespace ProjectBank.Infrastructure
                     masterP,
                     eyeP,
                     EHRP,
-                    ituWebSiteP
+                    ituWebSiteP,
+                    ituAlgorithms,
+                    ituMoonServers
                 };
 
                 // UNIVERSITIES

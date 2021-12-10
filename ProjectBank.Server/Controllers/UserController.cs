@@ -20,7 +20,7 @@ public class UserController : ControllerBase
     }
     
     [AllowAnonymous]
-    [HttpGet("{id}")]
+    [HttpGet("id/{id}")]
     public async Task<ActionResult<UserDTO>> Get(int id)
     {
         throw new NotImplementedException();
@@ -36,7 +36,7 @@ public class UserController : ControllerBase
     // } 
     
     [AllowAnonymous]
-    [HttpGet("{role}")]
+    [HttpGet("roles/{role}")]
     public async Task<IReadOnlyCollection<UserDTO>> Get(string role = "all")
     {
         if (role == "all")

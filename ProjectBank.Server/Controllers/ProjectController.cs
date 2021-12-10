@@ -33,6 +33,15 @@ public class ProjectController : ControllerBase
         var response = await _repository.CreateAsync(project);
         return response.ToActionResult();
     }
+    
+    [Authorize]
+    [HttpGet]
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get() 
+    {
+        var projects = await _repository.ReadAllAsync();
+        if (projects.IsNullOrEmpty()) return new List<ProjectDTO>();
+        return projects;
+    }
 
     [Authorize]
     [HttpGet("{tagIds}/{supervisorIds}")]

@@ -40,26 +40,32 @@
                                     <RadzenDropDown AllowFiltering="true"
                                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                                     @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
-                                                    Multiple="true" Placeholder="Select..."
-                                                    Data=@tg.TagDTOs TextProperty="Name"
+                                                    Multiple="true" 
+                                                    Placeholder="Select..."
+                                                    Data=@tg.TagDTOs 
+                                                    TextProperty="Name"
                                                     ValueProperty="Id" style="width: 100%;"
                                                     Change=@ApplyFilter/>
                                 }
                             </ChildContent>
                         </RadzenFieldset>
-                        <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
-                            <HeaderTemplate>
-                                <span style="vertical-align: middle">
-                                    <b class="TagFieldTitle">Supervisors</b>
-                                </span>
-                            </HeaderTemplate>
-                            <ChildContent>
-                                <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                                @bind-Value=@SelectedSupervisors Multiple="true" Placeholder="Select..."
-                                                Data=@_supervisors TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
-                            </ChildContent>
-                        </RadzenFieldset>
                     }
+                    <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
+                        <HeaderTemplate>
+                            <b class="tagFieldTitle">Supervisors</b>
+                        </HeaderTemplate>
+                        <ChildContent>
+                            <RadzenDropDown AllowFiltering="true" 
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            @bind-Value=@_selectedSupervisors 
+                                            Multiple="true" Placeholder="Select..."
+                                            Data=@_supervisors 
+                                            TextProperty="Name" 
+                                            ValueProperty="Id" 
+                                            style="width: 100%;" 
+                                            Change=@ApplyFilter />
+                        </ChildContent>
+                    </RadzenFieldset>
                 }
             </div>
 
@@ -108,26 +114,33 @@
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
         );
-    
+
     private IEnumerable<UserDTO> _supervisors = new List<UserDTO>();
-    private IEnumerable<int> SelectedSupervisors = new List<int>(); //todo sæt den her i html
+    private IEnumerable<int> _selectedSupervisors = new List<int>(); //todo sæt den her i html
 
     protected override async Task OnInitializedAsync()
     {
-        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>($"api/User/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
-        var initialProjects = await _http.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/Project");
-        _projects = initialProjects != null ? initialProjects.Skip(0).Take(_pageSize).ToList() : new List<ProjectDTO>();
+        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
+        Console.WriteLine("sup: " + _supervisors.Count());
+        
+        var initialProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project");
+        Console.WriteLine("proj: " + initialProjects.Count());
+        _projects = initialProjects.Skip(0).Take(_pageSize);
         _count = _projects.Count();
+        Console.WriteLine("_count: " + _projects.Count());
+        
+        _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
+        Console.WriteLine("_tg: " + _tagGroups.Count());
 
     // Create a set of empty "selected" ids for each tag group.
         foreach (var tg in _tagGroups)
             _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
     }
 
-    async Task<IEnumerable<ProjectDTO>> GetProjects(PagerEventArgs args)
+    async Task<List<ProjectDTO>> GetProjects(PagerEventArgs args)
     {
-        var test = await _http.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/Project");
-        return test != null ? test.Skip(args.Skip).Take(args.Top).ToList() : new List<ProjectDTO>();
+        _projects = await _http.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/Project");
+        return _projects != null ? _projects.Skip(args.Skip).Take(args.Top).ToList() : new List<ProjectDTO>();
     }
 
     async Task ApplyFilter()
@@ -135,7 +148,7 @@
     // todo: call API to get projects based on edited filters – skal vi vente til de trykker på en apply knap???
         Console.WriteLine("Current tags: " + String.Join(", ", SelectedTags));
         _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")) + "&"+ string.Join("&", SelectedSupervisors.Select(s => $"supervisorIds={s}"))); //todo hilfen mit filtering ples
+            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")) + "&" + string.Join("&", _selectedSupervisors.Select(s => $"supervisorIds={s}"))); //todo hilfen mit filtering ples
     }
 
 }

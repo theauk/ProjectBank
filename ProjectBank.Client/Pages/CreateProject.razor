@@ -94,7 +94,6 @@
                                 Multiple="true"
                                 @bind-Value="@SelectedTags[tg.Id]"
                                 TextProperty="Name"
-                                Change=@(args => Console.WriteLine(args))
                                 ValueProperty="Id">
                             </RadzenListBox>
                         }
@@ -149,7 +148,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        TagGroups = new[] {await _http.GetFromJsonAsync<TagGroupDTO>("api/TagGroup")}; // todo: fix
+        TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
         
         foreach (var tg in TagGroups)
         {
@@ -162,7 +161,7 @@
         // TODO: Fetch Supervisors from API.
         // TODO: Automatically add current user to SupervisorIds.
         //Supervisors = Supervisor.SampleSupervisors;
-        Supervisors = new List<UserDTO>(); // todo: get actual supervisors
+        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
 
         _project.UserIds = new HashSet<int>();
         await base.OnInitializedAsync();
