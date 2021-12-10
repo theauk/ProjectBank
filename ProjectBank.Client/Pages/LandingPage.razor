@@ -23,7 +23,7 @@
                                 <b class="tagFieldTitle">@tg.Name.ToUpper()</b>
                             </HeaderTemplate>
                             <ChildContent>
-                                @if (tg.TagDTOs.Count() > 8)
+                                @if (tg.TagDTOs.Count() >= 8)
                                 {
                                     <RadzenCheckBoxList class="checkBoxList"
                                                         @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
