@@ -5,10 +5,10 @@ namespace ProjectBank.Infrastructure.Entities
         [Required]
         public string DomainName { get; set; }
 
-        public ISet<User> Users { get; set; } = new HashSet<User>();
+        public ICollection<User> Users { get; set; } = new HashSet<User>();
 
-        public ISet<Project> Projects { get; set; } = new HashSet<Project>();
+        public ICollection<Project> Projects { get; set; } = new HashSet<Project>();
 
-        public ISet<TagGroup> TagGroups { get; set; } = new HashSet<TagGroup>();
+        public ICollection<TagGroup> TagGroups { get; set; } = new HashSet<TagGroup>();
     }
 }

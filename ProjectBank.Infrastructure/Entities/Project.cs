@@ -12,10 +12,7 @@ namespace ProjectBank.Infrastructure.Entities
         [StringLength(400)]
         public string Description { get; set; }
 
-        [Required]
-        public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
-
-        [Required]
-        public ISet<User> Supervisors { get; set; } = new HashSet<User>();
+        public ICollection<Tag> Tags { get; set; } = new HashSet<Tag>();
+        public ICollection<User> Supervisors { get; set; } = new HashSet<User>();
     }
 }

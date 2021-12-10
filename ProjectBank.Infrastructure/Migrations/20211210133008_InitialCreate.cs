@@ -69,22 +69,17 @@ namespace ProjectBank.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    ProjectId = table.Column<int>(type: "integer", nullable: true),
-                    UniversityDomainName = table.Column<string>(type: "text", nullable: true)
+                    UniversityDomainName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Users_Universities_UniversityDomainName",
                         column: x => x.UniversityDomainName,
                         principalTable: "Universities",
-                        principalColumn: "DomainName");
+                        principalColumn: "DomainName",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,22 +89,65 @@ namespace ProjectBank.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Value = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    ProjectId = table.Column<int>(type: "integer", nullable: true),
-                    TagGroupId = table.Column<int>(type: "integer", nullable: true)
+                    TagGroupId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tags_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Tags_TagGroups_TagGroupId",
                         column: x => x.TagGroupId,
                         principalTable: "TagGroups",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectUser",
+                columns: table => new
+                {
+                    ProjectsId = table.Column<int>(type: "integer", nullable: false),
+                    SupervisorsId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectUser", x => new { x.ProjectsId, x.SupervisorsId });
+                    table.ForeignKey(
+                        name: "FK_ProjectUser_Projects_ProjectsId",
+                        column: x => x.ProjectsId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectUser_Users_SupervisorsId",
+                        column: x => x.SupervisorsId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectTag",
+                columns: table => new
+                {
+                    ProjectsId = table.Column<int>(type: "integer", nullable: false),
+                    TagsId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectTag", x => new { x.ProjectsId, x.TagsId });
+                    table.ForeignKey(
+                        name: "FK_ProjectTag_Projects_ProjectsId",
+                        column: x => x.ProjectsId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectTag_Tags_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -122,6 +160,16 @@ namespace ProjectBank.Infrastructure.Migrations
                 name: "IX_Projects_UniversityDomainName",
                 table: "Projects",
                 column: "UniversityDomainName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectTag_TagsId",
+                table: "ProjectTag",
+                column: "TagsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectUser_SupervisorsId",
+                table: "ProjectUser",
+                column: "SupervisorsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TagGroups_Id",
@@ -139,11 +187,6 @@ namespace ProjectBank.Infrastructure.Migrations
                 table: "Tags",
                 column: "Id",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_ProjectId",
-                table: "Tags",
-                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tags_TagGroupId",
@@ -169,11 +212,6 @@ namespace ProjectBank.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_ProjectId",
-                table: "Users",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_UniversityDomainName",
                 table: "Users",
                 column: "UniversityDomainName");
@@ -182,16 +220,22 @@ namespace ProjectBank.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ProjectTag");
+
+            migrationBuilder.DropTable(
+                name: "ProjectUser");
+
+            migrationBuilder.DropTable(
                 name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
                 name: "TagGroups");
-
-            migrationBuilder.DropTable(
-                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "Universities");
