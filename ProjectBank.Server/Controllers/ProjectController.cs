@@ -35,7 +35,7 @@ public class ProjectController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("{tagIds}{supervisorIds}")]
+    [HttpGet("{tagIds}/{supervisorIds}")]
     public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IEnumerable<int> tagIds, [FromQuery] IEnumerable<int> supervisorIds) //Todo Spørgsmål - hvad gør FromQuery?
     {
         IReadOnlyCollection<ProjectDTO> resp;

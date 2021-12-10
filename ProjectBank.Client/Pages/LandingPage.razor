@@ -69,7 +69,18 @@
                         </ChildContent>
                     </RadzenFieldset>
                 }
-                <p>Selected tag IDs: @string.Join(", ", SelectedTags)</p>
+                <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
+                    <HeaderTemplate>
+                        <span style="vertical-align: middle">
+                            <b class="TagFieldTitle">Supervisors</b>
+                        </span>
+                    </HeaderTemplate>
+                    <ChildContent>
+                    <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    @bind-Value=@SelectedSupervisors Multiple="true" Placeholder="Select..."
+                                    Data=@_supervisors TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
+                    </ChildContent>
+                </RadzenFieldset>
             }
         </div>
     </div>
@@ -111,6 +122,6 @@
     {
         //Kode som sender API kald videre - Vi mangler API som kan håndtere Tag IDs
         _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")) + string.Join("&", SelectedSupervisors.Select(s => $"supervisorIds={s}"))); //todo hilfen mit filtering ples
+            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")) + "&"+ string.Join("&", SelectedSupervisors.Select(s => $"supervisorIds={s}"))); //todo hilfen mit filtering ples
     }
 }
