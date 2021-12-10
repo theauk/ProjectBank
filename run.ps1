@@ -9,7 +9,7 @@ if ($production) {
     $file = "docker-compose.prod.yml"
 }
 
-docker-compose -f $file up -d
+docker-compose -f $file up -d --build
 Write-Host "DONE."
 Write-Host "------------------------------------------------------------------------------------"
 Write-Host "TO STOP THE PROJECT WRITE:"
