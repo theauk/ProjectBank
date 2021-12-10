@@ -109,7 +109,7 @@
             "api/Project");
         _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
         string role = "supervisor"; //todo den her skal nok sættes et andet sted? -oli
-        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>($"api/User/{role}");
+        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>($"api/User/{role}"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
         //TODO Implementer Supervisors her også med _selectedSupervisors og det hele
         // Create a set of empty "selected" ids for each tag group.
         foreach (var tg in _tagGroups)

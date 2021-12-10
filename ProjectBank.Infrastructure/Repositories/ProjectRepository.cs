@@ -75,11 +75,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
             return projects;
         }
-
-        // public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds)
-        // {
-        //     return null;
-        // }
+        
         
         public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds, IEnumerable<int> supervisorIds)
         {
