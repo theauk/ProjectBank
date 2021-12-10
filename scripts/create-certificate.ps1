@@ -1,3 +1,5 @@
+# Use this script to create a developer certificate in order to be able to run the program.
+
 Write-Host "CREATING DEV CERTIFICATE FOR OS $Env:OS"
 dotnet dev-certs https --clean
 
