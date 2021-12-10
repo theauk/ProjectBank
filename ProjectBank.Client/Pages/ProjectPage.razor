@@ -1,5 +1,8 @@
 ﻿@page "/index/{Id:int}"
 @inject HttpClient _http
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin, Supervisor, Student")]
+
 <PageTitle>Project Page</PageTitle>
 
 @if (Id != -1)

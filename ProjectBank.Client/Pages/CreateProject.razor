@@ -1,6 +1,8 @@
 ﻿@page "/projectCreation"
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin, Supervisor")]
 
 <PageTitle>Create Project</PageTitle>
 

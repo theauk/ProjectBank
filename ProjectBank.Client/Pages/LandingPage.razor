@@ -1,5 +1,7 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
 @inject HttpClient _http
+@attribute [Authorize(Roles = "Admin, Supervisor, Student")]
 
 <PageTitle>Landing Page</PageTitle>
 
@@ -51,9 +53,9 @@
                             </ChildContent>
                         </RadzenFieldset>
                     }
-                    <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
+                    <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
                         <HeaderTemplate>
-                            <b class="tagFieldTitle">Supervisors</b>
+                            <b class="tagFieldTitle">SUPERVISORS</b>
                         </HeaderTemplate>
                         <ChildContent>
                             <RadzenDropDown AllowFiltering="true" 

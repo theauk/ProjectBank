@@ -1,6 +1,8 @@
 @page "/admin"
 @inject HttpClient _http
 @inject NavigationManager _nav
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>Admin Overview</PageTitle>
 

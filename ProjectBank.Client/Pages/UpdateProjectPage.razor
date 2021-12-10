@@ -1,4 +1,6 @@
 @page "/UpdateProjectPage"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin, Supervisor")]
 
 <h3>Update Project</h3>
 
