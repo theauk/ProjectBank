@@ -39,10 +39,8 @@ public class ProjectController : ControllerBase
     [HttpGet]
     public async Task<IReadOnlyCollection<ProjectDTO>> Get()
     {
-        Console.WriteLine(ClaimsPrincipal.Current?.FindFirst(ClaimTypes.Email).Value);
         var projects = await _repository.ReadAllAsync();
-        if (projects.IsNullOrEmpty()) return new List<ProjectDTO>();
-        return projects;
+        return projects.IsNullOrEmpty() ? new List<ProjectDTO>() : projects;
     }
 
     [Authorize]
