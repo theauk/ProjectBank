@@ -1,4 +1,4 @@
-# USe this script to create a migration and create a certificate to be able to run our Blazor server.
+# USe this script to create a migration.
 
 # Migrations
 Write-Host "CREATING MIGRATIONS..."
