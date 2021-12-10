@@ -86,7 +86,8 @@
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
     );
-
+    private IEnumerable<int> SelectedSupervisors = new List<int>(); //todo sæt den her i html
+    
     private bool _loaded = false;
 
     protected override async Task OnInitializedAsync()
@@ -110,6 +111,6 @@
     {
         //Kode som sender API kald videre - Vi mangler API som kan håndtere Tag IDs
         _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}"))); //todo hilfen mit filtering ples
+            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")) + string.Join("&", SelectedSupervisors.Select(s => $"supervisorIds={s}"))); //todo hilfen mit filtering ples
     }
 }
