@@ -94,7 +94,7 @@
                             </RadzenCard>
                         </Template>
                     </RadzenDataList>
-                    <RadzenPager class="landingPagePager" ShowPagingSummary="true" PagingSummaryFormat="@_pagingSummaryFormat" Count="@_count" PageSize="@_pageSize" PageChanged="@UpdateVisibleProjects"/>
+                    <RadzenPager class="landingPagePager" ShowPagingSummary="true" PagingSummaryFormat="@PagingSummaryFormat" Count="@_count" PageSize="@PageSize" PageChanged="@UpdateVisibleProjects"/>
                 }
             </div>
         </div>
@@ -103,15 +103,15 @@
 
 
 @code {
-    string _pagingSummaryFormat = "Displaying page {0} of {1} (total {2} projects)";
-    int _pageSize = 10;
+    private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} projects)";
+    private const int PageSize = 10;
     int _count;
-
+    
     private IEnumerable<ProjectDTO> _allProjects = new List<ProjectDTO>();
     private IEnumerable<ProjectDTO> _visibleProjects = new List<ProjectDTO>();
+    
     private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new();
-
     private HashSet<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate( // ikke sikker på hvad den her er til
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
@@ -135,7 +135,7 @@
         if (_allProjects.Any())
         {
             _count = _allProjects.Count();
-            _visibleProjects = _allProjects.Skip(0).Take(_pageSize).ToList();
+            _visibleProjects = _allProjects.Skip(0).Take(PageSize).ToList();
             
         }
         
@@ -154,7 +154,7 @@
         if (_allProjects.Any())
         {
             _count = _allProjects.Count();
-            _visibleProjects =  _allProjects.Skip(0).Take(_pageSize).ToList();
+            _visibleProjects =  _allProjects.Skip(0).Take(PageSize).ToList();
         }
     }
 

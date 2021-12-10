@@ -114,6 +114,10 @@ namespace ProjectBank.Infrastructure
 
                 // Topics
                 var dbTopic = new Tag { Value = "Databases" };
+                var aiTopic = new Tag { Value = "Artificial Intelligence" };
+                var webTopic = new Tag { Value = "Web Development" };
+                var logicTopic = new Tag { Value = "Logic" };
+                var algorithmsTopic = new Tag { Value = "Algorithms" };
 
                 // TAGGROUPS
                 var semesterTG = new TagGroup
@@ -242,6 +246,10 @@ namespace ProjectBank.Infrastructure
                     Tags = new HashSet<Tag>()
                     {
                         dbTopic,
+                        aiTopic,
+                        webTopic,
+                        logicTopic,
+                        algorithmsTopic
                     }
                 };
 
@@ -262,8 +270,8 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "1st year project",
                     Description = "This report talks about the proces of programing a streaming service, in java.",
-                    Tags = new HashSet<Tag>() { secondSemester, spring, uXSubject, danishLanguage, javaProLang },
-                    Supervisors = new HashSet<User>() { kasper, cecilie }
+                    Tags = new HashSet<Tag>() { secondSemester, spring, uXSubject, danishLanguage, javaProLang, algorithmsTopic },
+                    Supervisors = new HashSet<User>() { kasper, thea }
                 };
 
                 var secondYearP = new Project
@@ -271,14 +279,14 @@ namespace ProjectBank.Infrastructure
                     Name = "2nd year project",
                     Description = "In this project we made a program for a corporation. We chose Microsoft and made them a algorithm.",
                     Tags = new HashSet<Tag>() { fourthSemester, spring, functProSubject, danishLanguage, fSharpProLang },
-                    Supervisors = new HashSet<User>() { viktor, thea }
+                    Supervisors = new HashSet<User>() { viktor, cecilie }
                 };
 
                 var projectBankP = new Project
                 {
                     Name = "Project Bank",
                     Description = "In this project, you have to implement a service for students and teachers to create and share project thesis.",
-                    Tags = new HashSet<Tag>() { thirdSemster, fall, danishLanguage, cSharpProLang },
+                    Tags = new HashSet<Tag>() { thirdSemster, fall, danishLanguage, cSharpProLang, webTopic },
                     Supervisors = new HashSet<User>() { gustav, mai }
                 };
 
@@ -286,7 +294,7 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "Coq Proof Service",
                     Description = "You will implement a program from scratch in Java using Coq to prove mathematical theorems.",
-                    Tags = new HashSet<Tag>() { firstSemester, fall, danishLanguage, javaProLang, discMathSubject, teamComSubject },
+                    Tags = new HashSet<Tag>() { firstSemester, fall, danishLanguage, javaProLang, discMathSubject, teamComSubject, logicTopic, algorithmsTopic },
                     Supervisors = new HashSet<User>() { sille, josefine }
                 };
 
@@ -294,7 +302,7 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "Data Platforms",
                     Description = "You will in this project have to implement a platform for linking pictures to text in GoLang.",
-                    Tags = new HashSet<Tag>() { fifthSemester, fall, danishLanguage, goProLang },
+                    Tags = new HashSet<Tag>() { fifthSemester, fall, danishLanguage, goProLang, webTopic, dbTopic },
                     Supervisors = new HashSet<User>() { paolo, rasmus }
                 };
 
@@ -318,15 +326,15 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "Eye Tracker AI",
                     Description = "This project is all about AIs and the principles of Machine Learning. You will have to implement an AI being able to track and predict eye movements.",
-                    Tags = new HashSet<Tag>() { haskelProLang, phdLevel, englishLanguage, fall, spring },
+                    Tags = new HashSet<Tag>() { haskelProLang, phdLevel, englishLanguage, fall, spring, aiTopic },
                     Supervisors = new HashSet<User>() { cecilie }
                 };
 
                 var EHRP = new Project
                 {
                     Name = "EHR System ",
-                    Description = "In this project you aretasked with making an electronic health record for a small clinic with minimal security.",
-                    Tags = new HashSet<Tag>() { fifthSemester, fall, englishLanguage, javaProLang, jsProLang, sqlProLang },
+                    Description = "In this project you are tasked with making an electronic health record for a small clinic with minimal security.",
+                    Tags = new HashSet<Tag>() { fifthSemester, fall, englishLanguage, javaProLang, jsProLang, sqlProLang, webTopic, dbTopic },
                     Supervisors = new HashSet<User>() { carl }
                 };
 
@@ -334,7 +342,7 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "New ITU Website",
                     Description = "You will have to implement, test and maintain a new website replacing the very broken Learnit.",
-                    Tags = new HashSet<Tag>() { cSharpProLang, sixthSemester, mDigiProgramme, danishLanguage },
+                    Tags = new HashSet<Tag>() { cSharpProLang, sixthSemester, mDigiProgramme, danishLanguage, webTopic, dbTopic },
                     Supervisors = new HashSet<User>() { rasmus }
                 };
                 
@@ -342,7 +350,7 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "Kattis Problems",
                     Description = "You will have to develop various new Kattis exercises for different programming levels.",
-                    Tags = new HashSet<Tag>() { },
+                    Tags = new HashSet<Tag>() { fourthSemester, englishLanguage, algorithmsTopic },
                     Supervisors = new HashSet<User>() { cecilie }
                 };
                 
@@ -350,7 +358,7 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "Space Servers",
                     Description = "This project focuses on exploring the advantages and possible drawbacks of placing servers on the moon.",
-                    Tags = new HashSet<Tag>() { sixthSemester, englishLanguage },
+                    Tags = new HashSet<Tag>() { sixthSemester, englishLanguage, danishLanguage },
                     Supervisors = new HashSet<User>() { carl }
                 };
 
