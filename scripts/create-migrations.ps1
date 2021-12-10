@@ -2,7 +2,6 @@
 
 # Migrations
 Write-Host "CREATING MIGRATIONS..."
-Set-Location ..\ProjectBank.Infrastructure
-dotnet ef --startup-project ..\ProjectBank.Server\ migrations add InitialCreate
+dotnet ef --startup-project ..\ProjectBank.Server\ migrations add InitialCreate --project ..\ProjectBank.InfraStructure
 Set-Location ..
 Write-Host "DONE."
