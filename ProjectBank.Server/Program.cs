@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Identity.Web;
-using Microsoft.EntityFrameworkCore;
 using ProjectBank.Infrastructure;
 using ProjectBank.Core.IRepositories;
 using ProjectBank.Infrastructure.Repositories;

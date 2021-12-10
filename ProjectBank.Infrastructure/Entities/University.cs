@@ -2,7 +2,6 @@ namespace ProjectBank.Infrastructure.Entities
 {
     public class University
     {
-        public int Id { get; set; }
         [Required]
         public string DomainName { get; set; }
 
