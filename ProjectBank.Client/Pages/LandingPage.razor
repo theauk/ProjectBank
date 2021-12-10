@@ -69,7 +69,18 @@
                         </ChildContent>
                     </RadzenFieldset>
                 }
-                <p>Selected tag IDs: @string.Join(", ", SelectedTags)</p>
+                <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
+                    <HeaderTemplate>
+                        <span style="vertical-align: middle">
+                            <b class="TagFieldTitle">Supervisors</b>
+                        </span>
+                    </HeaderTemplate>
+                    <ChildContent>
+                    <RadzenDropDown AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    @bind-Value=@SelectedSupervisors Multiple="true" Placeholder="Select..."
+                                    Data=@_supervisors TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
+                    </ChildContent>
+                </RadzenFieldset>
             }
         </div>
     </div>
@@ -79,13 +90,15 @@
 @code {
     private IEnumerable<ProjectDTO> _projects = new List<ProjectDTO>();
     private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
+    private IEnumerable<UserDTO> _supervisors = new List<UserDTO>();
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new Dictionary<int, IEnumerable<int>>();
     // All selected tags, across all TagGroups.
     private IEnumerable<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate(
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
     );
-
+    private IEnumerable<int> SelectedSupervisors = new List<int>(); //todo sæt den her i html
+    
     private bool _loaded = false;
 
     protected override async Task OnInitializedAsync()
@@ -93,9 +106,11 @@
 
         //Projects = Project.SampleProjects; //Lav rigtigt API kald når det er med ProjectBankContext
         _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
+            "api/Project");
         _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
-
+        string role = "supervisor"; //todo den her skal nok sættes et andet sted? -oli
+        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>($"api/User/{role}");
+        //TODO Implementer Supervisors her også med _selectedSupervisors og det hele
         // Create a set of empty "selected" ids for each tag group.
         foreach (var tg in _tagGroups)
             _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
@@ -107,6 +122,6 @@
     {
         //Kode som sender API kald videre - Vi mangler API som kan håndtere Tag IDs
         _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
+            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")) + "&"+ string.Join("&", SelectedSupervisors.Select(s => $"supervisorIds={s}"))); //todo hilfen mit filtering ples
     }
 }

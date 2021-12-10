@@ -76,9 +76,24 @@ namespace ProjectBank.Infrastructure.Repositories
             return projects;
         }
 
-        public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds)
+        // public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds)
+        // {
+        //     return null;
+        // }
+        
+        public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds, IEnumerable<int> supervisorIds)
         {
-            return null;
+            var projects = (await _context.Projects
+                .Where(p => supervisorIds.All(sId => p.Supervisors.Select(s => s.Id).Contains(sId)))
+                .Where(p => tagIds.All(tId => p.Tags.Select(t => t.Id).Contains(tId))).Select(p => new ProjectDTO
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                    Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet()
+                }).ToListAsync()).AsReadOnly();
+            return projects;
         }
 
         public async Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)

@@ -13,7 +13,12 @@ namespace ProjectBank.Server.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository _repository;
-
+    
+    public UserController(IUserRepository repository)
+    {
+        _repository = repository;
+    }
+    
     [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDTO>> Get(int id)
@@ -21,11 +26,29 @@ public class UserController : ControllerBase
         throw new NotImplementedException();
     }
 
+    // [AllowAnonymous]
+    // [HttpGet]
+    // public async Task<IReadOnlyCollection<UserDTO>> Get()
+    // {
+    //
+    //     var supervisorUserDTOs = await _repository.ReadAllAsync("supervisor");
+    //     return supervisorUserDTOs;
+    // } 
+    
     [AllowAnonymous]
-    [HttpGet]
-    public async Task<IReadOnlyCollection<UserDTO>> Get()
+    [HttpGet("{role}")]
+    public async Task<IReadOnlyCollection<UserDTO>> Get(string role = "all")
     {
-        throw new NotImplementedException();
+        if (role == "all")
+        {
+            var supervisorUserDTOs = await _repository.ReadAllAsync();
+            return supervisorUserDTOs;
+        }
+        else 
+        {
+            var supervisorUserDTOs = await _repository.ReadBasedOnRoleAsync(role);
+            return supervisorUserDTOs;
+        }
     }
 
     [Authorize(Roles = "Admin")]
