@@ -58,7 +58,6 @@
         _edited.Add(-1, true);
         _editingName.Add(-1, true);
             _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
-        // TODO: Make TagGroupUpdateDTO List and use for storing data.
 
         TagGroups = _tagGroups.Select(tg => tg.ToUpdateDTO()).ToList();
         foreach (var tg in TagGroups)

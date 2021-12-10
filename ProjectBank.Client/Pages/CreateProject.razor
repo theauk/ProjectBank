@@ -133,8 +133,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
-        // TODO: Fetch TagGroups from API.
         TagGroups = await _http.GetFromJsonAsync<IEnumerable<TagGroupDTO>>("api/TagGroup");
         
         foreach (var tg in TagGroups)
