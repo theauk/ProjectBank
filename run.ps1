@@ -14,6 +14,7 @@ Write-Host "DONE."
 Write-Host
 
 docker-compose -f $file ps
+Write-Host
 Write-Host "------------------------------------------------------------------------------------"
 Write-Host "TO STOP THE PROJECT WRITE:"
 
