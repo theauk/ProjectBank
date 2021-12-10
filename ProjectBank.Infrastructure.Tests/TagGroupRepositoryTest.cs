@@ -98,14 +98,13 @@ public class TagGroupRepositoryTest : IDisposable
         Assert.Equal(999, found.Value.TagLimit);
     }
 
-    // [Fact]
-    // public async Task ReadAsync_on_nonexistant_id_throws_InvalidOperationException()
-    // {
-    //         //TODO Fix/Spørgsmål: Hvordan fungerer det med InvalidOperationException i Options?
-    //         var notfound = await   _repository.ReadAsync(56)
-    //         //Assert.Equal(Response.NotFound, notfound);
-    //         //await Assert.ThrowsAsync<InvalidOperationException>(() => _repository.ReadAsync(56));
-    // }
+    [Fact]
+    public async Task ReadAsync_on_nonexistant_id_throws_InvalidOperationException()
+    {
+        var actual = await _repository.ReadAsync(56);
+        Assert.Null(actual.Value);
+        
+    }
 
 
     [Fact]
