@@ -20,6 +20,20 @@ First ensure that you have created a valid developer certificate. This is done b
 
 ---
 
+### Ensure .local folder contents
+
+In order to run the program you will have to create some local files in the project directory.
+
+Create a folder: ``.local``
+
+Now create the following files in the ``.local`` directory:
+
+1. > ``connection_string.txt``
+
+2. > ``db_password.txt``
+
+Remember to fill in the respective files with the content needed. (It will be provided in a seperate file XXX)
+
 ### Run Project
 
 Run the project with the following script in PowerShell:
