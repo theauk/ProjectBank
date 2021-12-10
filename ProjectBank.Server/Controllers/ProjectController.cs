@@ -35,14 +35,14 @@ public class ProjectController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IEnumerable<int> tagIds)
+    [HttpGet("{tagIds}{supervisorIds}")]
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IEnumerable<int> tagIds, [FromQuery] IEnumerable<int> supervisorIds) //Todo Spørgsmål - hvad gør FromQuery?
     {
         IReadOnlyCollection<ProjectDTO> resp;
-        if (!tagIds.Any())
+        if (!tagIds.Any() && !supervisorIds.Any())
             resp = await _repository.ReadAllAsync();
         else
-            resp = await _repository.ReadFilteredAsync(tagIds);
+            resp = await _repository.ReadFilteredAsync(tagIds, supervisorIds);
 
         if (resp.IsNullOrEmpty()) return new List<ProjectDTO>();
         return resp;

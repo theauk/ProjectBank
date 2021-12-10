@@ -79,6 +79,7 @@
 @code {
     private IEnumerable<ProjectDTO> _projects = new List<ProjectDTO>();
     private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
+    private IEnumerable<UserDTO> _supervisors = new List<UserDTO>();
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new Dictionary<int, IEnumerable<int>>();
     // All selected tags, across all TagGroups.
     private IEnumerable<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate(
@@ -95,7 +96,9 @@
         _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
             "api/Project");
         _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
-
+        string role = "supervisor"; //todo den her skal nok sættes et andet sted? -oli
+        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>($"api/User/{role}");
+        //TODO Implementer Supervisors her også med _selectedSupervisors og det hele
         // Create a set of empty "selected" ids for each tag group.
         foreach (var tg in _tagGroups)
             _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
@@ -107,6 +110,6 @@
     {
         //Kode som sender API kald videre - Vi mangler API som kan håndtere Tag IDs
         _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
+            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}"))); //todo hilfen mit filtering ples
     }
 }

@@ -26,20 +26,29 @@ public class UserController : ControllerBase
         throw new NotImplementedException();
     }
 
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<IReadOnlyCollection<UserDTO>> Get()
-    {
-        throw new NotImplementedException();
-    } 
+    // [AllowAnonymous]
+    // [HttpGet]
+    // public async Task<IReadOnlyCollection<UserDTO>> Get()
+    // {
+    //
+    //     var supervisorUserDTOs = await _repository.ReadAllAsync("supervisor");
+    //     return supervisorUserDTOs;
+    // } 
     
     [AllowAnonymous]
     [HttpGet("{role}")]
-    public async Task<IReadOnlyCollection<UserDTO>> Get(string role)
+    public async Task<IReadOnlyCollection<UserDTO>> Get(string role = "all")
     {
-        //TODO Implement string role in final final product(out ofscope)
-        var supervisorUserDTOs = await _repository.ReadAllAsync(role);
-        throw new NotImplementedException(); 
+        if (role == "all")
+        {
+            var supervisorUserDTOs = await _repository.ReadAllAsync();
+            return supervisorUserDTOs;
+        }
+        else 
+        {
+            var supervisorUserDTOs = await _repository.ReadBasedOnRoleAsync(role);
+            return supervisorUserDTOs;
+        }
     }
 
     [Authorize(Roles = "Admin")]

@@ -117,6 +117,8 @@
     private IEnumerable<UserDTO> Supervisors { get; set; } = new List<UserDTO>();
     
     private Dictionary<int, IEnumerable<int>> SelectedTags = new();
+
+
     
     private ISet<int> TagIds => SelectedTags.Aggregate(
         new HashSet<int>(),
@@ -143,9 +145,9 @@
         }
         
         
-        // TODO: Fetch Supervisors from API.
         // TODO: Automatically add current user to SupervisorIds.
-        Supervisors = await _http.GetFromJsonAsync<IEnumerable<UserDTO>>("api/User/Supervisor");
+        string role = "supervisor"; //todo den her skal nok sættes et andet sted? -oli
+        Supervisors = await _http.GetFromJsonAsync<IEnumerable<UserDTO>>($"api/User/{role}");
         
         _project.UserIds = new HashSet<int>();
 
