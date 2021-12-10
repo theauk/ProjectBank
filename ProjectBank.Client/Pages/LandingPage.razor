@@ -124,16 +124,12 @@
     protected override async Task OnInitializedAsync()
     {
         _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
-        Console.WriteLine("sup: " + _supervisors.Count());
-        
+
         var initialProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project");
-        Console.WriteLine("proj: " + initialProjects.Count());
         _projects = initialProjects.Skip(0).Take(_pageSize);
         _count = _projects.Count();
-        Console.WriteLine("_count: " + _projects.Count());
-        
+
         _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
-        Console.WriteLine("_tg: " + _tagGroups.Count());
 
     // Create a set of empty "selected" ids for each tag group.
         foreach (var tg in _tagGroups)

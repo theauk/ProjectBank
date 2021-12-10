@@ -5,50 +5,44 @@
 
 <PageTitle>Project Page</PageTitle>
 
-@if (Id != -1)
+@if (Id == -1 && _project != null)
 {
-    @if (_project == null)
-    {
-        <h1>Loading...</h1>
-    }
-    else
-    {
-        <h1>@_project.Name</h1>
-        <div>
-            <h2>Description</h2>
-            <p>@_project.Description</p>
-        </div>
-        <div>
-            <h2>Supervisors</h2>
-            <p>@string.Join(", ", _project.Supervisors.Select(s => s.Name))</p>
-        </div>
-        <div>
-            <h2>Tags</h2>
-            <p>@string.Join(", ", _project.Tags.Select((t => t.Value)))</p>
-        </div>
-    }
+    <h1>Loading...</h1>
 }
 else
 {
-    <h1>404 - Project not found.</h1>
+    <h1>@_project.Name</h1>
+    <div>
+        <h2>Description</h2>
+        <p>@_project.Description</p>
+    </div>
+    <div>
+        <h2>Supervisors</h2>
+        <p>@string.Join(", ", _project.Supervisors.Select(s => s.Name))</p>
+    </div>
+    <div>
+        <h2>Tags</h2>
+        <p>@string.Join(", ", _project.Tags.Select((t => t.Value)))</p>
+    </div>
 }
 
 @code {
+
     [Parameter]
     public int Id { get; set; }
+
     private ProjectDTO? _project = null;
-    
+
     protected override async void OnParametersSet()
     {
         try
         {
             _project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
-            if (_project == null)
-                Id = -1;
         }
-        catch
+        catch (Exception e)
         {
             Id = -1;
         }
     }
+
 }

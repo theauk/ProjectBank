@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Blazorise.Extensions;
 using ProjectBank.Core.DTOs;
 using ProjectBank.Core.IRepositories;
@@ -36,8 +37,9 @@ public class ProjectController : ControllerBase
     
     [Authorize]
     [HttpGet]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get() 
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get()
     {
+        Console.WriteLine(ClaimsPrincipal.Current?.FindFirst(ClaimTypes.Email).Value);
         var projects = await _repository.ReadAllAsync();
         if (projects.IsNullOrEmpty()) return new List<ProjectDTO>();
         return projects;
