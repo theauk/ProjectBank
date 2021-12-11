@@ -22,7 +22,7 @@ namespace ProjectBank.Core.DTOs
         [Required]
         public string Name { get; set; }
 
-        public ISet<TagCreateDTO> NewTagsDTOs { get; set; } = new SortedSet<TagCreateDTO>();
+        public ISet<TagCreateDTO> NewTagsDTOs { get; set; } = new HashSet<TagCreateDTO>();
 
         [Required] public bool SupervisorCanAddTag { get; set; } = true;
 

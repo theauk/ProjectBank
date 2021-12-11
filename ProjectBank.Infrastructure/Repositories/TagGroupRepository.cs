@@ -19,7 +19,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                 RequiredInProject = tagGroup.RequiredInProject,
                 TagLimit = tagGroup.TagLimit,
-                Tags = tagGroup.NewTagsDTOs.Select(t => new Tag{Value = t.Value}).ToImmutableSortedSet(),
+                Tags = tagGroup.NewTagsDTOs.Select(t => new Tag{Value = t.Value}).ToHashSet(),
             };
 
             _context.TagGroups.Add(entity);
@@ -49,7 +49,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 {
                     Id = tagGroup.Id,
                     Name = tagGroup.Name,
-                    TagDTOs = tagGroup.Tags.Select(t => new TagDTO{Value = t.Value, Id = t.Id}).ToImmutableSortedSet(),
+                    TagDTOs = tagGroup.Tags.OrderBy(t => t.Value).Select(t => new TagDTO{Value = t.Value, Id = t.Id}).ToImmutableSortedSet(),
                     RequiredInProject = tagGroup.RequiredInProject,
                     SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                     TagLimit = tagGroup.TagLimit
@@ -62,7 +62,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 {
                     Id = tagGroup.Id,
                     Name = tagGroup.Name,
-                    TagDTOs = tagGroup.Tags.Select(t => new TagDTO{Value = t.Value, Id = t.Id}).ToImmutableSortedSet(),
+                    TagDTOs = tagGroup.Tags.OrderBy(t => t.Value).Select(t => new TagDTO{Value = t.Value, Id = t.Id}).ToImmutableSortedSet(),
                     RequiredInProject = tagGroup.RequiredInProject,
                     SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                     TagLimit = tagGroup.TagLimit

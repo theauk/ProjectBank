@@ -2,7 +2,6 @@
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 @using Microsoft.AspNetCore.Authorization
-@using System.Collections.Immutable
 @attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>Create Tag Group</PageTitle>
@@ -106,7 +105,7 @@
     void CreateTags()
     {
         if (_multipleSelectionTagsTexts.Count > 0)
-            _tagGroup.NewTagsDTOs = _multipleSelectionTagsTexts.Select(tag => new TagCreateDTO() {Value = tag}).ToImmutableSortedSet();
+            _tagGroup.NewTagsDTOs = _multipleSelectionTagsTexts.Select(tag => new TagCreateDTO() {Value = tag}).ToHashSet();
     }
 
     void Redirect()
