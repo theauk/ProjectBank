@@ -32,8 +32,8 @@ public class TagGroupController : ControllerBase
     [HttpGet]
     public async Task<IReadOnlyCollection<TagGroupDTO>> Get()
     {
-        var TagGroupDTOs = await _repository.ReadAllAsync();
-        return TagGroupDTOs;
+        var tagGroupDtOs = await _repository.ReadAllAsync();
+        return tagGroupDtOs;
 
     }
 
