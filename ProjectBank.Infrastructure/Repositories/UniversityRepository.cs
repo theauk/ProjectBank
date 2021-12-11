@@ -54,7 +54,7 @@ namespace ProjectBank.Infrastructure.Repositories
                     Name = p.Name, 
                     Description = p.Description, 
                     Supervisors = p.Supervisors.Select(u => new UserDTO{ Id = u.Id, Name = u.Name}).ToHashSet(), 
-                    Tags = p.Tags.Select(t => new TagDTO{ Id = t.Id, Value = t.Value }).ToHashSet()
+                    Tags = p.Tags.Select(t => new TagDTO{ Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList()
                 }).ToHashSet(),
                 TagGroups = entity.TagGroups.Select(tg => new TagGroupDTO
                 { 
@@ -63,7 +63,7 @@ namespace ProjectBank.Infrastructure.Repositories
                     TagLimit = tg.TagLimit,
                     SupervisorCanAddTag = tg.SupervisorCanAddTag,
                     RequiredInProject = tg.RequiredInProject,
-                    TagDTOs = tg.Tags.Select(t => new TagDTO{ Id = t.Id, Value = t.Value }).ToHashSet()
+                    TagDTOs = tg.Tags.Select(t => new TagDTO{ Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList()
                 }).ToHashSet()
             };
         }

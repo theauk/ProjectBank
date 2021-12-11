@@ -11,10 +11,11 @@ namespace ProjectBank.Infrastructure.Entities
 
         [Required]
         public bool SupervisorCanAddTag { get; set; }
-
+        
         [Required]
         public bool RequiredInProject { get; set; }
 
         public int? TagLimit { get; set; }
+        
     }
 }

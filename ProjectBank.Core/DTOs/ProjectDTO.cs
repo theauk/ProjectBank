@@ -12,7 +12,7 @@ namespace ProjectBank.Core.DTOs
         public string Description { get; init; }
 
         [Required]
-        public ISet<TagDTO> Tags { get; init; } = new HashSet<TagDTO>();
+        public ICollection<TagDTO> Tags { get; init; } = new List<TagDTO>();
         
         [Required]
         public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
@@ -23,7 +23,7 @@ namespace ProjectBank.Core.DTOs
                 Id.Equals(p.Id) &&
                 Name.Equals(p.Name) &&
                 Description.Equals(p.Description) &&
-                Tags.SetEquals(p.Tags) &&
+                Tags.Equals(p.Tags) &&
                 Supervisors.SetEquals(p.Supervisors)
             );
         }

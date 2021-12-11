@@ -49,7 +49,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 {
                     Id = tagGroup.Id,
                     Name = tagGroup.Name,
-                    TagDTOs = tagGroup.Tags.OrderBy(t => t.Value).Select(t => new TagDTO{Value = t.Value, Id = t.Id}).ToImmutableSortedSet(),
+                    TagDTOs = tagGroup.Tags.Select(t => new TagDTO{Value = t.Value, Id = t.Id}).OrderBy(t => t.Value).ToList(),
                     RequiredInProject = tagGroup.RequiredInProject,
                     SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                     TagLimit = tagGroup.TagLimit
@@ -62,7 +62,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 {
                     Id = tagGroup.Id,
                     Name = tagGroup.Name,
-                    TagDTOs = tagGroup.Tags.OrderBy(t => t.Value).Select(t => new TagDTO{Value = t.Value, Id = t.Id}).ToImmutableSortedSet(),
+                    TagDTOs = tagGroup.Tags.Select(t => new TagDTO{Value = t.Value, Id = t.Id}).OrderBy(t => t.Value).ToList(),
                     RequiredInProject = tagGroup.RequiredInProject,
                     SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                     TagLimit = tagGroup.TagLimit

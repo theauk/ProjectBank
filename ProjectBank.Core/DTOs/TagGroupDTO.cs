@@ -6,7 +6,7 @@ namespace ProjectBank.Core.DTOs
 
         [Required] public string Name { get; init; }
 
-        public ISet<TagDTO> TagDTOs { get; init; } = new SortedSet<TagDTO>();
+        public List<TagDTO> TagDTOs { get; init; } = new List<TagDTO>();
 
         [Required]
         public bool SupervisorCanAddTag { get; init; }
