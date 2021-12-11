@@ -172,7 +172,7 @@
             Id = 88,
             RequiredInProject = true,
             SupervisorCanAddTag = false,
-            TagDTOs = new HashSet<TagDTO> {new TagDTO {Id = 109, TagGroupId = 99, Value = "Checkbox"}, new TagDTO {Id = 101, TagGroupId = 88, Value = "Checkbox2"}}
+            TagDTOs = new HashSet<TagDTO> {new TagDTO {Id = 110, TagGroupId = 99, Value = "Checkbox"}, new TagDTO {Id = 101, TagGroupId = 88, Value = "Checkbox2"}}
         };
         TagGroups = new List<TagGroupDTO> {t, t2};
         foreach (var tg in TagGroups)
@@ -205,11 +205,12 @@
     private async void OnSubmit()
     {
         _missingTagsName = CheckRequiredTags();
+        Console.WriteLine();
 
-        if (!_missingTagsName.Any())
+        if (true)
         {
-            _project.UserIds = SelectedSupervisorIds.ToHashSet();
-            CreateTags();
+            
+            AddTags();
     
             Console.WriteLine("Submit project: " + _project);
             Console.WriteLine("Submit project w/ existing " + _project.ExistingTagIds.Count() + " tags IDS: ");
@@ -243,13 +244,29 @@
         }
     }
 
-    void CreateTags()
+    void AddTags()
     {
+        // New tags
         foreach (var keyvalue in _allSelectedTagsValues)
         {
             var list = keyvalue.Value.Except(_selectedExistingTagsValues[keyvalue.Key]);
             _project.NewTagDTOs.UnionWith(list.Select(t => new TagCreateDTO {TagGroupId = keyvalue.Key, Value = t}).ToHashSet());
         }
+        // existing tags
+        _project.ExistingTagIds.UnionWith(_selectedPredefinedOnlyTagsId.ToHashSet());
+        _project.UserIds = SelectedSupervisorIds.ToHashSet();
+
+        foreach (var tagDto in from tgID_StringTags in _selectedExistingTagsValues 
+            from tagGroupDto in TagGroups 
+            where tgID_StringTags.Key == tagGroupDto.Id 
+            from val in tgID_StringTags.Value 
+            select tagGroupDto.TagDTOs.FirstOrDefault(t => t.Value.Equals(val)) 
+            into tagDto 
+            where tagDto != null select tagDto)
+        {
+            _project.ExistingTagIds.Add(tagDto.Id);
+        }
+        
     }
 
     void Cancel()
