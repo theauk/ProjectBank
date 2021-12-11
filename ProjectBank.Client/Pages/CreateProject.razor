@@ -3,6 +3,7 @@
 @inject NavigationManager _navigationManager
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin, Supervisor")]
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Create Project</PageTitle>
 
@@ -100,20 +101,22 @@
                             </RadzenListBox>
                         }
                     }
-                    else if (tg.SupervisorCanAddTag && tg.TagDTOs.Any())
+                    else if (tg.SupervisorCanAddTag)
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         <Autocomplete class="autocompleteTags tagCheckItem" Style="max-width: 40%"
                                       TItem="TagDTO"
-                                      TValue="TagDTO"
+                                      TValue="int"
                                       Data="tg.TagDTOs"
                                       TextField="@((item) => item.Value)"
-                                      ValueField="@((item) => item)"
+                                      ValueField="@((item) => item.Id)"
                                       Placeholder="Search or press enter to create new..."
                                       Multiple
                                       FreeTyping
-                                      @bind-SelectedValues="_multipleSelectionTagsData[tg.Id]"
-                                      @bind-SelectedTexts="_multipleSelectionTagsText[tg.Id]">
+                                      @bind-SelectedValues="SelectedTags[tg.Id]"
+                                      @bind-SelectedTexts= "_multipleSelectionTagsText[tg.Id]"
+                                      >
+                            
                         </Autocomplete>
                     }
                 }
@@ -139,10 +142,10 @@
 
     private IEnumerable<UserDTO> Supervisors { get; set; } = new List<UserDTO>();
 
-    private Dictionary<int, IEnumerable<int>> SelectedTags = new();
+    private Dictionary<int, List<int>> SelectedTags = new();
     private IEnumerable<int> SelectedSupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
 
-    Dictionary<int, List<TagDTO>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
+    Dictionary<int, List<int>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
     Dictionary<int, List<string>> _multipleSelectionTagsText = new();
 
     private string _submitFormId = "submitForm";
@@ -150,11 +153,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
-        
+        //TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
+
+        TagGroupDTO t = new TagGroupDTO
+        {
+            Name = "The Name",
+            Id = 99,
+            RequiredInProject = true,
+            SupervisorCanAddTag = true,
+            TagDTOs = new HashSet<TagDTO>()
+        };
+        TagGroups = new List<TagGroupDTO>{t}; 
         foreach (var tg in TagGroups)
         {
-            _multipleSelectionTagsData[tg.Id] = new List<TagDTO>();
+            _multipleSelectionTagsData[tg.Id] = new List<int>();
             _multipleSelectionTagsText[tg.Id] = new List<string>();
             SelectedTags.Add(tg.Id, new List<int>());
             if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
@@ -163,7 +175,7 @@
         // TODO: Fetch Supervisors from API.
         // TODO: Automatically add current user to SupervisorIds.
         //Supervisors = Supervisor.SampleSupervisors;
-        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
+        //Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
 
         _project.UserIds = new HashSet<int>();
         await base.OnInitializedAsync();
@@ -171,16 +183,26 @@
 
     private IEnumerable<string> CheckRequiredTags()
     {
+        var list = new List<String>();
         return (from tg in RequiredTagGroups where !SelectedTags[tg.Key].Any() select tg.Value.Name).ToList();
+        foreach (var tg in RequiredTagGroups)
+        {
+            if (!SelectedTags[tg.Key].Any())
+            {
+                list.Add(tg.Value.Name);
+            }
+        }
     }
 
-    void OnInvalidSubmit()
+    async void OnInvalidSubmit()
     {
         _missingTagsName = CheckRequiredTags();
+        await JsRuntime.InvokeVoidAsync("scrollToTop");
     }
 
     private async void OnSubmit()
     {
+        Console.WriteLine(_project);
         _missingTagsName = CheckRequiredTags();
 
         if (!_missingTagsName.Any())
@@ -190,6 +212,16 @@
             {
                 _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
             }
+            else
+            {
+                Console.WriteLine("Nested else");
+                await JsRuntime.InvokeVoidAsync("scrollToTop");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Outside else");
+            await JsRuntime.InvokeVoidAsync("scrollToTop");
         }
     }
 
