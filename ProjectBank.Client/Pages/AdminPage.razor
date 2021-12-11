@@ -1,4 +1,4 @@
-@page "/admin"
+@page "/manageTagGroups"
 @inject HttpClient _http
 @inject NavigationManager _nav
 @using Microsoft.AspNetCore.Authorization
@@ -11,6 +11,7 @@
         <h1>Manage Tag Groups</h1>
         <div class="adminPageButtonContainer">
             <RadzenButton class="submitButton" Text="Save" Icon="save" Click="@Save"/>
+            <RadzenButton class="createTagGroupButton" Text="New Tag Group" Icon="add" Click="@RedirectToCreateTagGroup"/>
             <RadzenButton class="cancelButton" Text="Cancel" Icon="highlight_off" ButtonStyle="ButtonStyle.Warning" Click="@Cancel"/>
         </div>
     </div>
@@ -172,6 +173,11 @@
             await _http.DeleteAsync($"api/TagGroup/{id}");
 
         _nav.NavigateTo(_nav.Uri, forceLoad: true);
+    }
+    
+    private void RedirectToCreateTagGroup()
+    {
+        _nav.NavigateTo($"{_nav.BaseUri}createTagGroup");
     }
 
     private void Cancel()
