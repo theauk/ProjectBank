@@ -18,40 +18,43 @@
                 {
                     @foreach (var tg in _tagGroups)
                     {
-                        <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
-                            <HeaderTemplate>
-                                <b class="tagFieldTitle">@tg.Name.ToUpper()</b>
-                            </HeaderTemplate>
-                            <ChildContent>
-                                @if (tg.TagDTOs.Count() <= 8)
-                                {
-                                    <RadzenCheckBoxList class="checkBoxList"
+                        if (tg.TagDTOs.Any()) 
+                        {
+                            <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
+                                <HeaderTemplate>
+                                    <b class="tagFieldTitle">@tg.Name.ToUpper()</b>
+                                </HeaderTemplate>
+                                <ChildContent>
+                                    @if (tg.TagDTOs.Count() <= 8)
+                                    {
+                                        <RadzenCheckBoxList class="checkBoxList"
+                                                            @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
+                                                            TValue="int" Orientation="Radzen.Orientation.Vertical"
+                                                            Change=@ApplyFilter>
+                                            <Items>
+                                                @foreach (var t in tg.TagDTOs)
+                                                {
+                                                    <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id/>
+                                                }
+                                            </Items>
+                                        </RadzenCheckBoxList>
+                                    }
+                                    else
+                                    {
+                                        <RadzenDropDown AllowFiltering="true"
+                                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                                         @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
-                                                        TValue="int" Orientation="Radzen.Orientation.Vertical"
-                                                        Change=@ApplyFilter>
-                                        <Items>
-                                            @foreach (var t in tg.TagDTOs)
-                                            {
-                                                <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id/>
-                                            }
-                                        </Items>
-                                    </RadzenCheckBoxList>
-                                }
-                                else
-                                {
-                                    <RadzenDropDown AllowFiltering="true"
-                                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                                    @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
-                                                    Multiple="true"
-                                                    Placeholder="Select..."
-                                                    Data=@tg.TagDTOs
-                                                    TextProperty="Value"
-                                                    ValueProperty="Id"
-                                                    style="width: 100%;"
-                                                    Change=@ApplyFilter/>
-                                }
-                            </ChildContent>
-                        </RadzenFieldset>
+                                                        Multiple="true"
+                                                        Placeholder="Select..."
+                                                        Data=@tg.TagDTOs
+                                                        TextProperty="Value"
+                                                        ValueProperty="Id"
+                                                        style="width: 100%;"
+                                                        Change=@ApplyFilter/>
+                                    }
+                                </ChildContent>
+                            </RadzenFieldset>
+                        }
                     }
                     <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
                         <HeaderTemplate>
@@ -82,13 +85,13 @@
                 }
                 else
                 {
-                    <RadzenDataList WrapItems="true" AllowPaging="true" Data="@_visibleProjects" TItem="ProjectDTO">
+                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@_visibleProjects" TItem="ProjectDTO">
                         <Template Context="project">
                             <RadzenCard Style="width:300px; margin: 0;">
                                 <a href="index/@project.Id">
                                     <div class="projectEntryContent">
                                         <h4 class="mb-0 projectName">@project.Name</h4>
-                                        <p class="matchingTags">"need to implement function that shows matching tags"</p>
+                                        <p class="matchingTags">@string.Join(", ", project.Tags.Select(t => t.Value))</p>
                                     </div>
                                 </a>
                             </RadzenCard>
