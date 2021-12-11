@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Microsoft.Identity.Web;
+using ProjectBank.Core.IRepositories;
 using ProjectBank.Infrastructure;
 using ProjectBank.Infrastructure.Entities;
+using ProjectBank.Infrastructure.Repositories;
 
 namespace ProjectBank.Server.Integration.Tests;
 
@@ -39,14 +43,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 options.DefaultChallengeScheme = "Test";
                 options.DefaultScheme = "Test";
             })
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => {  });
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
 
             var connection = new SqliteConnection("Filename=:memory:");
 
-            services.AddDbContext<ProjectBankContext>(options =>
-            {
-                options.UseSqlite(connection);
-            });
+            services.AddDbContext<ProjectBankContext>(options => options.UseSqlite(connection));
+            services.AddScoped<IProjectBankContext, ProjectBankContext>();
+            services.AddScoped<IUniversityRepository, UniversityRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<ITagGroupRepository, TagGroupRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
 
             var provider = services.BuildServiceProvider();
             using var scope = provider.CreateScope();
@@ -64,38 +71,75 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     private void Seed(ProjectBankContext context)
     {
-        var numtheo = new Tag() {Id = 1, Value = "Number Theory"};
-        var crypto = new Tag() {Id = 2, Value = "Cryptography"};
-        var setTheo = new Tag() {Id = 3, Value = "Set Theory"};
-        var regex = new Tag() {Id = 4, Value = "RegEx's"};
-        var autom = new Tag() {Id = 5, Value = "Automatas"};
+        // --- Test data ---
+        // Supervisors
+        var marco = new User { Id = 1, Name = "Marco" };
+        var birgit = new User { Id = 2, Name = "Birgit" };
+        var bjorn = new User { Id = 3, Name = "Bjørn" };
+        var paolo = new User { Id = 4, Name = "Paolo" };
+        var rasmus = new User { Id = 5, Name = "Rasmus" };
 
-        var spring22 = new Tag() {Id = 12, Value = "Spring 2022"};
-        var autumn22 = new Tag() {Id = 13, Value = "Autumn 2022"};
-        var spring23 = new Tag() {Id = 14, Value = "Spring 2023"};
-        var autumn23 = new Tag() {Id = 15, Value = "Autumn 2023"};
-
-        var semester = new TagGroup()
+        // TagGroups
+        var semesterTG = new TagGroup
         {
-            Id = 31,
+            Id = 1,
             Name = "Semester",
-            Tags = new HashSet<Tag>() {spring22, spring23, autumn22, autumn23},
+            RequiredInProject = true,
             SupervisorCanAddTag = false,
-            RequiredInProject = false,
-            TagLimit = 999,
-        };
-        
-        var topic = new TagGroup()
-        {
-            Id = 32,
-            Name = "Topic",
-            Tags = new HashSet<Tag>() {numtheo, crypto,setTheo,regex,autom},
-            SupervisorCanAddTag = true,
-            RequiredInProject = false,
-            TagLimit = 999,
+            TagLimit = 2,
         };
 
-        context.TagGroups.AddRange(semester, topic);
+        var programmingLanguageTG = new TagGroup
+        {
+            Id = 2,
+            Name = "Programming Language",
+            RequiredInProject = false,
+            SupervisorCanAddTag = true,
+            TagLimit = 10,
+        };
+
+        var mandatoryProjectsTG = new TagGroup
+        {
+            Id = 3,
+            Name = "Mandatory Project",
+            RequiredInProject = false,
+            SupervisorCanAddTag = false,
+            TagLimit = 1,
+        };
+
+        var topicTG = new TagGroup
+        {
+            Id = 4,
+            Name = "Topic",
+            RequiredInProject = false,
+            SupervisorCanAddTag = true,
+            TagLimit = 10,
+        };
+
+        // Tags
+        var math = new Tag { Id = 1, Value = "Math Theory", TagGroup = topicTG };
+        var sql = new Tag { Id = 2, Value = "SQL", TagGroup = programmingLanguageTG };
+        var goLang = new Tag { Id = 3, Value = "GoLang", TagGroup = programmingLanguageTG };
+        var secondYear = new Tag { Id = 4, Value = "2nd Year Project", TagGroup = mandatoryProjectsTG };
+        var spring22 = new Tag { Id = 5, Value = "Spring 2022", TagGroup = semesterTG };
+
+        // Projects
+        var mathProject = new Project { Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<Tag>() { math }, Supervisors = new HashSet<User>() { birgit } };
+        var databaseProject = new Project { Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = new HashSet<Tag>() { sql, spring22 }, Supervisors = new HashSet<User>() { bjorn } };
+        var goProject = new Project { Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = new HashSet<Tag>() { goLang }, Supervisors = new HashSet<User>() { marco } };
+        var secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
+        // -------------------
+
+        // Universities
+        var ituUni = new University
+        {
+            DomainName = "itu.dk",
+            Projects = new HashSet<Project>() { mathProject, databaseProject, goProject, secondYearProject },
+            TagGroups = new HashSet<TagGroup>() { semesterTG, programmingLanguageTG, mandatoryProjectsTG, topicTG },
+            Users = new HashSet<User>() { marco, birgit, bjorn, paolo, rasmus }
+        };
+
+        context.Universities.Add(ituUni);
 
         context.SaveChanges();
     }
@@ -109,23 +153,21 @@ public static class WebApplicationFactoryExtensions
         {
             builder.ConfigureTestServices(services =>
             {
-                services.AddAuthentication("Test")
-                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });
- 
+                //services.AddAuthentication("Test").AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });
                 services.AddScoped<TestClaimsProvider>(_ => claimsProvider);
             });
         });
     }
- 
+
     public static HttpClient CreateClientWithTestAuth<T>(this WebApplicationFactory<T> factory, TestClaimsProvider claimsProvider) where T : class
     {
         var client = factory.WithAuthentication(claimsProvider).CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false
         });
- 
+
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
- 
+
         return client;
     }
 }
