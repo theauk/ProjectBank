@@ -88,7 +88,7 @@
                                 <a href="index/@project.Id">
                                     <div class="projectEntryContent">
                                         <h4 class="mb-0 projectName">@project.Name</h4>
-                                        <p class="matchingTags">"need to implement function that shows matching tags"</p>
+                                        <p class="matchingTags">@string.Join(", ", @project.Tags.Select((t => t.Value)))</p>
                                     </div>
                                 </a>
                             </RadzenCard>
