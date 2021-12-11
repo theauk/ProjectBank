@@ -75,7 +75,7 @@
             
                 @foreach (var tg in TagGroups)
                 {
-                    @if (!tg.SupervisorCanAddTag && tg.TagDTOs.Any())
+                    @if (!tg.SupervisorCanAddTag)
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         @if (tg.TagDTOs.Count() <= 0) {
@@ -204,31 +204,13 @@
 
     private async void OnSubmit()
     {
-        foreach (var v in _selectedExistingTagsValues)
-        {
-            foreach (var VARIABLE in v.Value)
-            {
-                Console.WriteLine("selected existing tags id: " + VARIABLE);
-            }
-        }
-
-        foreach (var v in _allSelectedTagsValues)
-        {
-            foreach (var VARIABLE in v.Value)
-            {
-                Console.WriteLine("all selected tags value: " + VARIABLE);
-            }
-        }
-
         _missingTagsName = CheckRequiredTags();
 
         if (!_missingTagsName.Any())
         {
-
-
-    // Missing in _project: tags, supervisors
-
-
+            _project.UserIds = SelectedSupervisorIds.ToHashSet();
+            CreateTags();
+    
             Console.WriteLine("Submit project: " + _project);
             Console.WriteLine("Submit project w/ existing " + _project.ExistingTagIds.Count() + " tags IDS: ");
             foreach (var VARIABLE in _project.ExistingTagIds)
@@ -241,8 +223,6 @@
             {
                 Console.WriteLine(VARIABLE + ", ");
             }
-
-
 
 
             var response = await _http.PostAsJsonAsync("api/Project", _project);
@@ -260,6 +240,15 @@
         {
             Console.WriteLine("Outside else");
             await JsRuntime.InvokeVoidAsync("scrollToTop");
+        }
+    }
+
+    void CreateTags()
+    {
+        foreach (var keyvalue in _allSelectedTagsValues)
+        {
+            var list = keyvalue.Value.Except(_selectedExistingTagsValues[keyvalue.Key]);
+            _project.NewTagDTOs.UnionWith(list.Select(t => new TagCreateDTO {TagGroupId = keyvalue.Key, Value = t}).ToHashSet());
         }
     }
 
