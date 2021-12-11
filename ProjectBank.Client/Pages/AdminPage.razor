@@ -38,22 +38,38 @@
                                     }
                                 </HeaderTemplate>
                                 <ChildContent>
-                                    <div class="flex-row tagGroupSelections">
-                                        <div class="tagGroupChecks">
-                                            <div>
-                                                <RadzenCheckBox class="selectLeftItem" @bind-Value=@tg.RequiredInProject TValue="bool" Change=@(_ => _edited[tg.Id] = true)/>
-                                                <RadzenLabel Text="Required"/>
+                                    <div class="selectGrid">
+                                        <div class="flex-row tagGroupSelections">
+                                            <div class="tagGroupChecks">
+                                                <div>
+                                                    <RadzenCheckBox class="selectLeftItem" @bind-Value=@tg.RequiredInProject TValue="bool" Change=@(_ => _edited[tg.Id] = true) />
+                                                    <RadzenLabel Text="Required"/>
+                                                </div>
+                                                <div>
+                                                    <RadzenCheckBox class="selectLeftItem" @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ => _edited[tg.Id] = true) />
+                                                    <RadzenLabel Text="Supervisors can add tags"/>
+                                                </div>
                                             </div>
                                             <div>
-                                                <RadzenCheckBox class="selectLeftItem" @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ => _edited[tg.Id] = true)/>
-                                                <RadzenLabel Text="Supervisors can add tags"/>
+                                                <RadzenLabel class="selectLeftItem" Text="Maximum tags"/>
+                                                <RadzenNumeric @bind-Value=@tg.TagLimit TValue="int?" Placeholder="No limit" Min="1" style="width: 200px" Change=@(_ => _edited[tg.Id] = true) />
                                             </div>
+                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Text="Delete Tag" Click=@(_ => RemoveTagGroup(tg)) />
                                         </div>
-                                        <div>
-                                            <RadzenLabel class="selectLeftItem" Text="Maximum tags"/>
-                                            <RadzenNumeric @bind-Value=@tg.TagLimit TValue="int?" Placeholder="No limit" Min="1" style="width: 200px" Change=@(_ => _edited[tg.Id] = true)/>
+                                        <div class="adminPageTags">
+                                            <Autocomplete class="autocompleteTags"
+                                                          TItem="TagDTO"
+                                                          TValue="int"
+                                                          Data="@_tagGroups.First(t => t.Id == tg.Id).TagDTOs"
+                                                          TextField="@((item) => item.Value)"
+                                                          ValueField="@((item) => item.Id)"
+                                                          Placeholder="Search or press enter to create new..."
+                                                          Multiple
+                                                          FreeTyping
+                                                          @bind-SelectedValues="_multipleSelectionTagsData[tg.Id]"
+                                                          @bind-SelectedTexts="_multipleSelectionTagsTexts[tg.Id]">
+                                            </Autocomplete>
                                         </div>
-                                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Text="Delete Tag" style="float: right" Click=@(_ => RemoveTagGroup(tg))/>
                                     </div>
                                 </ChildContent>
                             </RadzenFieldset>
@@ -70,8 +86,8 @@
         private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} tag groups)";
         private const int PageSize = 5;
     int _count;
-    int lastSkip;
-    int lastTake;
+    int _lastSkip;
+    int _lastTake;
 
     private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
     private IEnumerable<TagGroupUpdateDTO> TagGroupsUpdateDtos { get; set; } = new List<TagGroupUpdateDTO>();
@@ -81,12 +97,16 @@
     private Dictionary<int, bool> _edited = new();
     private Dictionary<int, bool> _editingName = new();
 
+    Dictionary<int, List<int>> _multipleSelectionTagsData = new();
+    //List<int> _multipleSelectionTagsData = new List<int>(); // TODO: for update – might need ID instead of value. 
+    Dictionary<int, List<string>> _multipleSelectionTagsTexts = new();
+
     protected override async Task OnInitializedAsync()
     {
         _edited.Add(-1, true);
         _editingName.Add(-1, true);
 
-    //_tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
+        //_tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
 
         var tags = new HashSet<TagDTO>();
         tags.Add(new TagDTO() {Id = 1, TagGroupId = 1, Value = "SWU"});
@@ -110,8 +130,13 @@
         tgs.Add(tg7);
         tgs.Add(tg8);
         _tagGroups = tgs;
-
-
+        
+        foreach(var tg in _tagGroups)
+        {
+            _multipleSelectionTagsData[tg.Id] = tg.TagDTOs.Select(t => t.Id).ToList();
+            _multipleSelectionTagsTexts[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
+        }
+        
         TagGroupsUpdateDtos = _tagGroups.Select(tg => tg.ToUpdateDTO()).ToList();
 
         foreach (var tg in TagGroupsUpdateDtos)
@@ -122,8 +147,8 @@
 
         _count = TagGroupsUpdateDtos.Count();
         _visibleTagGroups = TagGroupsUpdateDtos.Skip(0).Take(PageSize).ToList();
-        lastSkip = 0;
-        lastTake = PageSize;
+        _lastSkip = 0;
+        _lastTake = PageSize;
 
         await base.OnInitializedAsync();
     }
@@ -131,17 +156,17 @@
     void UpdateVisibleTgs(PagerEventArgs args)
     {
         _visibleTagGroups = TagGroupsUpdateDtos.Skip(args.Skip).Take(args.Top).ToList();
-        lastSkip = args.Skip;
-        lastTake = args.Top;
+        _lastSkip = args.Skip;
+        _lastTake = args.Top;
     }
 
     private async void Save()
     {
         foreach (var tg in TagGroupsUpdateDtos)
-            if (tg.Id == -1)
-                await _http.PostAsJsonAsync("api/TagGroup", tg.Depress());
-            else if (_edited[tg.Id])
-                await _http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
+        if (tg.Id == -1) // todo: hvad er det her???
+            await _http.PostAsJsonAsync("api/TagGroup", tg.Depress()); // todo: hvad er det her???
+        else if (_edited[tg.Id])
+            await _http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
 
         foreach (var id in _deletedTgs)
             await _http.DeleteAsync($"api/TagGroup/{id}");
@@ -151,14 +176,15 @@
 
     private void Cancel()
     {
-        _nav.NavigateTo($"{_nav.BaseUri}/index");
+        _nav.NavigateTo($"{_nav.BaseUri}");
     }
 
-    private void RemoveTagGroup(TagGroupUpdateDTO tg)
+    private async void RemoveTagGroup(TagGroupUpdateDTO tg)
     {
         _deletedTgs.Add(tg.Id);
         TagGroupsUpdateDtos = TagGroupsUpdateDtos.Where(t => t.Id != tg.Id).ToList();
-        _visibleTagGroups = TagGroupsUpdateDtos.Skip(lastSkip).Take(lastTake).ToList();
+
+        _visibleTagGroups = TagGroupsUpdateDtos.Skip(_lastSkip).Take(_lastTake).ToList();
         _count = TagGroupsUpdateDtos.Count();
     }
 
