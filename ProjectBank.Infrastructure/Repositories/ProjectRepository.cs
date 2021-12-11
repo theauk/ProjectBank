@@ -55,7 +55,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 Id = project.Id,
                 Name = project.Name,
                 Description = project.Description,
-                Tags = project.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                Tags = project.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(),
                 Supervisors = project.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
             };
         }
@@ -69,7 +69,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(),
                 Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet()
             }).ToListAsync()).AsReadOnly();
 
@@ -86,7 +86,7 @@ namespace ProjectBank.Infrastructure.Repositories
                     Id = p.Id,
                     Name = p.Name,
                     Description = p.Description,
-                    Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                    Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(),
                     Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet()
                 }).ToListAsync()).AsReadOnly();
             return projects;
