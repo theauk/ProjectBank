@@ -70,26 +70,30 @@ namespace ProjectBank.Infrastructure.Repositories
                 Name = p.Name,
                 Description = p.Description,
                 Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
-                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet()
+                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet(),
             }).ToListAsync()).AsReadOnly();
 
             return projects;
         }
         
         
-        public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds, IEnumerable<int> supervisorIds)
+        public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IList<int> tagIds, IList<int> supervisorIds)
         {
-            var projects = (await _context.Projects
-                .Where(p => supervisorIds.All(sId => p.Supervisors.Select(s => s.Id).Contains(sId)))
-                .Where(p => tagIds.All(tId => p.Tags.Select(t => t.Id).Contains(tId))).Select(p => new ProjectDTO
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
-                    Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet()
-                }).ToListAsync()).AsReadOnly();
-            return projects;
+            var projects = _context.Projects.Select(p => new ProjectDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
+                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet(),
+            }).ToList();
+            
+            if (tagIds.Any())
+                projects = projects.Where(p => tagIds.All(tId => p.Tags.Select(t => t.Id).Contains(tId))).ToList();
+            if (supervisorIds.Any())
+                projects = projects.Where(p => supervisorIds.All(sId => p.Supervisors.Select(s => s.Id).Contains(sId))).ToList();
+            
+            return projects.AsReadOnly();
         }
 
         public async Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)
