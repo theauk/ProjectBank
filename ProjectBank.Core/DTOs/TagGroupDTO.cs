@@ -6,7 +6,7 @@ namespace ProjectBank.Core.DTOs
 
         [Required] public string Name { get; init; }
 
-        public ISet<TagDTO> TagDTOs { get; init; } = new HashSet<TagDTO>();
+        public ISet<TagDTO> TagDTOs { get; init; } = new SortedSet<TagDTO>();
 
         [Required]
         public bool SupervisorCanAddTag { get; init; }
@@ -22,7 +22,7 @@ namespace ProjectBank.Core.DTOs
         [Required]
         public string Name { get; set; }
 
-        public ISet<TagCreateDTO> NewTagsDTOs { get; set; } = new HashSet<TagCreateDTO>();
+        public ISet<TagCreateDTO> NewTagsDTOs { get; set; } = new SortedSet<TagCreateDTO>();
 
         [Required] public bool SupervisorCanAddTag { get; set; } = true;
 

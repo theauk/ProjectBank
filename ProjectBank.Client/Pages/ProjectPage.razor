@@ -5,11 +5,11 @@
 
 <PageTitle>Project Page</PageTitle>
 
-@if (Id == -1 && _project != null)
+@if ( _response == "" && _project == null)
 {
     <h1>Loading...</h1>
 }
-else
+else if ( _project != null && _response != "404")
 {
     <h1>@_project.Name</h1>
     <div>
@@ -25,6 +25,10 @@ else
         <p>@string.Join(", ", _project.Tags.Select((t => t.Value)))</p>
     </div>
 }
+else
+{
+    <h1>404 Not Found</h1>
+}
 
 @code {
 
@@ -32,17 +36,14 @@ else
     public int Id { get; set; }
 
     private ProjectDTO? _project = null;
+    private string _response = "";
 
     protected override async void OnParametersSet()
     {
-        try
-        {
-            _project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
-        }
-        catch (Exception e)
-        {
-            Id = -1;
-        }
+        _response = await (await _http.GetAsync($"api/Project/{Id}")).Content.ReadAsStringAsync();
+        _project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
+
+
     }
 
 }
