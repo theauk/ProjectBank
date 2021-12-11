@@ -78,7 +78,7 @@
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         @if (tg.TagDTOs.Count() <= 5)
-                        {
+                        { @*
                             <RadzenCheckBoxList class="tagCheckItem" style="margin-bottom: 20px" @bind-Value="@SelectedTags[tg.Id]" TValue="int">
                                 <Items>
                                     @foreach (var tag in tg.TagDTOs)
@@ -86,7 +86,7 @@
                                         <RadzenCheckBoxListItem Style="min-width: 160px; max-width: 160px" Text=@tag.Value Value=@tag.Id/>
                                     }
                                 </Items>
-                            </RadzenCheckBoxList>
+                            </RadzenCheckBoxList> *@
                         }
                         else
                         {
@@ -101,7 +101,7 @@
                             </RadzenListBox>
                         }
                     }
-                    else if (tg.SupervisorCanAddTag)
+                    else if (tg.SupervisorCanAddTag && tg.TagDTOs.Any())
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         <Autocomplete class="autocompleteTags tagCheckItem" Style="max-width: 40%"
@@ -114,9 +114,7 @@
                                       Multiple
                                       FreeTyping
                                       @bind-SelectedValues="SelectedTags[tg.Id]"
-                                      @bind-SelectedTexts= "_multipleSelectionTagsText[tg.Id]"
-                                      >
-                            
+                                      @bind-SelectedTexts="_multipleSelectionTagsText[tg.Id]">
                         </Autocomplete>
                     }
                 }
@@ -145,7 +143,7 @@
     private Dictionary<int, List<int>> SelectedTags = new();
     private IEnumerable<int> SelectedSupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
 
-    Dictionary<int, List<int>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
+    Dictionary<int, List<TagDTO>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
     Dictionary<int, List<string>> _multipleSelectionTagsText = new();
 
     private string _submitFormId = "submitForm";
@@ -161,12 +159,12 @@
             Id = 99,
             RequiredInProject = true,
             SupervisorCanAddTag = true,
-            TagDTOs = new HashSet<TagDTO>()
+            TagDTOs = new HashSet<TagDTO>{new TagDTO{Id = 109, TagGroupId = 99, Value = "this"}}
         };
         TagGroups = new List<TagGroupDTO>{t}; 
         foreach (var tg in TagGroups)
         {
-            _multipleSelectionTagsData[tg.Id] = new List<int>();
+            _multipleSelectionTagsData[tg.Id] = new List<TagDTO>();
             _multipleSelectionTagsText[tg.Id] = new List<string>();
             SelectedTags.Add(tg.Id, new List<int>());
             if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
@@ -202,7 +200,7 @@
 
     private async void OnSubmit()
     {
-        Console.WriteLine(_project);
+        Console.WriteLine(SelectedTags[99]);
         _missingTagsName = CheckRequiredTags();
 
         if (!_missingTagsName.Any())
@@ -229,5 +227,4 @@
     {
         _navigationManager.NavigateTo($"{_navigationManager.BaseUri}supervisorOverview");
     }
-
 }
