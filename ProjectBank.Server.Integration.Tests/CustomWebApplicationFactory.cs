@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Identity.Web;
 using ProjectBank.Core.IRepositories;
 using ProjectBank.Infrastructure;
 using ProjectBank.Infrastructure.Entities;
@@ -37,13 +34,13 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = "Test";
-                options.DefaultChallengeScheme = "Test";
-                options.DefaultScheme = "Test";
-            })
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+            // services.AddAuthentication(options =>
+            // {
+            //     options.DefaultAuthenticateScheme = "Test";
+            //     options.DefaultChallengeScheme = "Test";
+            //     options.DefaultScheme = "Test";
+            // })
+            // .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
 
             var connection = new SqliteConnection("Filename=:memory:");
 
@@ -153,7 +150,7 @@ public static class WebApplicationFactoryExtensions
         {
             builder.ConfigureTestServices(services =>
             {
-                //services.AddAuthentication("Test").AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });
+                services.AddAuthentication("Test").AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", op => { });
                 services.AddScoped<TestClaimsProvider>(_ => claimsProvider);
             });
         });

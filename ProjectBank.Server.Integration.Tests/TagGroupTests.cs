@@ -17,9 +17,8 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
     {
         var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
-        var response = await client.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
+        var response = await client.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/Project");
 
-        
         // var tagGroups = await _client.GetFromJsonAsync<TagGroupDTO[]>("/api/TagGroup");
         // Assert.NotNull(tagGroups);
         // Assert.True(tagGroups.Length >= 4);
