@@ -78,8 +78,28 @@
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         @if (tg.TagDTOs.Count() <= 5)
-                        { @*
-                            <RadzenCheckBoxList class="tagCheckItem" style="margin-bottom: 20px" @bind-Value="@SelectedTags[tg.Id]" TValue="int">
+                        { 
+                            <RadzenCheckBoxList Data="tg.TagDTOs" 
+                                                TItem="TagDTO" 
+                                                TValue="int" 
+                                                TextProperty="Value" 
+                                                ValueProperty="Id" 
+                                                @bind-SelectedValues="@_selectedExistingTagsValues[tg.Id]" />
+                            
+                            @*<RadzenCheckBoxList class="tagCheckItem" style="margin-bottom: 20px" @bind-SelectedTexts="@_selectedExistingTagsIds[tg.Id]" TValue="int">
+                                <Items>
+                                    @foreach (var tag in tg.TagDTOs)
+                                    {
+                                        <RadzenCheckBoxListItem Style="min-width: 160px; max-width: 160px" Text=@tag.Value Value=@tag.Id/>
+                                    }
+                                </Items>
+                            </RadzenCheckBoxList>
+                            
+                            @*<RadzenCheckBoxList class="tagCheckItem" style="margin-bottom: 20px"
+                                                TItem="TagDTO" 
+                                                TValue="int"
+                                                @bind-SelectedValues="@_selectedExistingTagsIds[tg.Id]"
+                                                >
                                 <Items>
                                     @foreach (var tag in tg.TagDTOs)
                                     {
@@ -95,7 +115,7 @@
                                 AllowFiltering="true"
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 Multiple="true"
-                                @bind-Value="@_selectedExistingTagsIds[tg.Id]"
+                                @bind-Value="@_selectedExistingTagsValues[tg.Id]"
                                 TextProperty="Value"
                                 ValueProperty="Id">
                             </RadzenListBox>
@@ -106,14 +126,14 @@
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         <Autocomplete class="autocompleteTags tagCheckItem" Style="max-width: 40%"
                                       TItem="TagDTO"
-                                      TValue="int"
+                                      TValue="string"
                                       Data="tg.TagDTOs"
                                       TextField="@((item) => item.Value)"
-                                      ValueField="@((item) => item.Id)"
+                                      ValueField="@((item) => item.Value)"
                                       Placeholder="Search or press enter to create new..."
                                       Multiple
                                       FreeTyping
-                                      @bind-SelectedValues="_selectedExistingTagsIds[tg.Id]"
+                                      @bind-SelectedValues="_selectedExistingTagsValues[tg.Id]"
                                       @bind-SelectedTexts="_allSelectedTagsValues[tg.Id]">
                         </Autocomplete>
                     }
@@ -142,7 +162,7 @@
     
     private IEnumerable<int> SelectedSupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
     
-    private Dictionary<int, List<int>> _selectedExistingTagsIds = new();
+    private Dictionary<int, List<string>> _selectedExistingTagsValues = new();
     private Dictionary<int, List<string>> _allSelectedTagsValues = new();
 
     private string _submitFormId = "submitForm";
@@ -160,11 +180,19 @@
             SupervisorCanAddTag = true,
             TagDTOs = new HashSet<TagDTO>{new TagDTO{Id = 109, TagGroupId = 99, Value = "this"}}
         };
-        TagGroups = new List<TagGroupDTO>{t}; 
+        TagGroupDTO t2 = new TagGroupDTO
+        {
+            Name = "The Checkbox",
+            Id = 88,
+            RequiredInProject = true,
+            SupervisorCanAddTag = false,
+            TagDTOs = new HashSet<TagDTO>{new TagDTO{Id = 109, TagGroupId = 99, Value = "Checkbox"}}
+        };
+        TagGroups = new List<TagGroupDTO>{t, t2}; 
         foreach (var tg in TagGroups)
         {
             _allSelectedTagsValues.Add(tg.Id, new List<string>());
-            _selectedExistingTagsIds.Add(tg.Id, new List<int>());
+            _selectedExistingTagsValues.Add(tg.Id, new List<string>());
             if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
         }
         
@@ -179,7 +207,6 @@
 
     private IEnumerable<string> CheckRequiredTags()
     {
-        var list = new List<String>();
         return (from tg in RequiredTagGroups where !_allSelectedTagsValues[tg.Key].Any() select tg.Value.Name).ToList();
     }
 
@@ -188,10 +215,10 @@
         _missingTagsName = CheckRequiredTags();
         await JsRuntime.InvokeVoidAsync("scrollToTop");
     }
-
+    
     private async void OnSubmit()
     {
-        foreach (var v in _selectedExistingTagsIds)
+        foreach (var v in _selectedExistingTagsValues)
         {
             foreach (var VARIABLE in v.Value)
             {
@@ -211,6 +238,27 @@
 
         if (!_missingTagsName.Any())
         {
+            
+            
+            // Missing in _project: tags, supervisors
+
+
+            Console.WriteLine("Submit project: " + _project);
+            Console.WriteLine("Submit project w/ existing " + _project.ExistingTagIds.Count() + " tags IDS: ");
+            foreach (var VARIABLE in _project.ExistingTagIds)
+            {
+                Console.WriteLine(VARIABLE + ", ");    
+            }
+            
+            Console.WriteLine("Submit project w/ new " + _project.NewTagDTOs.Count() + " tags VALUES: ");
+            foreach (var VARIABLE in _project.NewTagDTOs)
+            {
+                Console.WriteLine(VARIABLE + ", ");    
+            }
+            
+            
+            
+            
             var response = await _http.PostAsJsonAsync("api/Project", _project);
             if (response.IsSuccessStatusCode)
             {
