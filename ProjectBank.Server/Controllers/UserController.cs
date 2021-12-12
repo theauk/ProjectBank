@@ -19,7 +19,11 @@ public class UserController : ControllerBase
     {
         throw new NotImplementedException();
     }
-    
+
+    [Authorize]
+    [HttpGet("filter")]
+    public async Task<IReadOnlyCollection<UserDTO>> Get() => await _repository.ReadAllActiveAsync();
+
     [Authorize]
     [HttpGet("roles/{role}")]
     public async Task<IReadOnlyCollection<UserDTO>> Get(string role = "all")
