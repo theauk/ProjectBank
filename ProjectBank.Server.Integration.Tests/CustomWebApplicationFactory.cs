@@ -45,12 +45,12 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             var connection = new SqliteConnection("Filename=:memory:");
 
             services.AddDbContext<ProjectBankContext>(options => options.UseSqlite(connection));
-            services.AddScoped<IProjectBankContext, ProjectBankContext>();
-            services.AddScoped<IUniversityRepository, UniversityRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IProjectRepository, ProjectRepository>();
-            services.AddScoped<ITagGroupRepository, TagGroupRepository>();
-            services.AddScoped<ITagRepository, TagRepository>();
+            // services.AddScoped<IProjectBankContext, ProjectBankContext>();
+            // services.AddScoped<IUniversityRepository, UniversityRepository>();
+            // services.AddScoped<IUserRepository, UserRepository>();
+            // services.AddScoped<IProjectRepository, ProjectRepository>();
+            // services.AddScoped<ITagGroupRepository, TagGroupRepository>();
+            // services.AddScoped<ITagRepository, TagRepository>();
 
             var provider = services.BuildServiceProvider();
             using var scope = provider.CreateScope();
