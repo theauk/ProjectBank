@@ -11,14 +11,16 @@ using Xunit;
 
 namespace ProjectBank.Infrastructure.Tests
 {
-    public class ProjectRepositoryTests : IDisposable
+    public class ProjectRepositoryTests : RepoTests
     {
-        private readonly ProjectBankContext _context;
+        //private readonly ProjectBankContext _context;
         private readonly ProjectRepository _repository;
-        private bool disposedValue;
+        //private bool disposedValue;
 
         public ProjectRepositoryTests()
         {
+            _repository = new ProjectRepository(_context);
+            /*
             var connection = new SqliteConnection("Filename=:memory:");
             connection.Open();
 
@@ -28,6 +30,7 @@ namespace ProjectBank.Infrastructure.Tests
             var context = new ProjectBankContext(builder.Options);
             context.Database.EnsureCreated();
 
+            
             // --- Test data ---
             // Supervisors
             var marco = new User { Id = 1, Name = "Marco", Email = "marco@itu.dk"};
@@ -100,7 +103,7 @@ namespace ProjectBank.Infrastructure.Tests
 
             context.SaveChanges();
             _context = context;
-            _repository = new ProjectRepository(_context);
+            _repository = new ProjectRepository(_context);*/
         }
 
         [Fact]
@@ -253,26 +256,6 @@ namespace ProjectBank.Infrastructure.Tests
             var actual = await _repository.UpdateAsync(1, project);
 
             Assert.Equal(Response.BadRequest, actual);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-
-                }
-
-                disposedValue = true;
-            }
-        }
-
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -20,7 +20,7 @@ public class ProjectControllerTests
             Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 1, Name = "Birgit" } }
         };
         var repository = new Mock<IProjectRepository>();
-        repository.Setup(m => m.CreateAsync(toCreate)).ReturnsAsync(response);
+        repository.Setup(m => m.CreateAsync(toCreate, "test", "test@itu.dk")).ReturnsAsync(response);
         
         var controller = new ProjectController(repository.Object);
 

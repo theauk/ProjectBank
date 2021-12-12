@@ -31,21 +31,6 @@ namespace ProjectBank.Infrastructure.Repositories
                 Name = u.Name
             }).ToListAsync()).AsReadOnly();
 
-            // // TEMP SUPERVISOR LIST for testing
-            // var marco = new UserDTO { Id = 1, Name = "Marco" };
-            // var birgit = new UserDTO { Id = 2, Name = "Birgit" };
-            // var bjorn = new UserDTO { Id = 3, Name = "Bjørn" };
-            // var paolo = new UserDTO { Id = 4, Name = "Paolo" };
-            // var rasmus = new UserDTO { Id = 5, Name = "Rasmus" };
-            //
-            // var usersList = new List<UserDTO>();
-            // usersList.Add(marco);
-            // usersList.Add(birgit);
-            // usersList.Add(bjorn);
-            // usersList.Add(paolo);
-            // usersList.Add(rasmus);
-            // var users = new ReadOnlyCollection<UserDTO>(usersList);
-
             return users;
             
         }
