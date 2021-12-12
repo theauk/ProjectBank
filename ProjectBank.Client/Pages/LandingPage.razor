@@ -9,6 +9,7 @@
     <div class="row" style="margin-bottom: 20px">
         <div class="col-md-3 align-right">
             <h1 class="landingPageTitle">Filter</h1>
+            @*TODO: make scrollbar, if tag container goes to far.*@
             <div class="tagFilterContainer">
                 @if (!_tagGroups.Any())
                 {
@@ -76,19 +77,23 @@
         <div class="col">
             <h1 class="landingPageTitle">Projects</h1>
             <div class="projectList">
-                @if (!_allProjects.Any())
+                @if (!_loaded)
                 {
                     <p>Loading projects...</p>
                 }
+                else if (!_allProjects.Any())
+                {
+                    <p>No projects found!</p>
+                }
                 else
                 {
-                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@_visibleProjects" TItem="ProjectDTO">
+                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@VisibleProjects" TItem="ProjectDTO">
                         <Template Context="project">
                             <RadzenCard Style="width:300px; margin: 0;">
                                 <a href="index/@project.Id">
                                     <div class="projectEntryContent">
                                         <h4 class="mb-0 projectName">@project.Name</h4>
-                                        <p class="matchingTags">"need to implement function that shows matching tags"</p>
+                                        <p class="matchingTags">@string.Join(", ", project.Tags.Select(t => t.Value))</p>
                                     </div>
                                 </a>
                             </RadzenCard>
@@ -105,14 +110,17 @@
 @code {
     private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} projects)";
     private const int PageSize = 10;
-    int _count;
+    private int _count;
+    private int _skip;
+    private int _take = PageSize;
+    private bool _loaded;
     
     private IEnumerable<ProjectDTO> _allProjects = new List<ProjectDTO>();
-    private IEnumerable<ProjectDTO> _visibleProjects = new List<ProjectDTO>();
+    private IEnumerable<ProjectDTO> VisibleProjects => _allProjects.Skip(_skip).Take(_take);
     
     private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new();
-    private HashSet<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate( // ikke sikker på hvad den her er til
+    private HashSet<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate( // ikke sikker på hvad den her er til | løber over _selectedTagsOfTagGroup og giver alle ids - Viktor.
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
         );
@@ -123,8 +131,8 @@
     protected override async Task OnInitializedAsync()
     {
         _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>();
-        
         _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
+        
         if (_tagGroups.Any())
         {
             foreach (var tg in _tagGroups)
@@ -132,30 +140,37 @@
         }
 
         _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project") ?? new List<ProjectDTO>();
-        if (_allProjects.Any())
-        {
-            _count = _allProjects.Count();
-            _visibleProjects = _allProjects.Skip(0).Take(PageSize).ToList();
-            
-        }
+        _count = _allProjects.Count();
         
         await base.OnInitializedAsync();
+        _loaded = true;
     }
 
     void UpdateVisibleProjects(PagerEventArgs args)
     {
-        _visibleProjects = _allProjects.Skip(args.Skip).Take(args.Top).ToList();
+        _skip = args.Skip;
+        _take = args.Top;
     }
 
     async Task ApplyFilter()
     {
+        var parameters = new List<string>();
+        if (SelectedTags.Any())
+            parameters.Add(string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
+        if (_selectedSupervisors.Any())
+            parameters.Add(string.Join("&", _selectedSupervisors.Select(s => $"supervisorIds={s.ToString()}")));
+        
         _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")) + "&" + string.Join("&", _selectedSupervisors.Select(s => $"supervisorIds={s}"))) ?? new List<ProjectDTO>(); //todo hilfen mit filtering ples
-        if (_allProjects.Any())
-        {
-            _count = _allProjects.Count();
-            _visibleProjects =  _allProjects.Skip(0).Take(PageSize).ToList();
-        }
+            "api/Project?" + string.Join("&", parameters)
+        ) ?? new List<ProjectDTO>();
+        
+        _skip = 0;
+        _take = PageSize;
+        _count = _allProjects.Count();
+        
+        Console.WriteLine("Selected tags: " + string.Join(", ", SelectedTags));
+        Console.WriteLine("Connected to: api/Project?" + string.Join("&", parameters));
+        Console.WriteLine("Received projects: " + string.Join(" ", _allProjects.Select(p => p.Id)));
+        Console.WriteLine(string.Join("&", SelectedTags.Select(t => $"tagIds={t.ToString()}")));
     }
-
 }

@@ -34,18 +34,10 @@ public class ProjectController : ControllerBase
         var response = await _repository.CreateAsync(project);
         return response.ToActionResult();
     }
-    
-    [Authorize]
-    [HttpGet]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get()
-    {
-        var projects = await _repository.ReadAllAsync();
-        return projects.IsNullOrEmpty() ? new List<ProjectDTO>() : projects;
-    }
 
     [Authorize]
-    [HttpGet("{tagIds}/{supervisorIds}")]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IEnumerable<int> tagIds, [FromQuery] IEnumerable<int> supervisorIds) //Todo Spørgsmål - hvad gør FromQuery?
+    [HttpGet]
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds, [FromQuery] IList<int> supervisorIds) //Todo Spørgsmål - hvad gør FromQuery?
     {
         IReadOnlyCollection<ProjectDTO> resp;
         if (!tagIds.Any() && !supervisorIds.Any())
@@ -53,8 +45,7 @@ public class ProjectController : ControllerBase
         else
             resp = await _repository.ReadFilteredAsync(tagIds, supervisorIds);
 
-        if (resp.IsNullOrEmpty()) return new List<ProjectDTO>();
-        return resp;
+        return resp.IsNullOrEmpty() ? new List<ProjectDTO>().AsReadOnly() : resp;
     }
 
     [Authorize(Roles = "Admin, Supervisor")] // Vi skal sørge for at supervisors ikke kan slette/opdatere andre supervisors projekter - Skal gøres i Razor/Blazor
