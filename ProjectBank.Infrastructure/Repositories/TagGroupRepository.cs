@@ -76,28 +76,44 @@ namespace ProjectBank.Infrastructure.Repositories
             var entity = await _context.TagGroups.Include(tg => tg.Tags).FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
 
             if (entity == null) return Response.NotFound;
+            
+            //get rid of deleted tags
+            var oldTagGroupDto = (await ReadAsync(tagGroupId)).Value;
+            var deletedTagIds = (from tagDTO in oldTagGroupDto.TagDTOs 
+                                        where !tagGroup.SelectedTagValues.Contains(tagDTO.Value) 
+                                        select tagDTO.Id).ToList();
+            
+            var DeleteResponse = await DeleteTagAsync(deletedTagIds);
+            if (DeleteResponse == Response.NotFound)
+            {
+                return DeleteResponse;
+            }
+        
+            //Create new tags
+            var newTagDTOs = ( from tagValue in tagGroup.SelectedTagValues 
+                                                where !oldTagGroupDto.TagDTOs.Select(t => t.Value).ToList().Contains(tagValue) 
+                                                select new TagCreateDTO {TagGroupId = tagGroupId, Value = tagValue}).ToList();
+
+            await AddTagAsync(tagGroupId, newTagDTOs);
+            
 
             entity.Name = tagGroup.Name;
             entity.RequiredInProject = tagGroup.RequiredInProject;
             entity.SupervisorCanAddTag = tagGroup.SupervisorCanAddTag;
             entity.TagLimit = tagGroup.TagLimit;
             
-            //await DeleteTagAsync(tagGroupId, tagGroup.DeletedTagIds); //todo: fix
-            await AddTagAsync(tagGroupId, tagGroup.NewTagsDTOs);
-            
-            //TODO : handle responses from delete tag and add tag
             await _context.SaveChangesAsync();
             
             return Response.Updated;
         }
         
-        private async Task<Response> DeleteTagAsync(int tagGroupId, ISet<int> tagsToDelete)
+        private async Task<Response> DeleteTagAsync(IEnumerable<int> tagsToDelete)
         {
             foreach (var id in tagsToDelete)
             {
                 var entity = await _context.Tags.FindAsync(id);
                 
-                if (entity == null) return Response.Conflict; 
+                if (entity == null) return Response.NotFound; 
 
                 _context.Tags.Remove(entity);
             }
@@ -107,16 +123,14 @@ namespace ProjectBank.Infrastructure.Repositories
 
         }
         
-        private async Task<Response> AddTagAsync(int tagGroupId, ISet<TagCreateDTO> tagsToAdd)
+        private async Task<Response> AddTagAsync(int tagGroupId, IEnumerable<TagCreateDTO> tagsToAdd)
         {
-            var tagGroup = await _context.TagGroups.FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
-            if (tagGroup == null) return Response.NotFound;
+            var tagGroup = await _context.TagGroups.FindAsync(tagGroupId);
             
             foreach (var tagCreateDto in tagsToAdd)
             {
                 tagGroup.Tags.Add(new Tag(){Value = tagCreateDto.Value});
             }
-            await _context.SaveChangesAsync();
             return Response.Created;
         }
     }
