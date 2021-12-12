@@ -71,10 +71,17 @@
 .tagCheckItemTitle {
     text-decoration: underline;
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
+}
+
+.requiredText {
+    font-style: italic;
+    margin-bottom: 0 !important;
+    color: var(--submitButton);
 }
 
 .tagCheckItem {
+    margin-top: 10px;
     margin-bottom: 20px !important;
 }
 

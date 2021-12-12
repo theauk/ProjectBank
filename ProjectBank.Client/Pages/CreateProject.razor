@@ -13,6 +13,7 @@
     <div class="row" style="margin-bottom: 48px">
         <div class="col-md-2 align-right">
             <RadzenLabel class="formLabelTextCreateProject" Text="Name"/>
+            <p class="requiredText">Required</p>   
         </div>
         <div class="col">
             <RadzenTextBox style="display: block; width: 50%;" Name="ProjectName" @bind-Value="@_project.Name"/>
@@ -22,6 +23,7 @@
     <div class="row" style="margin-bottom: 48px">
         <div class="col-md-2 align-right">
             <RadzenLabel class="formLabelTextCreateProject" Text="Description"/>
+            <p class="requiredText">Required</p>   
         </div>
         <div class="col">
             <RadzenTextArea style="display: block; width: 50%; height: 100px" Name="ProjectDescription" @bind-Value="@_project.Description"></RadzenTextArea>
@@ -77,7 +79,11 @@
                 {
                     @if (!tg.SupervisorCanAddTag)
                     {
-                        <h5 class="tagCheckItemTitle">@tg.Name</h5>
+                        <h5 class="tagCheckItemTitle">@tg.Name</h5>    
+                        @if (tg.RequiredInProject)
+                        {
+                            <p class="requiredText">Required</p>    
+                        }
                         @if (tg.TagDTOs.Count() <= 6) {
                                 
                             <RadzenCheckBoxList @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]" 
@@ -105,6 +111,10 @@
                     else if (tg.SupervisorCanAddTag && tg.TagDTOs.Any())
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
+                        @if (tg.RequiredInProject)
+                        {
+                            <p class="requiredText">Required</p>    
+                        }
                         <Autocomplete class="autocompleteTags tagCheckItem" Style="max-width: 40%"
                                       TItem="TagDTO"
                                       TValue="string"
