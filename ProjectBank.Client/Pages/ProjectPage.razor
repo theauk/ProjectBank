@@ -2,7 +2,6 @@
 @page "/index/{Id:int}"
 @inject HttpClient _http
 @using Microsoft.AspNetCore.Authorization
-@using System.Text.Json
 @attribute [Authorize(Roles = "Admin, Supervisor, Student")]
 
 <PageTitle>Project Page</PageTitle>
@@ -11,8 +10,13 @@
     {
         <h1>Loading... </h1>
     }
+    else if ( _response.StatusCode.ToString().ToLower() == "notfound" )
+    {
+        <h1>404 Not Found</h1>
+    }
     else if ( _project != null )
     {
+
         <h1>@_project.Name</h1>
         <div>
             <h2>Description</h2>
@@ -41,10 +45,6 @@
             }
         </div>
     }
-    else
-    {
-        <h1>404 Not Found</h1>
-    }
 </div>
 @code {
 
@@ -58,13 +58,9 @@
     protected override async Task OnParametersSetAsync()
     {
         _response = await _http.GetAsync($"api/Project/{Id}");
-
-        // _project = JsonSerializer.Deserialize<ProjectDTO>(await _response.Content.ReadAsStringAsync());
-        
-        Console.WriteLine("ResponseCode is " + _response.StatusCode );
-        
-        // _project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
-
+        Console.WriteLine("ResponseCode is " + _response.StatusCode.ToString().ToLower() );
+        // Console.WriteLine("JsonString is: " +"@"+ (await _response.Content.ReadAsStringAsync()));
+        _project = await _response.Content.ReadFromJsonAsync<ProjectDTO>();
 
         
     }
