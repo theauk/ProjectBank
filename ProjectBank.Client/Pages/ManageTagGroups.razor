@@ -117,7 +117,7 @@
             _allSelectedTagsValues[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
         }
         
-        TagGroupsUpdateDtos = _tagGroups.Select(tg => tg.ToUpdateDTO()).ToList();
+        TagGroupsUpdateDtos = _tagGroups.Select(tg => tg.ToUpdateDto()).ToList();
 
         foreach (var tg in TagGroupsUpdateDtos)
         {

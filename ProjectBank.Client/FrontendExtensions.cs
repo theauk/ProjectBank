@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using ProjectBank.Core.DTOs;
+﻿using ProjectBank.Core.DTOs;
 
 namespace ProjectBank.Client
 {
     public static class FrontendExtensions
     {
-        public static TagGroupUpdateDTO ToUpdateDTO(this TagGroupDTO tg)
+        public static TagGroupUpdateDTO ToUpdateDto(this TagGroupDTO tg)
         {
             return new TagGroupUpdateDTO()
             {

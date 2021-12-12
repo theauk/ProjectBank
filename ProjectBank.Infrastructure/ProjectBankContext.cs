@@ -1,5 +1,3 @@
-using ProjectBank.Infrastructure.Entities;
-
 namespace ProjectBank.Infrastructure
 {
     public class ProjectBankContext : DbContext, IProjectBankContext
@@ -15,31 +13,31 @@ namespace ProjectBank.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<University>(e => {
-                e.HasKey(e => e.DomainName);
-                e.HasIndex(e => e.DomainName)
+                e.HasKey(university => university.DomainName);
+                e.HasIndex(university => university.DomainName)
                 .IsUnique();
             });
 
             modelBuilder.Entity<User>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasIndex(user => user.Id)
                 .IsUnique();
             });
 
             modelBuilder.Entity<Project>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasIndex(project => project.Id)
                 .IsUnique();
             });
 
             modelBuilder.Entity<Tag>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasIndex(tag => tag.Id)
                 .IsUnique();
 
-                e.HasIndex(e => e.Value)
+                e.HasIndex(tag => tag.Value)
                 .IsUnique();
             });
 
             modelBuilder.Entity<TagGroup>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasIndex(tagGroup => tagGroup.Id)
                 .IsUnique();
             });
         }

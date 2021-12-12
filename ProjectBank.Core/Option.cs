@@ -20,5 +20,4 @@ public struct Option<T> where T : class
     public static implicit operator T(Option<T> option) => option.Value;
 
     public static implicit operator Option<T>(T? value) => new(value);
-
 }

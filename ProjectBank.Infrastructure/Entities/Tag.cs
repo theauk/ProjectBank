@@ -5,7 +5,9 @@ namespace ProjectBank.Infrastructure.Entities
     {
         public int Id { get; set; }
 
-        [Required] [StringLength(100)] public string Value { get; set; }
+        [Required] 
+        [StringLength(100)] 
+        public string Value { get; set; }
 
         public TagGroup TagGroup { get; set; }
 

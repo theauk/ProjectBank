@@ -39,7 +39,7 @@ public class TagGroupController : ControllerBase
         return CreatedAtAction(nameof(Get), response);
     }
 
-    [Authorize(Roles = "Admin")] 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
