@@ -4,9 +4,10 @@ namespace ProjectBank.Core.DTOs
     {
         public int Id { get; init; }
 
-        [Required] public string Name { get; init; }
+        [Required] 
+        public string Name { get; init; }
 
-        public ISet<TagDTO> TagDTOs { get; init; } = new HashSet<TagDTO>();
+        public IList<TagDTO> TagDTOs { get; init; } = new List<TagDTO>();
 
         [Required]
         public bool SupervisorCanAddTag { get; init; }
@@ -37,7 +38,7 @@ namespace ProjectBank.Core.DTOs
     {
         public int Id { get; init; }
         
-        public ISet<int> DeletedTagIds { get; set; } = new HashSet<int>();
+        public ISet<string> SelectedTagValues { get; set; } = new HashSet<string>();
 
     }
 }

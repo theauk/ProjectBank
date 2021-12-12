@@ -7,14 +7,15 @@ namespace ProjectBank.Infrastructure.Entities
         [Required]
         public string Name { get; set; }
 
-        public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
+        public ICollection<Tag> Tags { get; set; } = new SortedSet<Tag>();
 
         [Required]
         public bool SupervisorCanAddTag { get; set; }
-
+        
         [Required]
         public bool RequiredInProject { get; set; }
 
         public int? TagLimit { get; set; }
+        
     }
 }

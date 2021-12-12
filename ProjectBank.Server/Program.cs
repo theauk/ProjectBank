@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Identity.Web;
-using Microsoft.EntityFrameworkCore;
 using ProjectBank.Infrastructure;
 using ProjectBank.Core.IRepositories;
 using ProjectBank.Infrastructure.Repositories;
@@ -23,7 +20,6 @@ builder.Services.AddScoped<IUniversityRepository, UniversityRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ITagGroupRepository, TagGroupRepository>();
-builder.Services.AddScoped<ITagRepository, TagRepository>();
 
 builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {
@@ -66,3 +62,5 @@ if (!app.Environment.IsEnvironment("Integration"))
 }
 
 app.Run();
+
+public partial class Program { }

@@ -6,92 +6,177 @@
 
 /* Project Overview */
 
-.ProjectContainer {
+.projectContainer {
     margin-right: 15%;
+    height: 100%;
 }
 
-.ProjectList {
-    float: right;
-    width: 71%;
-    height: 85%;
-    background-color: red;
-    border: 2px solid lightgrey;
-    border-radius: 8px;
-    padding: 1.2%;
-    overflow: scroll;
-    overflow-x: hidden;
+.landingPageTitle {
+    margin: 15px 0 25px 0;
 }
 
-.ProjectEntry {
-    width: 100%;
-    background-color: darkred;
-    border-radius: 18px;
-    padding-right: 3%;
-    padding-left: 3%;
-    margin-bottom: 10px;
+.projectList {
+    border-radius: 2px;
 }
 
-.FilterContainer {
-    float: left;
-    position: absolute;
-    width: 18.5%;
-    bottom: 50px;
-    top: 75px;
-    background-color: blue;
-    border: 2px solid lightgrey;
-    border-radius: 8px;
-    padding: 1.2%;
+.projectName {
+    color: #1a1e21;
 }
 
-.TagFilter {
-    border: solid 2px lightgrey;
-    border-radius: 8px;
-    height: 92%;
-    padding: 1.8%;
-    background-color: darkblue;
-    overflow: scroll;
-    overflow-x: hidden;
+.matchingTags {
+    margin-top: 10px;
+    color: #1c33af;
+    text-decoration: none;
 }
 
-.TagFieldSet {
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    background-color: aquamarine;
-    border: solid 2px lightgrey;
-    border-radius: 10px;
+.projectEntryContent {
+    padding: 7px 0 7px;
 }
 
-.TagFieldTitle {
-    font-size: 30px;
+.tagFieldSet {
+    border: none !important;
+    overflow-wrap: break-word;
 }
 
-/* Project Page */
+.projectCardsFlex > .rz-g {
+    gap: 25px;
+}
+
+.rz-fieldset-legend {
+    padding: 10px 0 10px 0 !important;
+    margin: 0 !important;
+    white-space: normal !important;
+}
+
+.rz-fieldset-content {
+    padding: 0 20px 0 20px !important;
+}
+
+.tagFieldTitle {
+    font-size: 20px;
+    color: #4A4A4A;
+}
+
+.landingPagePager {
+    margin-top: 25px;
+}
 
 /* Project Creation */
 
-.tagCheckItem {
-    text-decoration: underline;
+.formLabelTextCreateProject {
+    font-weight: bold;
+    font-size: 20px;
 }
 
-/* Admin Page */
+.tagCheckItemTitle {
+    text-decoration: underline;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
 
-.TagGroupContainer, .CreateProjectContainer {
-    position: absolute;
-    margin: auto;
-    border: solid 2px lightgrey;
-    border-radius: 8px;
-    bottom: 50px;
-    top: 75px;
-    left: 20%;
-    right: 20%;
-    overflow: scroll;
-    overflow-x: hidden;
-    padding: 1%;
+.requiredText {
+    font-style: italic;
+    margin-bottom: 0 !important;
+    color: var(--submitButton);
+}
+
+.tagCheckItem {
+    margin-top: 10px;
+    margin-bottom: 20px !important;
+}
+
+.tagDropDown {
+    min-width: 250px;
+    height: 230px;
+}
+
+.missingRequiredTags {
+    color: #f9777f; 
+    font-size: 0.85rem; 
+    margin-top: 10px
+}
+
+/* Manage Tag Groups */
+
+.adminPageContainer {
+    width: 70%;
+}
+
+.tgCard {
+    width: 100%;
+}
+
+.adminPageTopBar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.adminPageButtonContainer {
+    display: flex;
+    align-items: center;
+}
+.selectGrid {
+    height: 150px;
+}
+
+.tagGroupSelections {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tagGroupChecks {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rz-spinner {
+    width: 100px !important;
+}
+
+.tgCard {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.selectLeftItem {
+    margin-right: 5px;
+}
+
+.adminPageTags {
+    margin-top: 15px;
+    width: 50%;
+}
+
+.adminAutocomplete {
+    position: absolute !important;
+    z-index: 2000 !important;
+    width: 50% !important;
+}
+
+.createTagGroupButton {
+    margin-right: 20px;
+    background-color: #613cbe !important;
+}
+
+/* Create Tag Group */
+
+.formLabelText {
+    font-weight: bold;
+}
+
+.tagGroupName {
+    width: 100%
 }
 
 .autocompleteTags {
     background-color: white;
     font-size: 18px;
+}
+
+.autoCompleteCreateTg {
+    width: 100% !important;
 }
 
 .badge.badge-primary.ml-2, .rz-chkbox-box.rz-state-active {
@@ -104,10 +189,6 @@
 
 /* General */
 
-.formLabelText {
-    font-weight: bold;
-}
-
 .submitButton {
     background-color: var(--submitButton) !important;
     margin-right: 20px;
@@ -115,4 +196,27 @@
 
 .cancelButton {
     background-color: var(--cancelButton) !important;
+}
+
+.lowerSubmitCancelButtons {
+    margin-top: 50px;
+    margin-bottom: 70px;
+}
+
+.form-control {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.tagFieldSet, .tagGroupFieldSet {
+    border: none !important;
+    overflow-wrap: break-word;
+}
+
+.rz-paginator-last, .rz-paginator-next {
+    background-color: var(--submitButton) !important;
+}
+
+.top-row.px-4.auth {
+    z-index: 3000;    
 }

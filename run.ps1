@@ -1,62 +1,68 @@
-param([bool]$dev)
+param([bool]$production, [bool]$dev)
 
 function Main {
-    if ($dev) {
-        OnlyDatabase
-    } else {
+    if (!$dev) {
+        Write-Host "STARTING VIA DOCKER-COMPOSE"
         DockerCompose
+    } else {
+        Write-Host "STARTING VIA DOTNET RUN WITH HOT RELOAD"
+        DotnetRun
     }
 }
 
 function DockerCompose {
-    # Ensure certificate is present
-    Write-Host "STARTING VIA DOCKER-COMPOSE"
+    Write-Host "PRODUCTION MODE = $production"
     Write-Host
-    Write-Host "CREATING DEV CERTIFICATE FOR OS $Env:OS"
-    dotnet dev-certs https --clean
+    $file = "docker-compose.dev.yml"
 
-    if ($IsWindows) {
-        Write-Host "WINDOWS DETECTED"
-        dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\aspnetapp.pfx -p localhost
-    }
-    elseif ($IsMacOS -or $IsLinux) {
-        Write-Host "MAC OR LINUX DETECTED"
-        dotnet dev-certs https -ep $env:HOME/.aspnet/https/aspnetapp.pfx -p localhost
+    if ($production) {
+        $file = "docker-compose.prod.yml"
     }
 
-    dotnet dev-certs https --trust
+    docker-compose -f $file up -d --build
     Write-Host "DONE."
-
-    # Run docker-compose
     Write-Host
-    Write-Host "STARTING 'ProjectBank'"
-    docker-compose up -d
-    Write-Host "DONE."
-    docker-compose ps
+
+    docker-compose -f $file ps
+    Write-Host
     Write-Host "------------------------------------------------------------------------------------"
-    Write-Host "TO STOP THE PROJECT WRITE: docker-compose stop"
+    Write-Host "TO STOP THE PROJECT WRITE:"
+    Write-Host "docker-compose -f $file stop"
+    Write-Host
 }
 
-function OnlyDatabase {
-    Write-Host "STARTING VIA PROJECT"
-    Write-Host
+function DotnetRun {
+    $Env:ASPNETCORE_ENVIRONMENT = "Development"
 
     $user = "postgres"
-    $password = "postgress"
+    $password = New-Guid
     $db = "projectbank"
 
-
     Write-Host "STARTING DATABASE"
-    docker run --name db --rm -p 5435:5434 -e "POSTGRES_USER=$user" -e "POSTGRES_PASSWORD=$password" -e "POSTGRES_DB=$db" -d postgres
+    docker run --name db --rm -d -p 5431:5432 -e "POSTGRES_USER=$user" -e "POSTGRES_PASSWORD=$password" -e "POSTGRES_DB=$db" postgres:latest
     Write-Host "DONE."
+    Write-Host 
 
-    $connectionString = "Host=localhost;Port=5432;Database=$db;Username=$user;Password=$password;"
+    Write-Host "SETTING DOTNET SECRETS"
+    $connectionString = "Host=localhost;Port=5431;Database=$db;Username=$user;Password=$password"
     dotnet user-secrets init --project ProjectBank.Server
     dotnet user-secrets set "ConnectionStrings:ProjectBank" "$connectionString" --project ProjectBank.Server
+    Write-Host "DONE."
+
+    Write-Host 
+    Write-Host "TO STOP THE DATA BASE WRITE:"
+    Write-Host "docker stop db"
+    Write-Host
+    Start-Sleep -Seconds 5
 
     Write-Host "STARTING APPLICATION"
-    dotnet run --project ProjectBank.Server
-    docker stop db
+    
+    if ($IsWindows) {
+        dotnet watch run --project .\ProjectBank.Server\
+    }
+    elseif ($IsMacOS -or $IsLinux) {
+        dotnet watch run --project ./ProjectBank.Server/
+    }
 }
 
 Main

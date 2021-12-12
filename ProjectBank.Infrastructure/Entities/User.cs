@@ -6,5 +6,11 @@ namespace ProjectBank.Infrastructure.Entities
 
         [Required]
         public string Name { get; set; }
+
+        public University University { get; set; }
+
+        public ICollection<Project> Projects { get; set; } = new HashSet<Project>(); // todo: this is never used???
+        
+        public string Email { get; set; }
     }
 }

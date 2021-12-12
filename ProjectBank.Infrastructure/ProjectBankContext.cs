@@ -15,30 +15,31 @@ namespace ProjectBank.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<University>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasKey(university => university.DomainName);
+                e.HasIndex(university => university.DomainName)
                 .IsUnique();
             });
 
             modelBuilder.Entity<User>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasIndex(user => user.Id)
                 .IsUnique();
             });
 
             modelBuilder.Entity<Project>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasIndex(project => project.Id)
                 .IsUnique();
             });
 
             modelBuilder.Entity<Tag>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasIndex(tag => tag.Id)
                 .IsUnique();
 
-                e.HasIndex(e => e.Value)
+                e.HasIndex(tag => tag.Value)
                 .IsUnique();
             });
 
             modelBuilder.Entity<TagGroup>(e => {
-                e.HasIndex(e => e.Id)
+                e.HasIndex(tagGroup => tagGroup.Id)
                 .IsUnique();
             });
         }

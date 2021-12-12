@@ -1,10 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-using ProjectBank.Server.Model;
-
 namespace ProjectBank.Server.Controllers;
 
 [Authorize]
@@ -21,30 +14,34 @@ public class TagGroupController : ControllerBase
     }
 
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(TagGroupDTO), StatusCodes.Status200OK)]
     [HttpGet("{id}")]
-    public async Task<ActionResult<TagGroupDTO>> Get(int id)
+    public async Task<ActionResult<TagGroupDTO?>> Get(int id)
     {
-        var tagGroupDto = await _repository.ReadAsync(id);
-        return tagGroupDto.ToActionResult();
+        var response = await _repository.ReadAsync(id);
+        return response.ToActionResult();
     }
 
     [Authorize]
     [HttpGet]
     public async Task<IReadOnlyCollection<TagGroupDTO>> Get()
     {
-        var taggroupDtos = await _repository.ReadAllAsync();
-        return taggroupDtos;
+        return await _repository.ReadAllAsync();
     }
 
     [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [HttpPost]
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
     {
         var response = await _repository.CreateAsync(tagGroup);
-        return response.ToActionResult();
+        return CreatedAtAction(nameof(Get), response);
     }
 
-    [Authorize(Roles = "Admin")] 
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -53,6 +50,8 @@ public class TagGroupController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] TagGroupUpdateDTO tagGroup)
     {

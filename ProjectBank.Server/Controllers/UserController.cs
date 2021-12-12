@@ -1,9 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-
 namespace ProjectBank.Server.Controllers;
 
 [Authorize]
@@ -14,24 +8,25 @@ public class UserController : ControllerBase
 {
     private readonly IUserRepository _repository;
 
-    [AllowAnonymous]
-    [HttpGet("{id}")]
-    public async Task<ActionResult<UserDTO>> Get(int id)
+    public UserController(IUserRepository repository)
     {
-        throw new NotImplementedException();
+        _repository = repository;
     }
 
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<IReadOnlyCollection<UserDTO>> Get()
+    [Authorize]
+    [HttpGet("roles/{role}")]
+    public async Task<IReadOnlyCollection<UserDTO>> Get(string role = "all")
     {
-        throw new NotImplementedException();
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPost]
-    public async Task<IActionResult> Post(UserCreateDTO tag)
-    {
-        throw new NotImplementedException();
+        if (role == "all")
+        {
+            var supervisorUserDTOs = await _repository.ReadAllAsync();
+            return supervisorUserDTOs;
+        }
+        else
+        {
+            var supervisorUserDTOs = await _repository.ReadAllAsync();
+            // var supervisorUserDTOs = await _repository.ReadBasedOnRoleAsync(role); // ToDo Need implementation in User database/repository  via Azure API Call
+            return supervisorUserDTOs;
+        }
     }
 }

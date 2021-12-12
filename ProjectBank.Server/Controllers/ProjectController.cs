@@ -1,7 +1,5 @@
+using System.Security.Claims;
 using Blazorise.Extensions;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-using ProjectBank.Server.Model;
 
 namespace ProjectBank.Server.Controllers;
 
@@ -18,37 +16,43 @@ public class ProjectController : ControllerBase
         _repository = repository;
     }
 
-    [AllowAnonymous]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProjectDTO), StatusCodes.Status200OK)]
     [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectDTO>> Get(int id)
+    public async Task<ActionResult<ProjectDTO?>> Get(int id)
     {
         var projectDto = await _repository.ReadAsync(id);
         return projectDto.ToActionResult();
     }
 
     [Authorize(Roles = "Admin, Supervisor")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> Post(ProjectCreateDTO project)
     {
-        var response = await _repository.CreateAsync(project);
-        return response.ToActionResult();
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var name = User.FindFirstValue("name");
+        var response = await _repository.CreateAsync(project, email, name);
+        return CreatedAtAction(nameof(Get), response);
     }
 
     [Authorize]
     [HttpGet]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IEnumerable<int> tagIds)
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds,
+        [FromQuery] IList<int> supervisorIds)
     {
         IReadOnlyCollection<ProjectDTO> resp;
-        if (!tagIds.Any())
+        if (!tagIds.Any() && !supervisorIds.Any())
             resp = await _repository.ReadAllAsync();
         else
-            resp = await _repository.ReadFilteredAsync(tagIds);
+            resp = await _repository.ReadFilteredAsync(tagIds, supervisorIds);
 
-        if (resp.IsNullOrEmpty()) return new List<ProjectDTO>();
-        return resp;
+        return resp.IsNullOrEmpty() ? new List<ProjectDTO>().AsReadOnly() : resp;
     }
 
-    [Authorize(Roles = "Admin, Supervisor")] // Vi skal sørge for at supervisors ikke kan slette/opdatere andre supervisors projekter - Skal gøres i Razor/Blazor
+    [Authorize(Roles = "Admin, Supervisor")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -57,6 +61,8 @@ public class ProjectController : ControllerBase
     }
 
     [Authorize(Roles = "Admin, Supervisor")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] ProjectUpdateDTO project)
     {

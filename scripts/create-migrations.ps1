@@ -1,8 +1,11 @@
-# USe this script to create a migration and create a certificate to be able to run our Blazor server.
+# USe this script to create a migration.
 
 # Migrations
 Write-Host "CREATING MIGRATIONS..."
-Set-Location ..\ProjectBank.Infrastructure
-dotnet ef --startup-project ..\ProjectBank.Server\ migrations add InitialCreate
-Set-Location ..
+if ($IsWindows) {
+    dotnet ef --startup-project ..\ProjectBank.Server\ migrations add InitialCreate --project ..\ProjectBank.InfraStructure
+}
+elseif ($IsMacOS -or $IsLinux) {
+    dotnet ef --startup-project ../ProjectBank.Server/ migrations add InitialCreate --project ../ProjectBank.InfraStructure
+}
 Write-Host "DONE."
