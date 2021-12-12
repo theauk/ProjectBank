@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Claims;
 using Blazorise.Extensions;
 using ProjectBank.Core.DTOs;
@@ -31,8 +32,9 @@ public class ProjectController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(ProjectCreateDTO project)
     {
-        var response = await _repository.CreateAsync(project);
-        // TODO: Automatically add current user to SupervisorIds.
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var name = User.FindFirstValue("name");
+        var response = await _repository.CreateAsync(project, email, name);
         return response.ToActionResult();
     }
 

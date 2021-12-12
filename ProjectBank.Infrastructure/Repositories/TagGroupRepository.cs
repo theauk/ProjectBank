@@ -129,7 +129,7 @@ namespace ProjectBank.Infrastructure.Repositories
             
             foreach (var tagCreateDto in tagsToAdd)
             {
-                tagGroup.Tags.Add(new Tag(){Value = tagCreateDto.Value});
+                tagGroup.Tags.Add(new Tag {Value = tagCreateDto.Value});
             }
             return Response.Created;
         }

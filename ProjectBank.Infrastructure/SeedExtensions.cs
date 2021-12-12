@@ -24,26 +24,24 @@ namespace ProjectBank.Infrastructure
             if (!await context.Universities.AnyAsync())
             {
                 // USERS
-                var gustav = new User { Name = "Gustav Metnik-Beck" };
-                var viktor = new User { Name = "Viktor Mønster" };
-                var thea = new User { Name = "Thea Kjeldsmark" };
-                var mai = new User { Name = "Mai Sigurd" };
-                var oliver = new User { Name = "Oliver Nord" };
-                var joanna = new User { Name = "Joanna Laursen" };
-                var morten = new User { Name = "Morten Nielsen" };
-                var kasper = new User { Name = "Kasper Mørk Jensen" };
-                var cecilie = new User { Name = "Cecilie Rønberg" };
-                var carl = new User { Name = "Carl Vestebryg" };
-                var sille = new User { Name = "Sille Mortensen" };
-                var josefine = new User { Name = "Josefine Nørgaard" };
-                var paolo = new User { Name = "Paolo Tell" };
-                var rasmus = new User { Name = "Rasmus Lystrøm" };
+                var gustav = new User { Name = "Gustav Metnik-Beck", Email = "gume@itu.dk"};
+                var viktor = new User { Name = "Viktor Mønster", Email = "vikm@itu.dk"};
+                var mai = new User { Name = "Mai Sigurd", Email = "maod@itu.dk"};
+                var oliver = new User { Name = "Oliver Nord", Email = "olno@itu.dk"};
+                var joanna = new User { Name = "Joanna Laursen", Email = "jskl@itu.dk"};
+                var morten = new User { Name = "Morten Nielsen", Email = "morten@itu.dk"};
+                var kasper = new User { Name = "Kasper Mørk Jensen", Email = "kasper@itu.dk"};
+                var cecilie = new User { Name = "Cecilie Rønberg", Email = "cecilie@itu.dk"};
+                var carl = new User { Name = "Carl Vestebryg", Email = "carl@itu.dk"};
+                var sille = new User { Name = "Sille Mortensen", Email = "sille@itu.dk"};
+                var josefine = new User { Name = "Josefine Nørgaard", Email = "josf@itu.dk"};
+                var paolo = new User { Name = "Paolo Tell", Email = "pate@itu.dk"}; // todo: update
+                var rasmus = new User { Name = "Rasmus Lystrøm", Email = "rnie@itu.dk"};
 
                 var usersSet = new HashSet<User>()
                 {
                     gustav,
                     viktor,
-                    thea,
                     mai,
                     oliver,
                     joanna,
@@ -271,7 +269,7 @@ namespace ProjectBank.Infrastructure
                     Name = "1st year project",
                     Description = "This report talks about the proces of programing a streaming service, in java.",
                     Tags = new HashSet<Tag>() { secondSemester, spring, uXSubject, danishLanguage, javaProLang, algorithmsTopic },
-                    Supervisors = new HashSet<User>() { kasper, thea }
+                    Supervisors = new HashSet<User>() { kasper }
                 };
 
                 var secondYearP = new Project

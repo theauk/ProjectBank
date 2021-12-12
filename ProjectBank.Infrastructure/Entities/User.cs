@@ -10,5 +10,7 @@ namespace ProjectBank.Infrastructure.Entities
         public University University { get; set; }
 
         public ICollection<Project> Projects { get; set; } = new HashSet<Project>();
+        
+        public string Email { get; set; }
     }
 }

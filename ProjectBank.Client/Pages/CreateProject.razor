@@ -78,7 +78,7 @@
                     @if (!tg.SupervisorCanAddTag)
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
-                        @if (tg.TagDTOs.Count() <= 8) {
+                        @if (tg.TagDTOs.Count() <= 6) {
                                 
                             <RadzenCheckBoxList @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]" 
                                                 TValue="int" 
@@ -206,10 +206,7 @@
         {
             AddTags();
             var response = await _http.PostAsJsonAsync("api/Project", _project);
-            if (response.IsSuccessStatusCode)
-            {_navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
-            }
-            
+            if (response.IsSuccessStatusCode) _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
         }
         else
         {

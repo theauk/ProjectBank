@@ -108,31 +108,8 @@
         _edited.Add(-1, true);
         _editingName.Add(-1, true);
 
-        //_tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
+        _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
 
-        var tags = new List<TagDTO>();
-        tags.Add(new TagDTO() {Id = 1, TagGroupId = 1, Value = "SWU"});
-
-        var tg1 = new TagGroupDTO {Id = 1, Name = "Programme1", SupervisorCanAddTag = false, RequiredInProject = false, TagDTOs = tags, TagLimit = 1};
-        var tg2 = new TagGroupDTO {Id = 2, Name = "Programme2", SupervisorCanAddTag = false, RequiredInProject = false, TagDTOs = tags, TagLimit = 2};
-        var tg3 = new TagGroupDTO {Id = 3, Name = "Programme3", SupervisorCanAddTag = true, RequiredInProject = true, TagDTOs = tags, TagLimit = 3};
-        /*var tg4 = new TagGroupDTO {Id = 4, Name = "Programme4", SupervisorCanAddTag = true, RequiredInProject = false, TagDTOs = tags, TagLimit = 4};
-        var tg5 = new TagGroupDTO {Id = 5, Name = "Programme5", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 5};
-        var tg6 = new TagGroupDTO {Id = 6, Name = "Programme6", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 6};
-        var tg7 = new TagGroupDTO {Id = 7, Name = "Programme7", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 7};
-        var tg8 = new TagGroupDTO {Id = 8, Name = "Programme8", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 8};*/
-        
-        var tgs = new List<TagGroupDTO>();
-        tgs.Add(tg1);
-        tgs.Add(tg2);
-        tgs.Add(tg3);
-        /*tgs.Add(tg4);
-        tgs.Add(tg5);
-        tgs.Add(tg6);
-        tgs.Add(tg7);
-        tgs.Add(tg8);*/
-        _tagGroups = tgs;
-        
         foreach(var tg in _tagGroups)
         {
             _selectedExistingTags[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
