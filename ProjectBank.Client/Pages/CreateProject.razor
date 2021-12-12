@@ -3,17 +3,22 @@
 @inject NavigationManager _navigationManager
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin, Supervisor")]
-@inject IJSRuntime JsRuntime
+@inject IJSRuntime _jsRuntime
 
 <PageTitle>Create Project</PageTitle>
 
 <h1 style="margin-bottom: 48px">Create Project</h1>
 
+@if (_response is {IsSuccessStatusCode: false })
+{
+    <h2>Something went wrong, please try again!</h2>
+}
+
 <RadzenTemplateForm TItem="ProjectCreateDTO" Data="@_project" Submit="@OnSubmit" InvalidSubmit="OnInvalidSubmit" id="@_submitFormId">
     <div class="row" style="margin-bottom: 48px">
         <div class="col-md-2 align-right">
             <RadzenLabel class="formLabelTextCreateProject" Text="Name"/>
-            <p class="requiredText">Required</p>   
+            <p class="requiredText">Required</p>
         </div>
         <div class="col">
             <RadzenTextBox style="display: block; width: 50%;" Name="ProjectName" @bind-Value="@_project.Name"/>
@@ -23,7 +28,7 @@
     <div class="row" style="margin-bottom: 48px">
         <div class="col-md-2 align-right">
             <RadzenLabel class="formLabelTextCreateProject" Text="Description"/>
-            <p class="requiredText">Required</p>   
+            <p class="requiredText">Required</p>
         </div>
         <div class="col">
             <RadzenTextArea style="display: block; width: 50%; height: 100px" Name="ProjectDescription" @bind-Value="@_project.Description"></RadzenTextArea>
@@ -36,12 +41,12 @@
         </div>
         <div class="col">
             <RadzenListBox class="tagDropDown"
-                @bind-Value="@SelectedSupervisorIds"
-                AllowFiltering="true"
-                Multiple="true"
-                Data="@Supervisors"
-                TextProperty="Name"
-                ValueProperty="Id"/>
+                           @bind-Value="@SelectedSupervisorIds"
+                           AllowFiltering="true"
+                           Multiple="true"
+                           Data="@Supervisors"
+                           TextProperty="Name"
+                           ValueProperty="Id"/>
         </div>
     </div>
 </RadzenTemplateForm>
@@ -61,50 +66,46 @@
                 <RadzenLabel class="formLabelTextCreateProject" Text="Tags"/>
                 @if (_missingTagsName.Any())
                 {
-                    <div style="color: #f9777f; font-size: 0.85rem; margin-top: 10px">
-                        
+                    <div class="missingRequiredTags">
                         <p>Required tags missing:</p>
-
+                        
                         @foreach (var missingTag in _missingTagsName)
                         {
                             <p>@missingTag</p>
-
                         }
                     </div>
                 }
             </div>
             <div class="col">
-            
+
                 @foreach (var tg in TagGroups)
                 {
                     @if (!tg.SupervisorCanAddTag)
                     {
-                        <h5 class="tagCheckItemTitle">@tg.Name</h5>    
+                        <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         @if (tg.RequiredInProject)
                         {
-                            <p class="requiredText">Required</p>    
+                            <p class="requiredText">Required</p>
                         }
-                        @if (tg.TagDTOs.Count() <= 6) {
-                                
-                            <RadzenCheckBoxList @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]" 
-                                                TValue="int" 
+                        @if (tg.TagDTOs.Count() <= 6)
+                        {
+                            <RadzenCheckBoxList @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]"
+                                                TValue="int"
                                                 Orientation="Radzen.Orientation.Vertical"
-                                                Data="@tg.TagDTOs" 
-                                                TextProperty="Value" 
-                                                ValueProperty="Id"
-                                                />
+                                                Data="@tg.TagDTOs"
+                                                TextProperty="Value"
+                                                ValueProperty="Id"/>
                         }
                         else
                         {
                             <RadzenListBox class="tagCheckItem tagDropDown"
-                                Data=@tg.TagDTOs
-                                AllowFiltering="true"
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                Multiple="true"
-                                @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]"
-                                TextProperty="Value"
-                                ValueProperty="Id"
-                                >
+                                           Data=@tg.TagDTOs
+                                           AllowFiltering="true"
+                                           FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                           Multiple="true"
+                                           @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]"
+                                           TextProperty="Value"
+                                           ValueProperty="Id">
                             </RadzenListBox>
                         }
                     }
@@ -113,7 +114,7 @@
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         @if (tg.RequiredInProject)
                         {
-                            <p class="requiredText">Required</p>    
+                            <p class="requiredText">Required</p>
                         }
                         <Autocomplete class="autocompleteTags tagCheckItem" Style="max-width: 40%"
                                       TItem="TagDTO"
@@ -145,7 +146,7 @@
 
 @code {
 
-    Dictionary<int,  IEnumerable<int>> _selectedPredefinedOnlyTagsId = new();
+    Dictionary<int, IEnumerable<int>> _selectedPredefinedOnlyTagsId = new();
     private ProjectCreateDTO _project = new();
 
     private IEnumerable<TagGroupDTO> TagGroups { get; set; } = new List<TagGroupDTO>();
@@ -160,22 +161,24 @@
 
     private string _submitFormId = "submitForm";
     private IEnumerable<string> _missingTagsName = new List<string>();
+    
+    private HttpResponseMessage? _response;
 
     protected override async Task OnInitializedAsync()
     {
         TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
-        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>(); 
-        
+        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>();
+
         foreach (var tg in TagGroups)
         {
             if (tg.SupervisorCanAddTag)
             {
                 _selectedExistingTagsValues[tg.Id] = new List<string>();
-                _allSelectedTagsValues[tg.Id] = new List<string>();    
+                _allSelectedTagsValues[tg.Id] = new List<string>();
             }
             else
             {
-                _selectedPredefinedOnlyTagsId.Add(tg.Id, new List<int>());    
+                _selectedPredefinedOnlyTagsId.Add(tg.Id, new List<int>());
             }
 
             if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
@@ -206,7 +209,7 @@
     async void OnInvalidSubmit()
     {
         _missingTagsName = CheckRequiredTags();
-        await JsRuntime.InvokeVoidAsync("scrollToTop");
+        await _jsRuntime.InvokeVoidAsync("scrollToTop");
     }
 
     private async void OnSubmit()
@@ -215,12 +218,12 @@
         if (!_missingTagsName.Any())
         {
             AddTags();
-            var response = await _http.PostAsJsonAsync("api/Project", _project);
-            if (response.IsSuccessStatusCode) _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+            _response = await _http.PostAsJsonAsync("api/Project", _project);
+            if (_response.IsSuccessStatusCode) _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
         }
         else
         {
-            await JsRuntime.InvokeVoidAsync("scrollToTop");
+            await _jsRuntime.InvokeVoidAsync("scrollToTop");
         }
     }
 
@@ -232,24 +235,25 @@
             var list = tagNames.Except(_selectedExistingTagsValues[tagGroupId]);
             _project.NewTagDTOs.UnionWith(list.Select(t => new TagCreateDTO {TagGroupId = tagGroupId, Value = t}).ToHashSet());
         }
-        // existing tags
+        
+        // Existing tags
         foreach (var list in _selectedPredefinedOnlyTagsId)
         {
             _project.ExistingTagIds.UnionWith(list.Value.ToHashSet());
         }
         _project.UserIds = SelectedSupervisorIds.ToHashSet();
 
-        foreach (var tagDto in from tgIdStringTags in _selectedExistingTagsValues 
-            from tagGroupDto in TagGroups 
-            where tgIdStringTags.Key == tagGroupDto.Id 
-            from val in tgIdStringTags.Value 
-            select tagGroupDto.TagDTOs.FirstOrDefault(t => t.Value.Equals(val)) 
-            into tagDto 
-            where tagDto != null select tagDto)
+        foreach (var tagDto in from tgIdStringTags in _selectedExistingTagsValues
+            from tagGroupDto in TagGroups
+            where tgIdStringTags.Key == tagGroupDto.Id
+            from val in tgIdStringTags.Value
+            select tagGroupDto.TagDTOs.FirstOrDefault(t => t.Value.Equals(val))
+            into tagDto
+            where tagDto != null
+            select tagDto)
         {
             _project.ExistingTagIds.Add(tagDto.Id);
         }
-        
     }
 
     void Cancel()

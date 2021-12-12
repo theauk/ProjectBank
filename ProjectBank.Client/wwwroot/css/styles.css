@@ -90,6 +90,12 @@
     height: 230px;
 }
 
+.missingRequiredTags {
+    color: #f9777f; 
+    font-size: 0.85rem; 
+    margin-top: 10px
+}
+
 /* Manage Tag Groups */
 
 .adminPageContainer {

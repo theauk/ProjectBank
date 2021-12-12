@@ -81,14 +81,8 @@
 @code {
     private string submitFormId = "submitForm";
     TagGroupCreateDTO _tagGroup = new();
-    List<string> _multipleSelectionTagsData; // TODO: for update – might need ID instead of value. 
-    List<string> _multipleSelectionTagsTexts = new List<string>();
-
-    protected override async Task OnInitializedAsync() // TODO: For the update page – here we need to read in the existing tags for the current tag group – so we need to get the tag group ID somehow
-    {
-        _multipleSelectionTagsData = new List<string>();
-        await base.OnInitializedAsync();
-    }
+    List<string> _multipleSelectionTagsData = new();
+    List<string> _multipleSelectionTagsTexts = new();
 
     async Task OnSubmit(TagGroupCreateDTO tagGroup)
     {

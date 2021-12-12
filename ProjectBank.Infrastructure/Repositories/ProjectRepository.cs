@@ -1,3 +1,5 @@
+using System.Net.Mail;
+
 namespace ProjectBank.Infrastructure.Repositories
 {
     public class ProjectRepository : IProjectRepository
@@ -53,6 +55,9 @@ namespace ProjectBank.Infrastructure.Repositories
             
             if (mainSupervisor == null)
             {
+                if (!MailAddress.TryCreate(email, out var mailAddress))
+                    return (Response.BadRequest, new User());
+
                 var universityDomain = email.Split("@");
                 var university = _context.Universities.FirstOrDefault(u => u.DomainName.Equals(universityDomain[1]));
                 if (university == null) return (Response.BadRequest, new User());
@@ -124,8 +129,6 @@ namespace ProjectBank.Infrastructure.Repositories
             //     Supervisors = project.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
             // };
         }
-
-
 
         public async Task<IReadOnlyCollection<ProjectDTO>> ReadAllAsync()
         {

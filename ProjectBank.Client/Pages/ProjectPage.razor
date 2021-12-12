@@ -2,21 +2,18 @@
 @page "/index/{Id:int}"
 @inject HttpClient _http
 @using Microsoft.AspNetCore.Authorization
+@using System.Net
 @attribute [Authorize(Roles = "Admin, Supervisor, Student")]
 
 <PageTitle>Project Page</PageTitle>
-<div class="projectContainer">
-    @if ( _response == null)
-    {
-        <h1>Loading... </h1>
-    }
-    else if ( _response.StatusCode.ToString().ToLower() == "notfound" ) //Todo minor - change to numerical code handling
-    {
-        <h1>404 Not Found</h1>
-    }
-    else if ( _project != null )
-    {
 
+<div class="projectContainer">
+    @if (_response is {StatusCode: HttpStatusCode.NotFound })
+    {
+        <h2>The project could not be found</h2>
+    }
+    else if (_project != null)
+    {
         <h1>@_project.Name</h1>
         <div>
             <h2>Description</h2>
@@ -46,22 +43,18 @@
         </div>
     }
 </div>
-@code {
 
+@code {
     private ProjectDTO? _project;
     private HttpResponseMessage? _response;
 
-    
     [Parameter]
     public int Id { get; set; }
-    
+
     protected override async Task OnParametersSetAsync()
     {
         _response = await _http.GetAsync($"api/Project/{Id}");
-    //This implementation below reduces get calls to server from 2 to 1 while handling HTTPResponse without throwing exception (Gets stuck on loading otherwise)
         _project = await _response.Content.ReadFromJsonAsync<ProjectDTO>();
-        
-        //This implementation cant handle 404 response, throws exception and stops code - result gets stuck on loading
-        // _project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
     }
+
 }

@@ -18,7 +18,7 @@
                 {
                     @foreach (var tg in _tagGroups)
                     {
-                        if (tg.TagDTOs.Any()) 
+                        if (tg.TagDTOs.Any())
                         {
                             <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
                                 <HeaderTemplate>
@@ -74,7 +74,6 @@
                     </RadzenFieldset>
                 }
             </div>
-
         </div>
         <div class="col">
             <h1 class="landingPageTitle">Projects</h1>
@@ -110,19 +109,21 @@
 
 
 @code {
-    private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} projects)";
-    private const int PageSize = 10;
+        private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} projects)";
+        private const int PageSize = 10;
+    
     private int _count;
     private int _skip;
     private int _take = PageSize;
     private bool _loaded;
-    
+
     private IEnumerable<ProjectDTO> _allProjects = new List<ProjectDTO>();
     private IEnumerable<ProjectDTO> VisibleProjects => _allProjects.Skip(_skip).Take(_take);
-    
+
     private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new();
-    private HashSet<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate( 
+
+    private HashSet<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate(
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
         );
@@ -134,7 +135,7 @@
     {
         _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>();
         _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
-        
+
         if (_tagGroups.Any())
         {
             foreach (var tg in _tagGroups)
@@ -143,7 +144,7 @@
 
         _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project") ?? new List<ProjectDTO>();
         _count = _allProjects.Count();
-        
+
         await base.OnInitializedAsync();
         _loaded = true;
     }
@@ -161,13 +162,14 @@
             parameters.Add(string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
         if (_selectedSupervisors.Any())
             parameters.Add(string.Join("&", _selectedSupervisors.Select(s => $"supervisorIds={s.ToString()}")));
-        
+
         _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
             "api/Project?" + string.Join("&", parameters)
-        ) ?? new List<ProjectDTO>();
-        
+            ) ?? new List<ProjectDTO>();
+
         _skip = 0;
         _take = PageSize;
         _count = _allProjects.Count();
     }
+
 }
