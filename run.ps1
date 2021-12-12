@@ -28,6 +28,7 @@ function DockerCompose {
     Write-Host "------------------------------------------------------------------------------------"
     Write-Host "TO STOP THE PROJECT WRITE:"
     Write-Host "docker-compose -f $file stop"
+    Write-Host
 }
 
 function DotnetRun {
