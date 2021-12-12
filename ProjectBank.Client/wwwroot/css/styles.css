@@ -203,3 +203,7 @@
 .rz-paginator-last, .rz-paginator-next {
     background-color: var(--submitButton) !important;
 }
+
+.top-row.px-4.auth {
+    z-index: 3000;    
+}

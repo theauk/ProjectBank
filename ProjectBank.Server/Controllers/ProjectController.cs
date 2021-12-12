@@ -28,6 +28,7 @@ public class ProjectController : ControllerBase
 
     [Authorize(Roles = "Admin, Supervisor")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> Post(ProjectCreateDTO project)
     {
