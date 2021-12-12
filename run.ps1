@@ -56,7 +56,14 @@ function DotnetRun {
     Start-Sleep -Seconds 5
 
     Write-Host "STARTING APPLICATION"
-    dotnet watch run --project .\ProjectBank.Server\
+    
+    if ($IsWindows) {
+        dotnet watch run --project .\ProjectBank.Server\
+    }
+    elseif ($IsMacOS -or $IsLinux) {
+        dotnet watch run --project ./ProjectBank.Server/
+    }
+    
 }
 
 Main

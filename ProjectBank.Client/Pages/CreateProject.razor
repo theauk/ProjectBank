@@ -156,6 +156,21 @@
         TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
         Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>(); 
         
+        foreach (var tg in TagGroups)
+        {
+            if (tg.SupervisorCanAddTag)
+            {
+                _selectedExistingTagsValues[tg.Id] = new List<string>();
+                _allSelectedTagsValues[tg.Id] = new List<string>();    
+            }
+            else
+            {
+                _selectedPredefinedOnlyTagsId.Add(tg.Id, new List<int>());    
+            }
+
+            if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
+        }
+
         _project.UserIds = new HashSet<int>();
         await base.OnInitializedAsync();
     }
