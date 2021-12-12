@@ -6,7 +6,7 @@ namespace ProjectBank.Core.DTOs
 
         [Required] public string Name { get; init; }
 
-        public ISet<TagDTO> TagDTOs { get; init; } = new HashSet<TagDTO>();
+        public ISet<TagDTO> TagDTOs { get; init; }
 
         [Required]
         public bool SupervisorCanAddTag { get; init; }

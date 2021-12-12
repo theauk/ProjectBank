@@ -55,6 +55,6 @@ namespace ProjectBank.Core.DTOs
 
     public record ProjectUpdateDTO : ProjectCreateDTO
     {
-        public int Id { get; init; } //todo Overvej den her når vi har kigget nærmere på frontend
+        public int Id { get; init; } 
     }
 }

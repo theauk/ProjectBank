@@ -142,15 +142,7 @@ public class TagGroupRepositoryTest : IDisposable
             Assert.Contains(createdTagGroupDtO.TagDTOs, actual => actual.Value == expected.Value);   
         }
     }
-/*
-    [Fact]
-    public async Task CreateAsync_create_duplicate_returns_duplicate_response()
-    {
-        //TODO implementér den her
-        // Lidt uden for scope, men kunne være relevant - er ikke blevet implementeret endnu
-        throw new NotImplementedException();
-    }
-*/
+    
     [Fact]
     public async Task DeleteAsync_deletes_tagGroup_with_Id_32()
     {   
