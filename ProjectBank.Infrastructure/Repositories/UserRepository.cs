@@ -13,7 +13,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<Response> CreateAsync(UserCreateDTO user)
         {
-            var entity = new User { Name = user.Name };
+            var entity = new User { Name = user.Name, University = _context.Universities.First() };
 
             _context.Users.Add(entity);
 
@@ -79,7 +79,7 @@ namespace ProjectBank.Infrastructure.Repositories
             
         }
 
-        public async Task<Option<UserDTO?>> ReadAsync(int userId)
+        public async Task<Option<UserDTO>> ReadAsync(int userId)
         {
             var entity = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
