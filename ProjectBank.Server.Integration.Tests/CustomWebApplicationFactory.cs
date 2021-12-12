@@ -34,23 +34,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
 
-            // services.AddAuthentication(options =>
-            // {
-            //     options.DefaultAuthenticateScheme = "Test";
-            //     options.DefaultChallengeScheme = "Test";
-            //     options.DefaultScheme = "Test";
-            // })
-            // .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
-
             var connection = new SqliteConnection("Filename=:memory:");
 
             services.AddDbContext<ProjectBankContext>(options => options.UseSqlite(connection));
-            // services.AddScoped<IProjectBankContext, ProjectBankContext>();
-            // services.AddScoped<IUniversityRepository, UniversityRepository>();
-            // services.AddScoped<IUserRepository, UserRepository>();
-            // services.AddScoped<IProjectRepository, ProjectRepository>();
-            // services.AddScoped<ITagGroupRepository, TagGroupRepository>();
-            // services.AddScoped<ITagRepository, TagRepository>();
 
             var provider = services.BuildServiceProvider();
             using var scope = provider.CreateScope();

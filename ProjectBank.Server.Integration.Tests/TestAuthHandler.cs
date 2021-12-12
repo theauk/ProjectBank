@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace ProjectBank.Server.Integration.Tests;
 
 // Code taken from Rasmus Lystrøm
-
 internal sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     private readonly IList<Claim> _claims;
