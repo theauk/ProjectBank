@@ -28,6 +28,7 @@ function DockerCompose {
     Write-Host "------------------------------------------------------------------------------------"
     Write-Host "TO STOP THE PROJECT WRITE:"
     Write-Host "docker-compose -f $file stop"
+    Write-Host
 }
 
 function DotnetRun {
@@ -40,6 +41,7 @@ function DotnetRun {
     Write-Host "STARTING DATABASE"
     docker run --name db --rm -d -p 5431:5432 -e "POSTGRES_USER=$user" -e "POSTGRES_PASSWORD=$password" -e "POSTGRES_DB=$db" postgres:latest
     Write-Host "DONE."
+    Write-Host 
 
     Write-Host "SETTING DOTNET SECRETS"
     $connectionString = "Host=localhost;Port=5431;Database=$db;Username=$user;Password=$password"
@@ -54,7 +56,13 @@ function DotnetRun {
     Start-Sleep -Seconds 5
 
     Write-Host "STARTING APPLICATION"
-    dotnet watch run --project .\ProjectBank.Server\
+    
+    if ($IsWindows) {
+        dotnet watch run --project .\ProjectBank.Server\
+    }
+    elseif ($IsMacOS -or $IsLinux) {
+        dotnet watch run --project ./ProjectBank.Server/
+    }
 }
 
 Main

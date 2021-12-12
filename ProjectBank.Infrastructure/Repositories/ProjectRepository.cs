@@ -9,26 +9,70 @@ namespace ProjectBank.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Response> CreateAsync(ProjectCreateDTO project)
+        public async Task<Response> CreateAsync(ProjectCreateDTO project, string email, string name)
         {
+            var mainSupervisor = await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
+            
+            // Creation of users would normally already had happen
+            if (mainSupervisor == null)
+            {
+                var universityDomain = email.Split("@");
+                var university = _context.Universities.FirstOrDefault(u => u.DomainName.Equals(universityDomain[1]));
+                if (university == null) return Response.BadRequest;
+                mainSupervisor = new User() {Email = email, Name = name, University = university};
+                _context.Users.Add(mainSupervisor);
+            }
+
+            var (responseSupervisors, supervisors) = await GetUsersAsync(project.UserIds);
+            if (responseSupervisors == Response.BadRequest) return (Response.BadRequest);
+
+            var users = supervisors.ToHashSet();
+            users.Add(mainSupervisor);
+
+            var (responseTags, tags) = await AddTagsFromExistingTagGroupsReturnIds(project.NewTagDTOs);
+            if (responseTags == Response.BadRequest) return Response.BadRequest;
+
             var entity = new Project
             {
                 Name = project.Name,
                 Description = project.Description,
-                Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync(), // TODO create new tags if not existing
-                Supervisors = await GetUsersAsync(project.UserIds).ToSetAsync()
+                Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync(), // todo sammenspil mellem nye tags der bliver laver i controlleren og hvordan de bliver tilføjet til project
+                Supervisors = users
             };
-
-            if (entity.Supervisors.Contains(null))
-            {
-                return (Response.BadRequest);
-            }
-
+            
+            var updatedTags = entity.Tags.Concat(tags);
+            entity.Tags = updatedTags.ToHashSet();
+            
             _context.Projects.Add(entity);
-
             await _context.SaveChangesAsync();
 
             return Response.Created;
+        }
+        
+        private async Task<(Response, IEnumerable<Tag>)> AddTagsFromExistingTagGroupsReturnIds(ISet<TagCreateDTO> projectNewTagDtos)
+        {
+            var newTags = new List<Tag>();
+            
+            foreach (var tag in projectNewTagDtos)
+            {
+                var tagGroup = await _context.TagGroups.FirstOrDefaultAsync(tg => tg.Id == tag.TagGroupId);
+                if (tagGroup == null) return (Response.BadRequest, new List<Tag>());
+
+                var newTag = new Tag {Value = tag.Value};
+                // todo: _context.Tags.Add(newTag); // er det her nødvendigt?
+                tagGroup.Tags.Add(newTag); // eller er det her nok
+
+                newTags.Add(newTag);
+            }
+
+            await _context.SaveChangesAsync();
+
+            foreach (var VARIABLE in newTags) // todo: delete
+            {
+                Console.WriteLine("new tag: " + VARIABLE.Id + " " + VARIABLE.Value + " " + VARIABLE.TagGroup);
+            }
+            
+            return (Response.Created, newTags);
         }
 
         public async Task<Response> DeleteAsync(int projectId)
@@ -48,16 +92,28 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<Option<ProjectDTO?>> ReadAsync(int projectId)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
-
-            return project == null ? null : new ProjectDTO
+            
+            if (_context.Projects.FirstOrDefault(p => p.Id == projectId) == null) return null; //ToDo Find en anden løsning end den her quickfix - Jeg tror at det har noget med Select på null at gøre
+        
+            var project = (await _context.Projects.Where(p =>  (p.Id == projectId)).Select(p => new ProjectDTO()  // ToDo Kan ikke få den her implementation til at håndtere 404 response, heraf løsning med FirstOrDefault
             {
-                Id = project.Id,
-                Name = project.Name,
-                Description = project.Description,
-                Tags = project.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
-                Supervisors = project.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
-            };
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(),
+                Supervisors = p.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
+            } ).ToListAsync()).First();
+
+            return project; 
+            
+            // var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId); // ToDO FirstOrDefaultAsync kan ikke håndtere, at vi referere til associated tags og superviser i henholdvis ProjectTag og ProjectUser
+            // {
+            //     Id = project.Id,
+            //     Name = project.Name,
+            //     Description = project.Description,
+            //     Tags = project.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(), //ToDo Kan ikke få en liste af tags eller supervisors ud i ProjectPage Console -
+            //     Supervisors = project.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
+            // };
         }
 
 
@@ -69,27 +125,31 @@ namespace ProjectBank.Infrastructure.Repositories
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
-                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet()
+                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(), 
+                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet() 
             }).ToListAsync()).AsReadOnly();
 
             return projects;
         }
         
         
-        public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IEnumerable<int> tagIds, IEnumerable<int> supervisorIds)
+        public Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IList<int> tagIds, IList<int> supervisorIds) 
         {
-            var projects = (await _context.Projects
-                .Where(p => supervisorIds.All(sId => p.Supervisors.Select(s => s.Id).Contains(sId)))
-                .Where(p => tagIds.All(tId => p.Tags.Select(t => t.Id).Contains(tId))).Select(p => new ProjectDTO
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).ToHashSet(),
-                    Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet()
-                }).ToListAsync()).AsReadOnly();
-            return projects;
+            var projects = _context.Projects.Select(p => new ProjectDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(),
+                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet(),
+            }).ToList();
+            
+            if (tagIds.Any())
+                projects = projects.Where(p => tagIds.All(tId => p.Tags.Select(t => t.Id).Contains(tId))).ToList();
+            if (supervisorIds.Any())
+                projects = projects.Where(p => supervisorIds.All(sId => p.Supervisors.Select(s => s.Id).Contains(sId))).ToList();
+            
+            return Task.FromResult<IReadOnlyCollection<ProjectDTO>>(projects.AsReadOnly());
         }
 
         public async Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)
@@ -104,12 +164,11 @@ namespace ProjectBank.Infrastructure.Repositories
             entity.Name = project.Name;
             entity.Description = project.Description;
             entity.Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync();
-            entity.Supervisors = await GetUsersAsync(project.UserIds).ToSetAsync();
+            
+            var (supervisorResponse, supervisors) = await GetUsersAsync(project.UserIds);
 
-            if (entity.Supervisors.Contains(null))
-            {
-                return Response.BadRequest;
-            }
+            if (supervisorResponse == Response.BadRequest) return Response.BadRequest;
+            entity.Supervisors = supervisors.ToHashSet();
 
             await _context.SaveChangesAsync();
 
@@ -126,14 +185,19 @@ namespace ProjectBank.Infrastructure.Repositories
             }
         }
 
-        private async IAsyncEnumerable<User> GetUsersAsync(IEnumerable<int> userIds)
+        private async Task<(Response, IEnumerable<User>)> GetUsersAsync(IEnumerable<int> userIds)
         {
             var existing = await _context.Users.Where(u => userIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id);
+            var users = new List<User>();
 
             foreach (var userId in userIds)
             {
-                yield return existing.TryGetValue(userId, out var u) ? u : null;
+                var user = existing.TryGetValue(userId, out var u) ? u : null;
+                if (user != null) users.Add(user);
+                else return (Response.BadRequest, new List<User>());
             }
+
+            return (Response.Success, users);
         }
     }
 }

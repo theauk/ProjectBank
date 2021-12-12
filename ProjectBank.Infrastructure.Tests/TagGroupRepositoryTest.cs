@@ -98,14 +98,13 @@ public class TagGroupRepositoryTest : IDisposable
         Assert.Equal(999, found.Value.TagLimit);
     }
 
-    // [Fact]
-    // public async Task ReadAsync_on_nonexistant_id_throws_InvalidOperationException()
-    // {
-    //         //TODO Fix/Spørgsmål: Hvordan fungerer det med InvalidOperationException i Options?
-    //         var notfound = await   _repository.ReadAsync(56)
-    //         //Assert.Equal(Response.NotFound, notfound);
-    //         //await Assert.ThrowsAsync<InvalidOperationException>(() => _repository.ReadAsync(56));
-    // }
+    [Fact]
+    public async Task ReadAsync_on_nonexistant_id_returns_null()
+    {
+        var actual = await _repository.ReadAsync(56);
+        Assert.Null(actual.Value);
+        
+    }
 
 
     [Fact]
@@ -143,15 +142,7 @@ public class TagGroupRepositoryTest : IDisposable
             Assert.Contains(createdTagGroupDtO.TagDTOs, actual => actual.Value == expected.Value);   
         }
     }
-/*
-    [Fact]
-    public async Task CreateAsync_create_duplicate_returns_duplicate_response()
-    {
-        //TODO implementér den her
-        // Lidt uden for scope, men kunne være relevant - er ikke blevet implementeret endnu
-        throw new NotImplementedException();
-    }
-*/
+    
     [Fact]
     public async Task DeleteAsync_deletes_tagGroup_with_Id_32()
     {   
@@ -174,20 +165,16 @@ public class TagGroupRepositoryTest : IDisposable
     }
 
     
-    
     [Fact]
     public async Task Update_TagGroup_31_with_required_bool_new_tags_new_name()
     {
         //Arrange
-        var tagsToDelete = new HashSet<int>() {12};
-        var spring23 = new TagCreateDTO() {Value = "spring 23"};
-        var tagsToAdd = new HashSet<TagCreateDTO>() {spring23};
+        var tags = new HashSet<string>() {"Autumn 2022", "Spring 2023", "Autumn 2023","Spring 23"};
         var tagGroupUpdate = new TagGroupUpdateDTO()
-            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTagsDTOs = tagsToAdd};
+            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, SelectedTagValues = tags};
         
         // Act
-        var update =  await _repository.UpdateAsync
-            (31, tagGroupUpdate);
+        var update =  await _repository.UpdateAsync(31, tagGroupUpdate);
         var readUpdatedTagGroup = await _repository.ReadAsync(31);
         var updatedTags = readUpdatedTagGroup.Value.TagDTOs;
         
@@ -204,11 +191,9 @@ public class TagGroupRepositoryTest : IDisposable
     public async Task Update_TagGroupID_56_returns_NotFound()
     {
         //Arrange
-        var tagsToDelete = new HashSet<int>() {12};
-        var spring23 = new TagCreateDTO() {Value = "spring 23"};
-        var tagsToAdd = new HashSet<TagCreateDTO>() {spring23};
+        var tags = new HashSet<string>() {"spring 23"};
         var tagGroupUpdate = new TagGroupUpdateDTO()
-            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, DeletedTagIds = tagsToDelete, NewTagsDTOs = tagsToAdd};
+            {Name = "Semester (Updated)", SupervisorCanAddTag = false, RequiredInProject = true, SelectedTagValues = tags};
      
         // Act
         var notFound =  await _repository.UpdateAsync

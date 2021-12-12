@@ -1,5 +1,7 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
 @inject HttpClient _http
+@attribute [Authorize(Roles = "Admin, Supervisor, Student")]
 
 <PageTitle>Landing Page</PageTitle>
 
@@ -16,53 +18,57 @@
                 {
                     @foreach (var tg in _tagGroups)
                     {
-                        <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
-                            <HeaderTemplate>
-                                <b class="tagFieldTitle">@tg.Name.ToUpper()</b>
-                            </HeaderTemplate>
-                            <ChildContent>
-                                @if (tg.TagDTOs.Count() <= 8)
-                                {
-                                    <RadzenCheckBoxList class="checkBoxList"
+                        if (tg.TagDTOs.Any()) 
+                        {
+                            <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
+                                <HeaderTemplate>
+                                    <b class="tagFieldTitle">@tg.Name.ToUpper()</b>
+                                </HeaderTemplate>
+                                <ChildContent>
+                                    @if (tg.TagDTOs.Count() <= 6)
+                                    {
+                                        <RadzenCheckBoxList class="checkBoxList"
+                                                            @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
+                                                            TValue="int" Orientation="Radzen.Orientation.Vertical"
+                                                            Change=@ApplyFilter>
+                                            <Items>
+                                                @foreach (var t in tg.TagDTOs)
+                                                {
+                                                    <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id/>
+                                                }
+                                            </Items>
+                                        </RadzenCheckBoxList>
+                                    }
+                                    else
+                                    {
+                                        <RadzenDropDown AllowFiltering="true"
+                                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                                         @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
-                                                        TValue="int" Orientation="Radzen.Orientation.Vertical"
-                                                        Change=@ApplyFilter>
-                                        <Items>
-                                            @foreach (var t in tg.TagDTOs)
-                                            {
-                                                <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id/>
-                                            }
-                                        </Items>
-                                    </RadzenCheckBoxList>
-                                }
-                                else
-                                {
-                                    <RadzenDropDown AllowFiltering="true"
-                                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                                    @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
-                                                    Multiple="true" 
-                                                    Placeholder="Select..."
-                                                    Data=@tg.TagDTOs 
-                                                    TextProperty="Name"
-                                                    ValueProperty="Id" style="width: 100%;"
-                                                    Change=@ApplyFilter/>
-                                }
-                            </ChildContent>
-                        </RadzenFieldset>
+                                                        Multiple="true"
+                                                        Placeholder="Select..."
+                                                        Data=@tg.TagDTOs
+                                                        TextProperty="Value"
+                                                        ValueProperty="Id"
+                                                        style="width: 100%;"
+                                                        Change=@ApplyFilter/>
+                                    }
+                                </ChildContent>
+                            </RadzenFieldset>
+                        }
                     }
-                    <RadzenFieldset AllowCollapse="true" Collapsed="true" class="TagFieldSet">
+                    <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
                         <HeaderTemplate>
-                            <b class="tagFieldTitle">Supervisors</b>
+                            <b class="tagFieldTitle">SUPERVISORS</b>
                         </HeaderTemplate>
                         <ChildContent>
-                            <RadzenDropDown AllowFiltering="true" 
+                            <RadzenDropDown AllowFiltering="true"
                                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                            @bind-Value=@_selectedSupervisors 
+                                            @bind-Value=@_selectedSupervisors
                                             Multiple="true" Placeholder="Select..."
-                                            Data=@_supervisors 
-                                            TextProperty="Name" 
-                                            ValueProperty="Id" 
-                                            style="width: 100%;" 
+                                            Data=@_supervisors
+                                            TextProperty="Name"
+                                            ValueProperty="Id"
+                                            style="width: 100%;"
                                             Change=@ApplyFilter />
                         </ChildContent>
                     </RadzenFieldset>
@@ -73,25 +79,29 @@
         <div class="col">
             <h1 class="landingPageTitle">Projects</h1>
             <div class="projectList">
-                @if (!_projects.Any())
+                @if (!_loaded)
                 {
                     <p>Loading projects...</p>
                 }
+                else if (!_allProjects.Any())
+                {
+                    <p>No projects found!</p>
+                }
                 else
                 {
-                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@_projects" TItem="ProjectDTO">
+                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@VisibleProjects" TItem="ProjectDTO">
                         <Template Context="project">
                             <RadzenCard Style="width:300px; margin: 0;">
                                 <a href="index/@project.Id">
                                     <div class="projectEntryContent">
                                         <h4 class="mb-0 projectName">@project.Name</h4>
-                                        <p class="matchingTags">"need to implement function that shows matching tags"</p>
+                                        <p class="matchingTags">@string.Join(", ", @project.Tags.Select((t => t.Value)))</p>
                                     </div>
                                 </a>
                             </RadzenCard>
                         </Template>
                     </RadzenDataList>
-                    <RadzenPager class="landingPagePager" ShowPagingSummary="true" PagingSummaryFormat="@_pagingSummaryFormat" Count="@_count" PageSize="@_pageSize" PageChanged="@GetProjects"/>
+                    <RadzenPager class="landingPagePager" ShowPagingSummary="true" PagingSummaryFormat="@PagingSummaryFormat" Count="@_count" PageSize="@PageSize" PageChanged="@UpdateVisibleProjects"/>
                 }
             </div>
         </div>
@@ -100,55 +110,64 @@
 
 
 @code {
-    // todo: implement function that shows the matching tags based on the selected tags
-
-    string _pagingSummaryFormat = "Displaying page {0} of {1} (total {2} projects)";
-    int _pageSize = 10;
-    int _count;
-
-    private IEnumerable<ProjectDTO> _projects = new List<ProjectDTO>();
+    private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} projects)";
+    private const int PageSize = 10;
+    private int _count;
+    private int _skip;
+    private int _take = PageSize;
+    private bool _loaded;
+    
+    private IEnumerable<ProjectDTO> _allProjects = new List<ProjectDTO>();
+    private IEnumerable<ProjectDTO> VisibleProjects => _allProjects.Skip(_skip).Take(_take);
+    
     private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new();
-    // All selected tags, across all TagGroups...
-    private HashSet<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate( // ikke sikker på hvad den her er til
+    private HashSet<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate( 
         new HashSet<int>(),
         (collection, item) => collection.Concat(item.Value).ToHashSet()
         );
 
     private IEnumerable<UserDTO> _supervisors = new List<UserDTO>();
-    private IEnumerable<int> _selectedSupervisors = new List<int>(); //todo sæt den her i html
+    private IEnumerable<int> _selectedSupervisors = new List<int>();
 
     protected override async Task OnInitializedAsync()
     {
-        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
-        Console.WriteLine("sup: " + _supervisors.Count());
+        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>();
+        _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
         
-        var initialProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project");
-        Console.WriteLine("proj: " + initialProjects.Count());
-        _projects = initialProjects.Skip(0).Take(_pageSize);
-        _count = _projects.Count();
-        Console.WriteLine("_count: " + _projects.Count());
-        
-        _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
-        Console.WriteLine("_tg: " + _tagGroups.Count());
+        if (_tagGroups.Any())
+        {
+            foreach (var tg in _tagGroups)
+                _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
+        }
 
-    // Create a set of empty "selected" ids for each tag group.
-        foreach (var tg in _tagGroups)
-            _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
+        _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project") ?? new List<ProjectDTO>();
+        _count = _allProjects.Count();
+        
+        await base.OnInitializedAsync();
+        _loaded = true;
     }
 
-    async Task<List<ProjectDTO>> GetProjects(PagerEventArgs args)
+    void UpdateVisibleProjects(PagerEventArgs args)
     {
-        _projects = await _http.GetFromJsonAsync<IEnumerable<ProjectDTO>>("api/Project");
-        return _projects != null ? _projects.Skip(args.Skip).Take(args.Top).ToList() : new List<ProjectDTO>();
+        _skip = args.Skip;
+        _take = args.Top;
     }
 
     async Task ApplyFilter()
     {
-    // todo: call API to get projects based on edited filters – skal vi vente til de trykker på en apply knap???
-        Console.WriteLine("Current tags: " + String.Join(", ", SelectedTags));
-        _projects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", SelectedTags.Select(t => $"tagIds={t}")) + "&" + string.Join("&", _selectedSupervisors.Select(s => $"supervisorIds={s}"))); //todo hilfen mit filtering ples
+        var parameters = new List<string>();
+        if (SelectedTags.Any())
+            parameters.Add(string.Join("&", SelectedTags.Select(t => $"tagIds={t}")));
+        if (_selectedSupervisors.Any())
+            parameters.Add(string.Join("&", _selectedSupervisors.Select(s => $"supervisorIds={s.ToString()}")));
+        
+        _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
+            "api/Project?" + string.Join("&", parameters)
+        ) ?? new List<ProjectDTO>();
+        
+        _skip = 0;
+        _take = PageSize;
+        _count = _allProjects.Count();
     }
-
 }

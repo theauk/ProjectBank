@@ -1,0 +1,187 @@
+@page "/manageTagGroups"
+@inject HttpClient _http
+@inject NavigationManager _nav
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+@inject IJSRuntime _jsRuntime
+
+<PageTitle>Admin Overview</PageTitle>
+
+<div class="adminPageContainer">
+    <div class="adminPageTopBar">
+        <h1>Manage Tag Groups</h1>
+        <div class="adminPageButtonContainer">
+            <RadzenButton class="submitButton" Text="Save" Icon="save" Click="@Save"/>
+            <RadzenButton class="createTagGroupButton" Text="New Tag Group" Icon="add" Click="@RedirectToCreateTagGroup"/>
+            <RadzenButton class="cancelButton" Text="Cancel" Icon="highlight_off" ButtonStyle="ButtonStyle.Warning" Click="@Cancel"/>
+        </div>
+    </div>
+
+    <div class="row tagGroupContainer" style="margin-bottom: 20px">
+        <div class="col">
+            @if (!_tagGroups.Any())
+            {
+                <p>Loading...</p>
+            }
+            else
+            {
+                <RadzenDataList class="tgCards" WrapItems="true" AllowPaging="true" Data="@_visibleTagGroups" TItem="TagGroupUpdateDTO">
+                    <Template Context="tg">
+                        <RadzenCard class="tgCard">
+                            <RadzenFieldset class="tagGroupFieldSet" AllowCollapse="true" Collapsed="true">
+                                <HeaderTemplate>
+                                    @if (!_editingName[tg.Id])
+                                    {
+                                        <b class="tagFieldTitle" @onclick=@(_ => _editingName[tg.Id] = true)>@tg.Name</b>
+                                    }
+                                    else
+                                    {
+                                        <RadzenTextBox @bind-Value=@tg.Name Change=@(_ => { _editingName[tg.Id] = false; _edited[tg.Id] = true; })/>
+                                    }
+                                </HeaderTemplate>
+                                <ChildContent>
+                                    <div class="selectGrid">
+                                        <div class="flex-row tagGroupSelections">
+                                            <div class="tagGroupChecks">
+                                                <div>
+                                                    <RadzenCheckBox class="selectLeftItem" @bind-Value=@tg.RequiredInProject TValue="bool" Change=@(_ => _edited[tg.Id] = true) />
+                                                    <RadzenLabel Text="Required"/>
+                                                </div>
+                                                <div>
+                                                    <RadzenCheckBox class="selectLeftItem" @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ => _edited[tg.Id] = true) />
+                                                    <RadzenLabel Text="Supervisors can add tags"/>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <RadzenLabel class="selectLeftItem" Text="Maximum tags"/>
+                                                <RadzenNumeric @bind-Value=@tg.TagLimit TValue="int?" Placeholder="No limit" Min="1" style="width: 200px" Change=@(_ => _edited[tg.Id] = true) />
+                                            </div>
+                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Text="Delete Tag Group" Click=@(_ => RemoveTagGroup(tg)) />
+                                        </div>
+                                        <div class="adminPageTags">
+                                            <Autocomplete class="autocompleteTags adminAutocomplete"
+                                                          TItem="TagDTO"
+                                                          TValue="string"
+                                                          Data="@_tagGroups.First(t => t.Id == tg.Id).TagDTOs"
+                                                          TextField="@((item) => item.Value)"
+                                                          ValueField="@((item) => item.Value)"
+                                                          SelectedTextChanged="@(_ => _edited[tg.Id] = true)"
+                                                          Placeholder="Search or press enter to create new..."
+                                                          Multiple
+                                                          FreeTyping
+                                                          @bind-SelectedValues="_selectedExistingTags[tg.Id]"
+                                                          @bind-SelectedTexts="_allSelectedTagsValues[tg.Id]">
+                                            </Autocomplete>
+                                        </div>
+                                    </div>
+                                </ChildContent>
+                            </RadzenFieldset>
+                        </RadzenCard>
+                    </Template>
+                </RadzenDataList>
+                <RadzenPager class="landingPagePager" ShowPagingSummary="true" PagingSummaryFormat="@PagingSummaryFormat" Count="@_count" PageSize="@PageSize" PageChanged="@UpdateVisibleTgs"/>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+        private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} tag groups)";
+        private const int PageSize = 5;
+    int _count;
+    int _lastSkip;
+    int _lastTake;
+
+    private IEnumerable<TagGroupDTO> _tagGroups = new List<TagGroupDTO>();
+    private IEnumerable<TagGroupUpdateDTO> TagGroupsUpdateDtos { get; set; } = new List<TagGroupUpdateDTO>();
+    private List<int> _deletedTgs = new();
+    private IEnumerable<TagGroupUpdateDTO> _visibleTagGroups = new List<TagGroupUpdateDTO>();
+
+    private Dictionary<int, bool> _edited = new();
+    private Dictionary<int, bool> _editingName = new();
+
+    Dictionary<int, List<string>> _selectedExistingTags = new();
+    Dictionary<int, List<string>> _allSelectedTagsValues = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _edited.Add(-1, true);
+        _editingName.Add(-1, true);
+
+        _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
+
+        foreach(var tg in _tagGroups)
+        {
+            _selectedExistingTags[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
+            _allSelectedTagsValues[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
+        }
+        
+        TagGroupsUpdateDtos = _tagGroups.Select(tg => tg.ToUpdateDTO()).ToList();
+
+        foreach (var tg in TagGroupsUpdateDtos)
+        {
+            _edited.Add(tg.Id, false);
+            _editingName.Add(tg.Id, false);
+        }
+
+        _count = TagGroupsUpdateDtos.Count();
+        _visibleTagGroups = TagGroupsUpdateDtos.Skip(0).Take(PageSize).ToList();
+        _lastSkip = 0;
+        _lastTake = PageSize;
+
+        await base.OnInitializedAsync();
+    }
+    
+    async Task CloseTagCards(string elementId, string style, string styleValue) {
+        await _jsRuntime.InvokeAsync<object>("applyStyleForElement", new { id = elementId,  styleAttribute = style, value = styleValue });
+    }
+
+    void UpdateVisibleTgs(PagerEventArgs args)
+    {
+        _visibleTagGroups = TagGroupsUpdateDtos.Skip(args.Skip).Take(args.Top).ToList();
+        _lastSkip = args.Skip;
+        _lastTake = args.Top;
+    }
+
+    private async void Save()
+    {
+        foreach (var tg in TagGroupsUpdateDtos)
+        {
+            if (!_edited[tg.Id]) continue;
+            UpdateTagGroup(tg);
+            await _http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
+        }
+
+        foreach (var id in _deletedTgs)
+            await _http.DeleteAsync($"api/TagGroup/{id}");
+
+        _nav.NavigateTo(_nav.Uri, forceLoad: true);
+    }
+
+    private void UpdateTagGroup(TagGroupUpdateDTO tg)
+    {
+        tg.SelectedTagValues = _allSelectedTagsValues[tg.Id].ToHashSet();
+    }
+    
+    private void RedirectToCreateTagGroup()
+    {
+        _nav.NavigateTo($"{_nav.BaseUri}createTagGroup");
+    }
+
+    private void Cancel()
+    {
+        _nav.NavigateTo($"{_nav.BaseUri}");
+    }
+
+    private async void RemoveTagGroup(TagGroupUpdateDTO tg)
+    {
+        _deletedTgs.Add(tg.Id);
+        TagGroupsUpdateDtos = TagGroupsUpdateDtos.Where(t => t.Id != tg.Id).ToList();
+
+        _visibleTagGroups = TagGroupsUpdateDtos.Skip(_lastSkip).Take(_lastTake).ToList();
+        _count = TagGroupsUpdateDtos.Count();
+        
+        await CloseTagCards("rz-fieldset-0-content", "display", "none");
+    }
+
+}

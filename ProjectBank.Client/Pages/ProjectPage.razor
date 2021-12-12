@@ -1,15 +1,22 @@
-﻿@page "/index/{Id:int}"
+﻿@page "/index"
+@page "/index/{Id:int}"
 @inject HttpClient _http
-<PageTitle>Project Page</PageTitle>
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin, Supervisor, Student")]
 
-@if (Id != -1)
-{
-    @if (_project == null)
+<PageTitle>Project Page</PageTitle>
+<div class="projectContainer">
+    @if ( _response == null)
     {
-        <h1>Loading...</h1>
+        <h1>Loading... </h1>
     }
-    else
+    else if ( _response.StatusCode.ToString().ToLower() == "notfound" ) //Todo minor - change to numerical code handling
     {
+        <h1>404 Not Found</h1>
+    }
+    else if ( _project != null )
+    {
+
         <h1>@_project.Name</h1>
         <div>
             <h2>Description</h2>
@@ -17,35 +24,44 @@
         </div>
         <div>
             <h2>Supervisors</h2>
-            <p>@string.Join(", ", _project.Supervisors.Select(s => s.Name))</p>
+            @if (_project.Supervisors.Any())
+            {
+                <p>@string.Join(", ", _project.Supervisors.Select(s => s.Name))</p>
+            }
+            else
+            {
+                <h3>No supervisor associated to this project</h3>
+            }
         </div>
         <div>
             <h2>Tags</h2>
-            <p>@string.Join(", ", _project.Tags.Select((t => t.Value)))</p>
+            @if (_project.Tags.Any())
+            {
+                <p>@string.Join(", ", _project.Tags.Select((t => t.Value)))</p>
+            }
+            else
+            {
+                <h3>No tags in this project</h3>
+            }
         </div>
     }
-}
-else
-{
-    <h1>404 - Project not found.</h1>
-}
-
+</div>
 @code {
+
+    private ProjectDTO? _project;
+    private HttpResponseMessage? _response;
+
+    
     [Parameter]
     public int Id { get; set; }
-    private ProjectDTO? _project = null;
     
-    protected override async void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        try
-        {
-            _project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
-            if (_project == null)
-                Id = -1;
-        }
-        catch
-        {
-            Id = -1;
-        }
+        _response = await _http.GetAsync($"api/Project/{Id}");
+    //This implementation below reduces get calls to server from 2 to 1 while handling HTTPResponse without throwing exception (Gets stuck on loading otherwise)
+        _project = await _response.Content.ReadFromJsonAsync<ProjectDTO>();
+        
+        //This implementation cant handle 404 response, throws exception and stops code - result gets stuck on loading
+        // _project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
     }
 }

@@ -12,21 +12,21 @@ namespace ProjectBank.Core.DTOs
         public string Description { get; init; }
 
         [Required]
-        public ISet<TagDTO> Tags { get; init; } = new HashSet<TagDTO>();
+        public ICollection<TagDTO> Tags { get; init; } = new List<TagDTO>();
         
         [Required]
         public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
 
-        public virtual bool Equals(ProjectDTO p)
-        {
-            return (
-                Id.Equals(p.Id) &&
-                Name.Equals(p.Name) &&
-                Description.Equals(p.Description) &&
-                Tags.SetEquals(p.Tags) &&
-                Supervisors.SetEquals(p.Supervisors)
-            );
-        }
+        // public virtual bool Equals(ProjectDTO? p) // Outcommented to make ProjectPage work - throws Unhandled exception rendering component: Arg_NullReferenceException when accessing the page
+        // {
+        //     return (
+        //         Id.Equals(p.Id) &&
+        //         Name.Equals(p.Name) &&
+        //         Description.Equals(p.Description) &&
+        //         Tags.Equals(p.Tags) &&
+        //         Supervisors.SetEquals(p.Supervisors)
+        //     );
+        // }
 
         public override int GetHashCode()
         {
@@ -55,6 +55,6 @@ namespace ProjectBank.Core.DTOs
 
     public record ProjectUpdateDTO : ProjectCreateDTO
     {
-        public int Id { get; init; } //todo Overvej den her når vi har kigget nærmere på frontend
+        public int Id { get; init; } 
     }
 }

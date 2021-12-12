@@ -24,26 +24,24 @@ namespace ProjectBank.Infrastructure
             if (!await context.Universities.AnyAsync())
             {
                 // USERS
-                var gustav = new User { Name = "Gustav Metnik-Beck" };
-                var viktor = new User { Name = "Viktor Mønster" };
-                var thea = new User { Name = "Thea Kjeldsmark" };
-                var mai = new User { Name = "Mai Sigurd" };
-                var oliver = new User { Name = "Oliver Nord" };
-                var joanna = new User { Name = "Joanna Laursen" };
-                var morten = new User { Name = "Morten Nielsen" };
-                var kasper = new User { Name = "Kasper Mørk Jensen" };
-                var cecilie = new User { Name = "Cecilie Rønberg" };
-                var carl = new User { Name = "Carl Vestebryg" };
-                var sille = new User { Name = "Sille Mortensen" };
-                var josefine = new User { Name = "Josefine Nørgaard" };
-                var paolo = new User { Name = "Paolo Tell" };
-                var rasmus = new User { Name = "Rasmus Lystrøm" };
+                var gustav = new User { Name = "Gustav Metnik-Beck", Email = "gume@itu.dk"};
+                var viktor = new User { Name = "Viktor Mønster", Email = "vikm@itu.dk"};
+                var mai = new User { Name = "Mai Sigurd", Email = "maod@itu.dk"};
+                var oliver = new User { Name = "Oliver Nord", Email = "olno@itu.dk"};
+                var joanna = new User { Name = "Joanna Laursen", Email = "jskl@itu.dk"};
+                var morten = new User { Name = "Morten Nielsen", Email = "morten@itu.dk"};
+                var kasper = new User { Name = "Kasper Mørk Jensen", Email = "kasper@itu.dk"};
+                var cecilie = new User { Name = "Cecilie Rønberg", Email = "cecilie@itu.dk"};
+                var carl = new User { Name = "Carl Vestebryg", Email = "carl@itu.dk"};
+                var sille = new User { Name = "Sille Mortensen", Email = "sille@itu.dk"};
+                var josefine = new User { Name = "Josefine Nørgaard", Email = "josf@itu.dk"};
+                var paolo = new User { Name = "Paolo Tell", Email = "pate@itu.dk"}; // todo: update
+                var rasmus = new User { Name = "Rasmus Lystrøm", Email = "rnie@itu.dk"};
 
                 var usersSet = new HashSet<User>()
                 {
                     gustav,
                     viktor,
-                    thea,
                     mai,
                     oliver,
                     joanna,
@@ -114,6 +112,10 @@ namespace ProjectBank.Infrastructure
 
                 // Topics
                 var dbTopic = new Tag { Value = "Databases" };
+                var aiTopic = new Tag { Value = "Artificial Intelligence" };
+                var webTopic = new Tag { Value = "Web Development" };
+                var logicTopic = new Tag { Value = "Logic" };
+                var algorithmsTopic = new Tag { Value = "Algorithms" };
 
                 // TAGGROUPS
                 var semesterTG = new TagGroup
@@ -242,6 +244,10 @@ namespace ProjectBank.Infrastructure
                     Tags = new HashSet<Tag>()
                     {
                         dbTopic,
+                        aiTopic,
+                        webTopic,
+                        logicTopic,
+                        algorithmsTopic
                     }
                 };
 
@@ -262,8 +268,8 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "1st year project",
                     Description = "This report talks about the proces of programing a streaming service, in java.",
-                    Tags = new HashSet<Tag>() { secondSemester, spring, uXSubject, danishLanguage, javaProLang },
-                    Supervisors = new HashSet<User>() { kasper, cecilie }
+                    Tags = new HashSet<Tag>() { secondSemester, spring, uXSubject, danishLanguage, javaProLang, algorithmsTopic },
+                    Supervisors = new HashSet<User>() { kasper }
                 };
 
                 var secondYearP = new Project
@@ -271,22 +277,22 @@ namespace ProjectBank.Infrastructure
                     Name = "2nd year project",
                     Description = "In this project we made a program for a corporation. We chose Microsoft and made them a algorithm.",
                     Tags = new HashSet<Tag>() { fourthSemester, spring, functProSubject, danishLanguage, fSharpProLang },
-                    Supervisors = new HashSet<User>() { viktor, thea }
+                    Supervisors = new HashSet<User>() { viktor, cecilie }
                 };
 
                 var projectBankP = new Project
                 {
                     Name = "Project Bank",
                     Description = "In this project, you have to implement a service for students and teachers to create and share project thesis.",
-                    Tags = new HashSet<Tag>() { thirdSemster, fall, danishLanguage, cSharpProLang },
+                    Tags = new HashSet<Tag>() { thirdSemster, fall, danishLanguage, cSharpProLang, webTopic },
                     Supervisors = new HashSet<User>() { gustav, mai }
                 };
 
                 var coqP = new Project
                 {
-                    Name = "Coq Proofer",
+                    Name = "Coq Proof Service",
                     Description = "You will implement a program from scratch in Java using Coq to prove mathematical theorems.",
-                    Tags = new HashSet<Tag>() { firstSemester, fall, danishLanguage, javaProLang, discMathSubject, teamComSubject },
+                    Tags = new HashSet<Tag>() { firstSemester, fall, danishLanguage, javaProLang, discMathSubject, teamComSubject, logicTopic, algorithmsTopic },
                     Supervisors = new HashSet<User>() { sille, josefine }
                 };
 
@@ -294,14 +300,14 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "Data Platforms",
                     Description = "You will in this project have to implement a platform for linking pictures to text in GoLang.",
-                    Tags = new HashSet<Tag>() { fifthSemester, fall, danishLanguage, goProLang },
+                    Tags = new HashSet<Tag>() { fifthSemester, fall, danishLanguage, goProLang, webTopic, dbTopic },
                     Supervisors = new HashSet<User>() { paolo, rasmus }
                 };
 
                 var bachelorP = new Project
                 {
                     Name = "Bachelor Project",
-                    Description = "This is your official bachelor project.",
+                    Description = "This is your official bachelor's project.",
                     Tags = new HashSet<Tag>() { sixthSemester, spring, englishLanguage, bachelorLevel, reflecItSubject },
                     Supervisors = new HashSet<User>() { morten }
                 };
@@ -309,7 +315,7 @@ namespace ProjectBank.Infrastructure
                 var masterP = new Project
                 {
                     Name = "Master Project",
-                    Description = "This master wil discuss the problems associeret with interface and userbility. Aswell as presending a possible solution to the problem. ",
+                    Description = "This project wil discuss the problems associate with interface and usability. As well as presenting a possible solution to the problem. ",
                     Tags = new HashSet<Tag>() { fall, spring, englishLanguage, masterLevel, pythonProLang },
                     Supervisors = new HashSet<User>() { kasper }
                 };
@@ -318,15 +324,15 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "Eye Tracker AI",
                     Description = "This project is all about AIs and the principles of Machine Learning. You will have to implement an AI being able to track and predict eye movements.",
-                    Tags = new HashSet<Tag>() { haskelProLang, phdLevel, englishLanguage, fall, spring },
+                    Tags = new HashSet<Tag>() { haskelProLang, phdLevel, englishLanguage, fall, spring, aiTopic },
                     Supervisors = new HashSet<User>() { cecilie }
                 };
 
                 var EHRP = new Project
                 {
-                    Name = "EHR system ",
-                    Description = "In this project you aretasked with making an electronic health record for a small clinic with minimal security.",
-                    Tags = new HashSet<Tag>() { fifthSemester, fall, englishLanguage, javaProLang, jsProLang, sqlProLang },
+                    Name = "EHR System ",
+                    Description = "In this project you are tasked with making an electronic health record for a small clinic with minimal security.",
+                    Tags = new HashSet<Tag>() { fifthSemester, fall, englishLanguage, javaProLang, jsProLang, sqlProLang, webTopic, dbTopic },
                     Supervisors = new HashSet<User>() { carl }
                 };
 
@@ -334,23 +340,23 @@ namespace ProjectBank.Infrastructure
                 {
                     Name = "New ITU Website",
                     Description = "You will have to implement, test and maintain a new website replacing the very broken Learnit.",
-                    Tags = new HashSet<Tag>() { cSharpProLang, sixthSemester, mDigiProgramme, danishLanguage },
+                    Tags = new HashSet<Tag>() { cSharpProLang, sixthSemester, mDigiProgramme, danishLanguage, webTopic, dbTopic },
                     Supervisors = new HashSet<User>() { rasmus }
                 };
                 
                 var ituAlgorithms = new Project
                 {
-                    Name = "New great algorithm",
-                    Description = "You will have to implement, test and maintain a new great algorithm.",
-                    Tags = new HashSet<Tag>() { },
-                    Supervisors = new HashSet<User>() { rasmus }
+                    Name = "Kattis Problems",
+                    Description = "You will have to develop various new Kattis exercises for different programming levels.",
+                    Tags = new HashSet<Tag>() { fourthSemester, englishLanguage, algorithmsTopic },
+                    Supervisors = new HashSet<User>() { cecilie }
                 };
                 
                 var ituMoonServers = new Project
                 {
-                    Name = "Moon serves",
-                    Description = "Investigate the potential of servers on the moon.",
-                    Tags = new HashSet<Tag>() { sixthSemester, danishLanguage },
+                    Name = "Space Servers",
+                    Description = "This project focuses on exploring the advantages and possible drawbacks of placing servers on the moon.",
+                    Tags = new HashSet<Tag>() { sixthSemester, englishLanguage, danishLanguage },
                     Supervisors = new HashSet<User>() { carl }
                 };
 

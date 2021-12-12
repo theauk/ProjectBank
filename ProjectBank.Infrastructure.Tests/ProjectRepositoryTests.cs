@@ -11,14 +11,16 @@ using Xunit;
 
 namespace ProjectBank.Infrastructure.Tests
 {
-    public class ProjectRepositoryTests : IDisposable
+    public class ProjectRepositoryTests : RepoTests
     {
-        private readonly ProjectBankContext _context;
+        //private readonly ProjectBankContext _context;
         private readonly ProjectRepository _repository;
-        private bool disposedValue;
+        //private bool disposedValue;
 
         public ProjectRepositoryTests()
         {
+            _repository = new ProjectRepository(_context);
+            /*
             var connection = new SqliteConnection("Filename=:memory:");
             connection.Open();
 
@@ -28,13 +30,14 @@ namespace ProjectBank.Infrastructure.Tests
             var context = new ProjectBankContext(builder.Options);
             context.Database.EnsureCreated();
 
+            
             // --- Test data ---
             // Supervisors
-            var marco = new User { Id = 1, Name = "Marco" };
-            var birgit = new User { Id = 2, Name = "Birgit" };
-            var bjorn = new User { Id = 3, Name = "Bjørn" };
-            var paolo = new User { Id = 4, Name = "Paolo" };
-            var rasmus = new User { Id = 5, Name = "Rasmus" };
+            var marco = new User { Id = 1, Name = "Marco", Email = "marco@itu.dk"};
+            var birgit = new User { Id = 2, Name = "Birgit", Email = "birgit@itu.dk" };
+            var bjorn = new User { Id = 3, Name = "Bjørn", Email = "bjoern@itu.dk" };
+            var paolo = new User { Id = 4, Name = "Paolo", Email = "paolo@itu.dk" };
+            var rasmus = new User { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk" };
 
             // TagGroups
             var semesterTG = new TagGroup
@@ -87,7 +90,7 @@ namespace ProjectBank.Infrastructure.Tests
             var secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
             // -------------------
 
-            // Univertities
+            // Universities
             var ituUni = new University
             { 
                 DomainName = "itu.dk",
@@ -100,7 +103,7 @@ namespace ProjectBank.Infrastructure.Tests
 
             context.SaveChanges();
             _context = context;
-            _repository = new ProjectRepository(_context);
+            _repository = new ProjectRepository(_context);*/
         }
 
         [Fact]
@@ -114,7 +117,7 @@ namespace ProjectBank.Infrastructure.Tests
                 UserIds = new HashSet<int>() { 4, 5 }
             };
 
-            var actual = await _repository.CreateAsync(project);
+            var actual = await _repository.CreateAsync(project, "test@itu.dk", "test");
             var actualResponse = actual;
             var actualProject = (await _repository.ReadAsync(5)).Value;
 
@@ -142,7 +145,7 @@ namespace ProjectBank.Infrastructure.Tests
                 UserIds = new HashSet<int>() { 4, 6 }
             };
 
-            var actual = await _repository.CreateAsync(project);
+            var actual = await _repository.CreateAsync(project, "test@itu.dk", "test");
 
             Assert.Equal(Response.BadRequest, actual);
         }
@@ -253,26 +256,6 @@ namespace ProjectBank.Infrastructure.Tests
             var actual = await _repository.UpdateAsync(1, project);
 
             Assert.Equal(Response.BadRequest, actual);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-
-                }
-
-                disposedValue = true;
-            }
-        }
-
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }
