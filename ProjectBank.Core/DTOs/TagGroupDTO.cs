@@ -15,11 +15,6 @@ namespace ProjectBank.Core.DTOs
         public bool RequiredInProject { get; init; }
 
         public int? TagLimit { get; init; }
-
-        private SortedSet<TagDTO> _sortedSet(ISet<TagDTO> TagDTOs)
-        {
-            return null;
-        }
     }
 
     public record TagGroupCreateDTO

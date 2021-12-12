@@ -156,8 +156,7 @@
     protected override async Task OnInitializedAsync()
     {
         TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
-    // TODO: Automatically add current user to SupervisorIds.
-        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
+        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); 
         
         _project.UserIds = new HashSet<int>();
         await base.OnInitializedAsync();

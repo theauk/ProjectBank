@@ -83,7 +83,6 @@ namespace ProjectBank.Infrastructure.Repositories
             await DeleteTagAsync(tagGroupId, tagGroup.DeletedTagIds);
             await AddTagAsync(tagGroupId, tagGroup.NewTagsDTOs);
             
-            //TODO : handle responses from delete tag and add tag
             await _context.SaveChangesAsync();
             
             return Response.Updated;
@@ -95,7 +94,7 @@ namespace ProjectBank.Infrastructure.Repositories
             {
                 var entity = await _context.Tags.FindAsync(id);
 
-                if (entity == null) return Response.Conflict; //TODO Spørgsmål: Burde det her ikke være en NotFound/den burde vel ikke returnere
+                if (entity == null) return Response.Conflict; 
 
                 _context.Tags.Remove(entity);
             }
