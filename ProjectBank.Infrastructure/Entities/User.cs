@@ -12,5 +12,15 @@ namespace ProjectBank.Infrastructure.Entities
         public ICollection<Project> Projects { get; set; } = new HashSet<Project>();
         
         public string Email { get; set; }
+
+        public UserDTO ToDTO()
+        {
+            return new UserDTO
+            {
+                Id = Id,
+                Email = Email,
+                Name = Name,
+            };
+        }
     }
 }
