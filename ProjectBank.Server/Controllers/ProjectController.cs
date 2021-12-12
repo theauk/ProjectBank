@@ -51,7 +51,7 @@ public class ProjectController : ControllerBase
         return resp.IsNullOrEmpty() ? new List<ProjectDTO>().AsReadOnly() : resp;
     }
 
-    [Authorize(Roles = "Admin, Supervisor")] //ToDo  Vi skal sørge for at supervisors ikke kan slette/opdatere andre supervisors projekter - Skal gøres i Razor/Blazor
+    [Authorize(Roles = "Admin, Supervisor")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

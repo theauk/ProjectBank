@@ -11,24 +11,9 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<Response> CreateAsync(ProjectCreateDTO project, string email, string name)
         {
-            var mainSupervisor = await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
+            var (mainAndCoSupervisorsResponse, mainAndCoSupervisors) = await GetAllSupervisors(project, email, name);
+            if (mainAndCoSupervisorsResponse == Response.BadRequest) return Response.BadRequest;
             
-            // Creation of users would normally already had happen
-            if (mainSupervisor == null)
-            {
-                var universityDomain = email.Split("@");
-                var university = _context.Universities.FirstOrDefault(u => u.DomainName.Equals(universityDomain[1]));
-                if (university == null) return Response.BadRequest;
-                mainSupervisor = new User() {Email = email, Name = name, University = university};
-                _context.Users.Add(mainSupervisor);
-            }
-
-            var (responseSupervisors, supervisors) = await GetUsersAsync(project.UserIds);
-            if (responseSupervisors == Response.BadRequest) return (Response.BadRequest);
-
-            var users = supervisors.ToHashSet();
-            users.Add(mainSupervisor);
-
             var (responseTags, tags) = await AddTagsFromExistingTagGroupsReturnIds(project.NewTagDTOs);
             if (responseTags == Response.BadRequest) return Response.BadRequest;
 
@@ -36,8 +21,8 @@ namespace ProjectBank.Infrastructure.Repositories
             {
                 Name = project.Name,
                 Description = project.Description,
-                Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync(), // todo sammenspil mellem nye tags der bliver laver i controlleren og hvordan de bliver tilføjet til project
-                Supervisors = users
+                Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync(),
+                Supervisors = mainAndCoSupervisors
             };
             
             var updatedTags = entity.Tags.Concat(tags);
@@ -47,6 +32,37 @@ namespace ProjectBank.Infrastructure.Repositories
             await _context.SaveChangesAsync();
 
             return Response.Created;
+        }
+
+        private async Task<(Response, ISet<User>)> GetAllSupervisors(ProjectCreateDTO project, string email, string name)
+        {
+            var (mainSupervisorResponse, mainSupervisor) = await GetMainSupervisor(email, name);
+            if (mainSupervisorResponse == Response.BadRequest) return (Response.BadRequest, new HashSet<User>());
+
+            var (responseCoSupervisors, coSupervisors) = await GetUsersAsync(project.UserIds);
+            if (responseCoSupervisors == Response.BadRequest) return (Response.BadRequest, new HashSet<User>());
+
+            var mainAndCoSupervisors = coSupervisors.ToHashSet();
+            mainAndCoSupervisors.Add(mainSupervisor);
+            return (Response.Success, mainAndCoSupervisors);
+        }
+
+        private async Task<(Response, User)> GetMainSupervisor(string email, string name)
+        {
+            var mainSupervisor = await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
+            
+            if (mainSupervisor == null)
+            {
+                var universityDomain = email.Split("@");
+                var university = _context.Universities.FirstOrDefault(u => u.DomainName.Equals(universityDomain[1]));
+                if (university == null) return (Response.BadRequest, new User());
+                
+                // Creation of users would normally already had happen at the initial setup based on the users and their roles in Azure.
+                mainSupervisor = new User() {Email = email, Name = name, University = university};
+                _context.Users.Add(mainSupervisor);
+            }
+
+            return (Response.Success, mainSupervisor);
         }
         
         private async Task<(Response, IEnumerable<Tag>)> AddTagsFromExistingTagGroupsReturnIds(ISet<TagCreateDTO> projectNewTagDtos)
@@ -59,19 +75,12 @@ namespace ProjectBank.Infrastructure.Repositories
                 if (tagGroup == null) return (Response.BadRequest, new List<Tag>());
 
                 var newTag = new Tag {Value = tag.Value};
-                // todo: _context.Tags.Add(newTag); // er det her nødvendigt?
-                tagGroup.Tags.Add(newTag); // eller er det her nok
+                tagGroup.Tags.Add(newTag); 
 
                 newTags.Add(newTag);
             }
-
             await _context.SaveChangesAsync();
 
-            foreach (var VARIABLE in newTags) // todo: delete
-            {
-                Console.WriteLine("new tag: " + VARIABLE.Id + " " + VARIABLE.Value + " " + VARIABLE.TagGroup);
-            }
-            
             return (Response.Created, newTags);
         }
 
