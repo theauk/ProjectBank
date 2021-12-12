@@ -48,16 +48,28 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<Option<ProjectDTO?>> ReadAsync(int projectId)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
-
-            return project == null ? null : new ProjectDTO
+            
+            if (_context.Projects.FirstOrDefault(p => p.Id == projectId) == null) return null; //ToDo Find en anden løsning end den her quickfix - Jeg tror at det har noget med Select på null at gøre
+        
+            var project = (await _context.Projects.Where(p =>  (p.Id == projectId)).Select(p => new ProjectDTO()  // ToDo Kan ikke få den her implementation til at håndtere 404 response, heraf løsning med FirstOrDefault
             {
-                Id = project.Id,
-                Name = project.Name,
-                Description = project.Description,
-                Tags = project.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(), //ToDo Kan ikke få en liste af tags eller supervisors ud i ProjectPage Console -
-                Supervisors = project.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
-            };
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(),
+                Supervisors = p.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
+            } ).ToListAsync()).First();
+
+            return project; 
+            
+            // var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId); // ToDO FirstOrDefaultAsync kan ikke håndtere, at vi referere til associated tags og superviser i henholdvis ProjectTag og ProjectUser
+            // {
+            //     Id = project.Id,
+            //     Name = project.Name,
+            //     Description = project.Description,
+            //     Tags = project.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(), //ToDo Kan ikke få en liste af tags eller supervisors ud i ProjectPage Console -
+            //     Supervisors = project.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
+            // };
         }
 
 
