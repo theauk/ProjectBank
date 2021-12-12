@@ -11,7 +11,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<Response> CreateAsync(UniversityCreateDTO university)
         {
-            var entity = new University { DomainName = university.DomainName };
+            var entity = new University { DomainName = university.DomainName.ToLower() };
 
             _context.Universities.Add(entity);
 
