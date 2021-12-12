@@ -24,7 +24,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 return (Response.BadRequest);
             }
 
-            _context.Projects.Add(entity);
+            _context.Projects.Add(entity); // TODO Tags & Supvervisors skal addes til ProjectTag og ProjectUser
 
             await _context.SaveChangesAsync();
 
@@ -69,8 +69,8 @@ namespace ProjectBank.Infrastructure.Repositories
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(),
-                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet()
+                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(), //TODO I alle Reads() skal vi lave noget lignende _context.ProjectTag.Select( noget ala where  ProjectId = p.Id) og så _context.Tag.Select(De tagIds vi har fundet med forrige select) 
+                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet() // TODO Vi skal nok gøre noget af det samme her mht ProjectUser tabellen
             }).ToListAsync()).AsReadOnly();
 
             return projects;
