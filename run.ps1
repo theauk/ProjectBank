@@ -63,7 +63,6 @@ function DotnetRun {
     elseif ($IsMacOS -or $IsLinux) {
         dotnet watch run --project ./ProjectBank.Server/
     }
-    
 }
 
 Main

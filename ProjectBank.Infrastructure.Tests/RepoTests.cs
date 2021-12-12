@@ -25,17 +25,17 @@ public class RepoTests : IDisposable
         
         // Users
 
-        var marco  = new User() { Name = "Marco" , University = itu };
-        var birgit = new User() { Name = "Birgit", University = itu };
-        var bjorn  = new User() { Name = "Bjørn" , University = itu };
-        var paolo  = new User() { Name = "Paolo" , University = itu };
-        var rasmus = new User() { Name = "Rasmus", University = itu };
+        var marco  = new User { Name = "Marco" , University = itu, Email = "marco@itu.dk", };
+        var birgit = new User { Name = "Birgit", University = itu, Email = "birgit@itu.dk", };
+        var bjorn  = new User { Name = "Bjørn" , University = itu, Email = "bjorn@itu.dk", };
+        var paolo  = new User { Name = "Paolo" , University = itu, Email = "paolo@itu.dk", };
+        var rasmus = new User { Name = "Rasmus", University = itu, Email = "rasmus@itu.dk", };
         
-        _context.AddRange(new List<User>() {marco, birgit, bjorn, paolo, rasmus});
+        _context.AddRange(new List<User> {marco, birgit, bjorn, paolo, rasmus});
         
         // Tags
 
-        var semesterTags = new List<Tag>()
+        var semesterTags = new List<Tag>
         {
             new() {Value = "Spring 2022"},
             new() {Value = "Autumn 2022"},
@@ -44,7 +44,7 @@ public class RepoTests : IDisposable
             new() {Value = "Spring 2024"},
             new() {Value = "Autumn 2024"},
         };
-        var plangTags = new List<Tag>()
+        var plangTags = new List<Tag>
         {
             new() {Value = ".NET"},
             new() {Value = "Python"},
@@ -54,7 +54,7 @@ public class RepoTests : IDisposable
             new() {Value = "Java (yuck)"},
             new() {Value = "JavaScript (yuckier)"},
         };
-        var levelTags = new List<Tag>()
+        var levelTags = new List<Tag>
         {
             new() {Value = "Bachelor"},
             new() {Value = "Master"},
@@ -63,7 +63,7 @@ public class RepoTests : IDisposable
         
         // TagGroups
 
-        var semester = new TagGroup()
+        var semester = new TagGroup
         {
             Name = "Semester",
             Tags = semesterTags,
@@ -71,7 +71,7 @@ public class RepoTests : IDisposable
             SupervisorCanAddTag = false,
             TagLimit = 2,
         };
-        var plangs = new TagGroup()
+        var plangs = new TagGroup
         {
             Name = "Programming Language",
             Tags = plangTags,
@@ -79,7 +79,7 @@ public class RepoTests : IDisposable
             SupervisorCanAddTag = true,
             TagLimit = 3,
         };
-        var levels = new TagGroup()
+        var levels = new TagGroup
         {
             Name = "Level",
             Tags = levelTags,
@@ -88,32 +88,32 @@ public class RepoTests : IDisposable
             TagLimit = null,
         };
         
-        _context.AddRange(new List<TagGroup>() {semester, plangs, levels});
+        _context.AddRange(new List<TagGroup> {semester, plangs, levels});
         
         // Projects
 
-        var projects = new List<Project>()
+        var projects = new List<Project>
         {
             new()
             {
                 Name = "Invent AI",
                 Description = "Your task, should you choose to accept it, is to threaten the existence of life on earth.",
-                Supervisors = new List<User>() {rasmus, bjorn},
-                Tags = new List<Tag>() {semesterTags[0], plangTags[3], plangTags[4], levelTags[2]},
+                Supervisors = new List<User> {rasmus, bjorn},
+                Tags = new List<Tag> {semesterTags[0], plangTags[3], plangTags[4], levelTags[2]},
             },
             new()
             {
                 Name = "Project Bank",
                 Description = "Replace our current system.",
-                Supervisors = new List<User>() {rasmus, paolo},
-                Tags = new List<Tag>() {semesterTags[0], plangTags[0], levelTags[0]},
+                Supervisors = new List<User> {rasmus, paolo},
+                Tags = new List<Tag> {semesterTags[0], plangTags[0], levelTags[0]},
             },
             new()
             {
                 Name = "Make an app!",
                 Description = "Like a dating app, or something. Just something we can sell for a lot of money.",
-                Supervisors = new List<User>() {birgit, marco},
-                Tags = new List<Tag>() {semesterTags[1], semesterTags[2], plangTags[6], levelTags[0]},
+                Supervisors = new List<User> {birgit, marco},
+                Tags = new List<Tag> {semesterTags[1], semesterTags[2], plangTags[6], levelTags[0]},
             },
         };
         
