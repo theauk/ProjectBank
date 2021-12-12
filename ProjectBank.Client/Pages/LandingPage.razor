@@ -133,14 +133,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>();
+        _supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/filter") ?? new List<UserDTO>();
         _tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
 
         if (_tagGroups.Any())
-        {
             foreach (var tg in _tagGroups)
                 _selectedTagsOfTagGroup.Add(tg.Id, new List<int>());
-        }
 
         _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project") ?? new List<ProjectDTO>();
         _count = _allProjects.Count();
