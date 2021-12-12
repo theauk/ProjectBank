@@ -1,8 +1,4 @@
-using System.Security.Claims;
 using Blazorise.Extensions;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-using ProjectBank.Server.Model;
 
 namespace ProjectBank.Server.Controllers;
 
@@ -19,25 +15,19 @@ public class ProjectController : ControllerBase
         _repository = repository;
     }
 
-    [AllowAnonymous]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProjectDTO), StatusCodes.Status200OK)]
     [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectDTO>> Get(int id)
+    public async Task<ActionResult<ProjectDTO?>> Get(int id)
     {
-        var projectDto = await _repository.ReadAsync(id);
-        return projectDto.ToActionResult();
-    }
-
-    [Authorize(Roles = "Admin, Supervisor")]
-    [HttpPost]
-    public async Task<IActionResult> Post(ProjectCreateDTO project)
-    {
-        var response = await _repository.CreateAsync(project);
+        var response = await _repository.ReadAsync(id);
         return response.ToActionResult();
     }
 
     [Authorize]
     [HttpGet]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds, [FromQuery] IList<int> supervisorIds) 
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds, [FromQuery] IList<int> supervisorIds)
     {
         IReadOnlyCollection<ProjectDTO> resp;
         if (!tagIds.Any() && !supervisorIds.Any())
@@ -46,6 +36,15 @@ public class ProjectController : ControllerBase
             resp = await _repository.ReadFilteredAsync(tagIds, supervisorIds);
 
         return resp.IsNullOrEmpty() ? new List<ProjectDTO>().AsReadOnly() : resp;
+    }
+
+    [Authorize(Roles = "Admin, Supervisor")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [HttpPost]
+    public async Task<IActionResult> Post(ProjectCreateDTO project)
+    {
+        var response = await _repository.CreateAsync(project);
+        return CreatedAtAction(nameof(Get), response);
     }
 
     [Authorize(Roles = "Admin, Supervisor")] //ToDo  Vi skal sørge for at supervisors ikke kan slette/opdatere andre supervisors projekter - Skal gøres i Razor/Blazor
@@ -57,6 +56,8 @@ public class ProjectController : ControllerBase
     }
 
     [Authorize(Roles = "Admin, Supervisor")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] ProjectUpdateDTO project)
     {

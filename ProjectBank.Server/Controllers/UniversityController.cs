@@ -1,9 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Core.IRepositories;
-
 namespace ProjectBank.Server.Controllers;
 
 [Authorize]
@@ -12,45 +6,49 @@ namespace ProjectBank.Server.Controllers;
 [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
 public class UniversityController : ControllerBase
 {
-    // Skal kun kaldes hvis brugeren har forbindelsetil/affiliation med universitetet
-    private readonly IProjectRepository _repository;
+    private readonly IUniversityRepository _repository;
 
-    [AllowAnonymous]
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectDTO>> Get(int id)
+    public UniversityController(IUniversityRepository repository)
     {
-        throw new NotImplementedException();
+        _repository = repository;
     }
 
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get()
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(UniversityDTO), StatusCodes.Status200OK)]
+    [HttpGet("{domain}")]
+    public async Task<ActionResult<UniversityDTO?>> Get(string domain)
     {
-        throw new NotImplementedException();
-    }
-
-    [Authorize(Roles = "SuperAdmin")] //SuperAdmin for at vise at en alm, admin ikke skal kunne gøre disse ting
-    [HttpPost]
-    public async Task<IActionResult> Post(ProjectCreateDTO project)
-    {
-        throw new NotImplementedException();
-    }
-
-    [Authorize(Roles = "SuperAdmin")] 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        throw new NotImplementedException();
+        var response = await _repository.ReadAsync(domain);
+        return response.ToActionResult();
     }
 
     [Authorize(Roles = "SuperAdmin")]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] ProjectUpdateDTO project)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [HttpPost]
+    public async Task<IActionResult> Post(UniversityCreateDTO university)
     {
-        throw new NotImplementedException();
+        var response = await _repository.CreateAsync(university);
+        return CreatedAtAction(nameof(Get), response);
     }
 
+    [Authorize(Roles = "SuperAdmin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpDelete("{domain}")]
+    public async Task<IActionResult> Delete(string domain)
+    {
+        var response = await _repository.DeleteAsync(domain);
+        return response.ToActionResult();
+    }
 
-
-
+    [Authorize(Roles = "SuperAdmin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put(string domain, [FromBody] UniversityUpdateDTO university)
+    {
+        var response = await _repository.UpdateAsync(domain, university);
+        return response.ToActionResult();
+    }
 }
