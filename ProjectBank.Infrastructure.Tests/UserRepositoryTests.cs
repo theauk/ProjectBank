@@ -72,8 +72,9 @@ public class UserRepositoryTests : RepoTests
         var expected = new List<int> { 1, 2, 3, 4, 5, };
         
         var users = await _repository.ReadAllAsync();
-        
-        Assert.Equal(expected,  users.Select(u => u.Id));
+
+        foreach (var id in expected)
+            Assert.Contains(id, users.Select(u => u.Id));
     }
     
     // ReadAsync
