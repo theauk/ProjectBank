@@ -58,8 +58,7 @@
     protected override async Task OnParametersSetAsync()
     {
         _response = await _http.GetAsync($"api/Project/{Id}");
-        Console.WriteLine("Json is: " + await _response.Content.ReadAsStringAsync());
-        //This implementation below reduces get calls to server from 2 to 1 while handling HTTPResponse without throwing exception (Gets stuck on loading otherwise)
+    //This implementation below reduces get calls to server from 2 to 1 while handling HTTPResponse without throwing exception (Gets stuck on loading otherwise)
         _project = await _response.Content.ReadFromJsonAsync<ProjectDTO>();
         
         //This implementation cant handle 404 response, throws exception and stops code - result gets stuck on loading
