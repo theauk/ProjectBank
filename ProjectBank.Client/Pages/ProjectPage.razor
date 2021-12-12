@@ -61,6 +61,8 @@
         Console.WriteLine("Json is: " + await _response.Content.ReadAsStringAsync());
         //This implementation below reduces get calls to server from 2 to 1 while handling HTTPResponse without throwing exception (Gets stuck on loading otherwise)
         _project = await _response.Content.ReadFromJsonAsync<ProjectDTO>();
+        
+        //This implementation cant handle 404 response, gets stuck on loading
         // _project = await _http.GetFromJsonAsync<ProjectDTO>($"api/Project/{Id}");
     }
 }
