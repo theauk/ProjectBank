@@ -110,7 +110,7 @@
 
         //_tagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
 
-        var tags = new HashSet<TagDTO>();
+        var tags = new List<TagDTO>();
         tags.Add(new TagDTO() {Id = 1, TagGroupId = 1, Value = "SWU"});
 
         var tg1 = new TagGroupDTO {Id = 1, Name = "Programme1", SupervisorCanAddTag = false, RequiredInProject = false, TagDTOs = tags, TagLimit = 1};

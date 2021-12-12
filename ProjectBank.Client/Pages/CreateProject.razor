@@ -136,8 +136,6 @@
 @code {
 
     Dictionary<int,  IEnumerable<int>> _selectedPredefinedOnlyTagsId = new();
-
-
     private ProjectCreateDTO _project = new();
 
     private IEnumerable<TagGroupDTO> TagGroups { get; set; } = new List<TagGroupDTO>();
@@ -155,8 +153,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
-        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); 
+        TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
+        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor") ?? new List<UserDTO>(); 
         
         _project.UserIds = new HashSet<int>();
         await base.OnInitializedAsync();
