@@ -131,7 +131,7 @@
     width: 50%;
 }
 
-.dropdown-menu.show, .dropdown-menu, .b-is-autocomplete {
+.adminAutocomplete {
     position: absolute !important;
     z-index: 2000 !important;
     width: 50% !important;
@@ -148,9 +148,17 @@
     font-weight: bold;
 }
 
+.tagGroupName {
+    width: 100%
+}
+
 .autocompleteTags {
     background-color: white;
     font-size: 18px;
+}
+
+.autoCompleteCreateTg {
+    width: 100% !important;
 }
 
 .badge.badge-primary.ml-2, .rz-chkbox-box.rz-state-active {
@@ -173,6 +181,7 @@
 }
 
 .lowerSubmitCancelButtons {
+    margin-top: 50px;
     margin-bottom: 70px;
 }
 

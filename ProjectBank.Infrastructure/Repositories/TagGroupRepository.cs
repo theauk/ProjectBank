@@ -80,7 +80,7 @@ namespace ProjectBank.Infrastructure.Repositories
             entity.SupervisorCanAddTag = tagGroup.SupervisorCanAddTag;
             entity.TagLimit = tagGroup.TagLimit;
             
-            await DeleteTagAsync(tagGroupId, tagGroup.DeletedTagIds);
+            //await DeleteTagAsync(tagGroupId, tagGroup.DeletedTagIds); //todo: fix
             await AddTagAsync(tagGroupId, tagGroup.NewTagsDTOs);
             
             //TODO : handle responses from delete tag and add tag

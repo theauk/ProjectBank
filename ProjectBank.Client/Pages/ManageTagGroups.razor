@@ -3,6 +3,7 @@
 @inject NavigationManager _nav
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
+@inject IJSRuntime _jsRuntime
 
 <PageTitle>Admin Overview</PageTitle>
 
@@ -31,7 +32,7 @@
                                 <HeaderTemplate>
                                     @if (!_editingName[tg.Id])
                                     {
-                                        <b class="tagFieldTitle" @ondblclick=@(_ => _editingName[tg.Id] = true)>@tg.Name</b>
+                                        <b class="tagFieldTitle" @onclick=@(_ => _editingName[tg.Id] = true)>@tg.Name</b>
                                     }
                                     else
                                     {
@@ -55,20 +56,21 @@
                                                 <RadzenLabel class="selectLeftItem" Text="Maximum tags"/>
                                                 <RadzenNumeric @bind-Value=@tg.TagLimit TValue="int?" Placeholder="No limit" Min="1" style="width: 200px" Change=@(_ => _edited[tg.Id] = true) />
                                             </div>
-                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Text="Delete Tag" Click=@(_ => RemoveTagGroup(tg)) />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Text="Delete Tag Group" Click=@(_ => RemoveTagGroup(tg)) />
                                         </div>
                                         <div class="adminPageTags">
-                                            <Autocomplete class="autocompleteTags"
+                                            <Autocomplete class="autocompleteTags adminAutocomplete"
                                                           TItem="TagDTO"
-                                                          TValue="int"
+                                                          TValue="string"
                                                           Data="@_tagGroups.First(t => t.Id == tg.Id).TagDTOs"
                                                           TextField="@((item) => item.Value)"
-                                                          ValueField="@((item) => item.Id)"
+                                                          ValueField="@((item) => item.Value)"
+                                                          SelectedTextChanged="@(_ => _edited[tg.Id] = true)"
                                                           Placeholder="Search or press enter to create new..."
                                                           Multiple
                                                           FreeTyping
-                                                          @bind-SelectedValues="_multipleSelectionTagsData[tg.Id]"
-                                                          @bind-SelectedTexts="_multipleSelectionTagsTexts[tg.Id]">
+                                                          @bind-SelectedValues="_selectedExistingTags[tg.Id]"
+                                                          @bind-SelectedTexts="_allSelectedTagsValues[tg.Id]">
                                             </Autocomplete>
                                         </div>
                                     </div>
@@ -98,9 +100,8 @@
     private Dictionary<int, bool> _edited = new();
     private Dictionary<int, bool> _editingName = new();
 
-    Dictionary<int, List<int>> _multipleSelectionTagsData = new();
-    //List<int> _multipleSelectionTagsData = new List<int>(); // TODO: for update – might need ID instead of value. 
-    Dictionary<int, List<string>> _multipleSelectionTagsTexts = new();
+    Dictionary<int, List<string>> _selectedExistingTags = new();
+    Dictionary<int, List<string>> _allSelectedTagsValues = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -112,30 +113,30 @@
         var tags = new HashSet<TagDTO>();
         tags.Add(new TagDTO() {Id = 1, TagGroupId = 1, Value = "SWU"});
 
-        var tg1 = new TagGroupDTO {Id = 1, Name = "Programme", SupervisorCanAddTag = false, RequiredInProject = false, TagDTOs = tags, TagLimit = 1};
-        var tg2 = new TagGroupDTO {Id = 2, Name = "Programme", SupervisorCanAddTag = false, RequiredInProject = false, TagDTOs = tags, TagLimit = 2};
-        var tg3 = new TagGroupDTO {Id = 3, Name = "Programme", SupervisorCanAddTag = true, RequiredInProject = true, TagDTOs = tags, TagLimit = 3};
-        var tg4 = new TagGroupDTO {Id = 4, Name = "Programme", SupervisorCanAddTag = true, RequiredInProject = false, TagDTOs = tags, TagLimit = 4};
-        var tg5 = new TagGroupDTO {Id = 5, Name = "Programme", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 5};
-        var tg6 = new TagGroupDTO {Id = 6, Name = "Programme", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 6};
-        var tg7 = new TagGroupDTO {Id = 7, Name = "Programme", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 7};
-        var tg8 = new TagGroupDTO {Id = 8, Name = "Programme", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 8};
-
+        var tg1 = new TagGroupDTO {Id = 1, Name = "Programme1", SupervisorCanAddTag = false, RequiredInProject = false, TagDTOs = tags, TagLimit = 1};
+        var tg2 = new TagGroupDTO {Id = 2, Name = "Programme2", SupervisorCanAddTag = false, RequiredInProject = false, TagDTOs = tags, TagLimit = 2};
+        var tg3 = new TagGroupDTO {Id = 3, Name = "Programme3", SupervisorCanAddTag = true, RequiredInProject = true, TagDTOs = tags, TagLimit = 3};
+        /*var tg4 = new TagGroupDTO {Id = 4, Name = "Programme4", SupervisorCanAddTag = true, RequiredInProject = false, TagDTOs = tags, TagLimit = 4};
+        var tg5 = new TagGroupDTO {Id = 5, Name = "Programme5", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 5};
+        var tg6 = new TagGroupDTO {Id = 6, Name = "Programme6", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 6};
+        var tg7 = new TagGroupDTO {Id = 7, Name = "Programme7", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 7};
+        var tg8 = new TagGroupDTO {Id = 8, Name = "Programme8", SupervisorCanAddTag = false, RequiredInProject = true, TagDTOs = tags, TagLimit = 8};*/
+        
         var tgs = new List<TagGroupDTO>();
         tgs.Add(tg1);
         tgs.Add(tg2);
         tgs.Add(tg3);
-        tgs.Add(tg4);
+        /*tgs.Add(tg4);
         tgs.Add(tg5);
         tgs.Add(tg6);
         tgs.Add(tg7);
-        tgs.Add(tg8);
+        tgs.Add(tg8);*/
         _tagGroups = tgs;
         
         foreach(var tg in _tagGroups)
         {
-            _multipleSelectionTagsData[tg.Id] = tg.TagDTOs.Select(t => t.Id).ToList();
-            _multipleSelectionTagsTexts[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
+            _selectedExistingTags[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
+            _allSelectedTagsValues[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
         }
         
         TagGroupsUpdateDtos = _tagGroups.Select(tg => tg.ToUpdateDTO()).ToList();
@@ -153,6 +154,10 @@
 
         await base.OnInitializedAsync();
     }
+    
+    async Task CloseTagCards(string elementId, string style, string styleValue) {
+        await _jsRuntime.InvokeAsync<object>("applyStyleForElement", new { id = elementId,  styleAttribute = style, value = styleValue });
+    }
 
     void UpdateVisibleTgs(PagerEventArgs args)
     {
@@ -164,15 +169,21 @@
     private async void Save()
     {
         foreach (var tg in TagGroupsUpdateDtos)
-        if (tg.Id == -1) // todo: hvad er det her???
-            await _http.PostAsJsonAsync("api/TagGroup", tg.Depress()); // todo: hvad er det her???
-        else if (_edited[tg.Id])
+        {
+            if (!_edited[tg.Id]) continue;
+            UpdateTagGroup(tg);
             await _http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
+        }
 
         foreach (var id in _deletedTgs)
             await _http.DeleteAsync($"api/TagGroup/{id}");
 
         _nav.NavigateTo(_nav.Uri, forceLoad: true);
+    }
+
+    private void UpdateTagGroup(TagGroupUpdateDTO tg)
+    {
+        tg.SelectedTagValues = _allSelectedTagsValues[tg.Id].ToHashSet();
     }
     
     private void RedirectToCreateTagGroup()
@@ -192,6 +203,8 @@
 
         _visibleTagGroups = TagGroupsUpdateDtos.Skip(_lastSkip).Take(_lastTake).ToList();
         _count = TagGroupsUpdateDtos.Count();
+        
+        await CloseTagCards("rz-fieldset-0-content", "display", "none");
     }
 
 }
