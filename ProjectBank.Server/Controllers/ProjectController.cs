@@ -37,7 +37,7 @@ public class ProjectController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds, [FromQuery] IList<int> supervisorIds) //Todo Spørgsmål - hvad gør FromQuery?
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds, [FromQuery] IList<int> supervisorIds) 
     {
         IReadOnlyCollection<ProjectDTO> resp;
         if (!tagIds.Any() && !supervisorIds.Any())
@@ -48,7 +48,7 @@ public class ProjectController : ControllerBase
         return resp.IsNullOrEmpty() ? new List<ProjectDTO>().AsReadOnly() : resp;
     }
 
-    [Authorize(Roles = "Admin, Supervisor")] // Vi skal sørge for at supervisors ikke kan slette/opdatere andre supervisors projekter - Skal gøres i Razor/Blazor
+    [Authorize(Roles = "Admin, Supervisor")] //ToDo  Vi skal sørge for at supervisors ikke kan slette/opdatere andre supervisors projekter - Skal gøres i Razor/Blazor
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

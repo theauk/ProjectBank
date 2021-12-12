@@ -97,7 +97,7 @@ namespace ProjectBank.Infrastructure.Repositories
             {
                 var entity = await _context.Tags.FindAsync(id);
 
-                if (entity == null) return Response.Conflict; //TODO Spørgsmål: Burde det her ikke være en NotFound/den burde vel ikke returnere
+                if (entity == null) return Response.Conflict; //TODO Spørgsmål: Burde det her ikke være en NotFound/den burde vel ikke returnere - nok ikke så vigtigt, men tænkte over det under testing
 
                 _context.Tags.Remove(entity);
             }

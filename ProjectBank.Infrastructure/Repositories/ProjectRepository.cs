@@ -24,7 +24,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 return (Response.BadRequest);
             }
 
-            _context.Projects.Add(entity); // TODO Tags & Supvervisors skal addes til ProjectTag og ProjectUser
+            _context.Projects.Add(entity);
 
             await _context.SaveChangesAsync();
 
@@ -55,7 +55,7 @@ namespace ProjectBank.Infrastructure.Repositories
                 Id = project.Id,
                 Name = project.Name,
                 Description = project.Description,
-                Tags = project.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(),
+                Tags = project.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(), //ToDo Kan ikke få en liste af tags eller supervisors ud i ProjectPage Console -
                 Supervisors = project.Supervisors.Select(u => new UserDTO { Id = u.Id, Name = u.Name }).ToHashSet()
             };
         }
@@ -69,15 +69,15 @@ namespace ProjectBank.Infrastructure.Repositories
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(), //TODO I alle Reads() skal vi lave noget lignende _context.ProjectTag.Select( noget ala where  ProjectId = p.Id) og så _context.Tag.Select(De tagIds vi har fundet med forrige select) 
-                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet() // TODO Vi skal nok gøre noget af det samme her mht ProjectUser tabellen
+                Tags = p.Tags.Select(t => new TagDTO { Id = t.Id, Value = t.Value }).OrderBy(t => t.Value).ToList(), 
+                Supervisors = p.Supervisors.Select(user => new UserDTO { Id = user.Id, Name = user.Name }).ToHashSet() 
             }).ToListAsync()).AsReadOnly();
 
             return projects;
         }
         
         
-        public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IList<int> tagIds, IList<int> supervisorIds)
+        public async Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IList<int> tagIds, IList<int> supervisorIds) 
         {
             var projects = _context.Projects.Select(p => new ProjectDTO
             {
