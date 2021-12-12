@@ -4,17 +4,14 @@ public class UserRepositoryTests : RepoTests
 {
     private readonly UserRepository _repository;
 
-    public UserRepositoryTests() : base()
-    {
-        _repository = new UserRepository(_context);
-    }
+    public UserRepositoryTests() => _repository = new UserRepository(_context);
     
     // Create
 
     [Fact]
     public async Task CreateAsync_returns_Created_response()
     {
-        var u = new UserCreateDTO()
+        var u = new UserCreateDTO
         {
             Name = "John Doe",
         };
@@ -32,7 +29,7 @@ public class UserRepositoryTests : RepoTests
     public async Task CreateAsync_adds_user_to_context(string name)
     {
         await _repository.CreateAsync(
-            new UserCreateDTO() {Name = name}
+            new UserCreateDTO {Name = name}
         );
         
         Assert.NotNull(_context.Users.FirstOrDefault(user => user.Name == name));
@@ -41,7 +38,7 @@ public class UserRepositoryTests : RepoTests
     [Fact]
     public async Task Correct_user_count_after_addition()
     {
-        var u = new UserCreateDTO()
+        var u = new UserCreateDTO
         {
             Name = "John Doe",
         };
@@ -72,7 +69,7 @@ public class UserRepositoryTests : RepoTests
     [Fact]
     public async Task Gets_all_users_on_ReadAll()
     {
-        var expected = new List<int>() { 1, 2, 3, 4, 5, };
+        var expected = new List<int> { 1, 2, 3, 4, 5, };
         
         var users = await _repository.ReadAllAsync();
         
