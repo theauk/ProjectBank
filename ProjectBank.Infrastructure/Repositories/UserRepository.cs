@@ -50,6 +50,5 @@ public class UserRepository : IUserRepository
                 Id = entity.Id,
                 Name = entity.Name
             };
-        }
     }
 }
