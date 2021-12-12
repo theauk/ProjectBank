@@ -13,7 +13,7 @@ namespace ProjectBank.Infrastructure.Repositories
 
         public async Task<Response> CreateAsync(UserCreateDTO user)
         {
-            var entity = new User { Name = user.Name, University = _context.Universities.First() };
+            var entity = new User { Name = user.Name, Email = user.Name, University = _context.Universities.First()};
 
             _context.Users.Add(entity);
 
@@ -61,11 +61,11 @@ namespace ProjectBank.Infrastructure.Repositories
             // }).ToListAsync()).AsReadOnly();
         
             // TEMP SUPERVISOR LIST for testing
-            var marco = new UserDTO { Id = 1, Name = "Marco" };
-            var birgit = new UserDTO { Id = 2, Name = "Birgit" };
-            var bjorn = new UserDTO { Id = 3, Name = "Bjørn" };
-            var paolo = new UserDTO { Id = 4, Name = "Paolo" };
-            var rasmus = new UserDTO { Id = 5, Name = "Rasmus" };
+            var marco = new UserDTO { Id = 1, Name = "Marco", Email = "marco@itu.dk"};
+            var birgit = new UserDTO { Id = 2, Name = "Birgit", Email = "birgit@itu.dk" };
+            var bjorn = new UserDTO { Id = 3, Name = "Bjørn", Email = "bjoern@itu.dk" };
+            var paolo = new UserDTO { Id = 4, Name = "Klaus", Email = "klaus@itu.dk" };
+            var rasmus = new UserDTO { Id = 5, Name = "Mette", Email = "mette@itu.dk" };
             
             var usersList = new List<UserDTO>();
             usersList.Add(marco);
@@ -76,7 +76,6 @@ namespace ProjectBank.Infrastructure.Repositories
             var users = new ReadOnlyCollection<UserDTO>(usersList);
 
             return users;
-            
         }
 
         public async Task<Option<UserDTO>> ReadAsync(int userId)

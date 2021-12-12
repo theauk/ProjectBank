@@ -30,11 +30,11 @@ namespace ProjectBank.Infrastructure.Tests
 
             // --- Test data ---
             // Supervisors
-            var marco = new User { Id = 1, Name = "Marco" };
-            var birgit = new User { Id = 2, Name = "Birgit" };
-            var bjorn = new User { Id = 3, Name = "Bjørn" };
-            var paolo = new User { Id = 4, Name = "Paolo" };
-            var rasmus = new User { Id = 5, Name = "Rasmus" };
+            var marco = new User { Id = 1, Name = "Marco", Email = "marco@itu.dk"};
+            var birgit = new User { Id = 2, Name = "Birgit", Email = "birgit@itu.dk" };
+            var bjorn = new User { Id = 3, Name = "Bjørn", Email = "bjoern@itu.dk" };
+            var paolo = new User { Id = 4, Name = "Paolo", Email = "paolo@itu.dk" };
+            var rasmus = new User { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk" };
 
             // TagGroups
             var semesterTG = new TagGroup
@@ -87,7 +87,7 @@ namespace ProjectBank.Infrastructure.Tests
             var secondYearProject = new Project { Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<Tag>() { secondYear, spring22 }, Supervisors = new HashSet<User>() { paolo, rasmus } };
             // -------------------
 
-            // Univertities
+            // Universities
             var ituUni = new University
             { 
                 DomainName = "itu.dk",
@@ -114,7 +114,7 @@ namespace ProjectBank.Infrastructure.Tests
                 UserIds = new HashSet<int>() { 4, 5 }
             };
 
-            var actual = await _repository.CreateAsync(project);
+            var actual = await _repository.CreateAsync(project, "test@itu.dk", "test");
             var actualResponse = actual;
             var actualProject = (await _repository.ReadAsync(5)).Value;
 
@@ -142,7 +142,7 @@ namespace ProjectBank.Infrastructure.Tests
                 UserIds = new HashSet<int>() { 4, 6 }
             };
 
-            var actual = await _repository.CreateAsync(project);
+            var actual = await _repository.CreateAsync(project, "test@itu.dk", "test");
 
             Assert.Equal(Response.BadRequest, actual);
         }

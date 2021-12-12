@@ -1,4 +1,4 @@
-﻿@page "/tagGroupCreation"
+﻿@page "/createTagGroup"
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 @using Microsoft.AspNetCore.Authorization
@@ -18,24 +18,8 @@
                             <RadzenLabel class="formLabelText" Text="Name"/>
                         </div>
                         <div class="col">
-                            <RadzenTextBox style="display: block; width: 100%" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
+                            <RadzenTextBox class="tagGroupName" style="display: block; width: 100%" Name="TagGroupName" @bind-Value=@_tagGroup.Name />
                             <RadzenRequiredValidator Component="TagGroupName" Text="Tag group name is required"/>
-                        </div>
-                    </div>
-                    <div class="row supervisorTagsLimit" style="margin-bottom: 48px">
-                        <div class="col-md-4">
-                            <RadzenLabel class="formLabelText" Text="Maximum Amount of Tags"/>
-                        </div>
-                        <div class="col">
-                            <RadzenNumeric @bind-Value=@_tagGroup.TagLimit TValue="int?" Placeholder="No Limit" Min="1"/>
-                        </div>
-                    </div>
-                    <div class="row supervisorAddTags" style="margin-bottom: 48px">
-                        <div class="col-md-4">
-                            <RadzenLabel class="formLabelText" Text="Supervisors Can Add Tags"/>
-                        </div>
-                        <div class="col">
-                            <RadzenCheckBox @bind-Value=@_tagGroup.SupervisorCanAddTag Name="SupervisorCanAdd" TValue="bool"/>
                         </div>
                     </div>
                     <div class="row requiredInProject" style="margin-bottom: 48px">
@@ -46,13 +30,29 @@
                             <RadzenCheckBox @bind-Value=@_tagGroup.RequiredInProject Name="RequiredInProject" TValue="bool"/>
                         </div>
                     </div>
+                    <div class="row supervisorAddTags" style="margin-bottom: 48px">
+                        <div class="col-md-4">
+                            <RadzenLabel class="formLabelText" Text="Supervisors Can Add Tags"/>
+                        </div>
+                        <div class="col">
+                            <RadzenCheckBox @bind-Value=@_tagGroup.SupervisorCanAddTag Name="SupervisorCanAdd" TValue="bool"/>
+                        </div>
+                    </div>
+                    <div class="row supervisorTagsLimit" style="margin-bottom: 48px">
+                        <div class="col-md-4">
+                            <RadzenLabel class="formLabelText" Text="Maximum Amount of Tags"/>
+                        </div>
+                        <div class="col">
+                            <RadzenNumeric @bind-Value=@_tagGroup.TagLimit TValue="int?" Placeholder="No Limit" Min="1"/>
+                        </div>
+                    </div>
                 </RadzenTemplateForm>
                 <div class="row" style="margin-bottom: 48px">
                     <div class="col-md-4">
                         <RadzenLabel class="formLabelText" Text="Predefined Tags"/>
                     </div>
                     <div class="col">
-                        <Autocomplete class="autocompleteTags"
+                        <Autocomplete class="autocompleteTags autoCompleteCreateTg"
                                       TItem="TagCreateDTO"
                                       TValue="string"
                                       Data="@_tagGroup.NewTagsDTOs"
@@ -81,8 +81,8 @@
 @code {
     private string submitFormId = "submitForm";
     TagGroupCreateDTO _tagGroup = new();
-    List<String> _multipleSelectionTagsData; // TODO: for update – might need ID instead of value. 
-    List<String> _multipleSelectionTagsTexts = new List<string>();
+    List<string> _multipleSelectionTagsData; // TODO: for update – might need ID instead of value. 
+    List<string> _multipleSelectionTagsTexts = new List<string>();
 
     protected override async Task OnInitializedAsync() // TODO: For the update page – here we need to read in the existing tags for the current tag group – so we need to get the tag group ID somehow
     {
@@ -93,7 +93,7 @@
     async Task OnSubmit(TagGroupCreateDTO tagGroup)
     {
         CreateTags();
-        
+
         var response = await _http.PostAsJsonAsync("api/TagGroup", _tagGroup);
 
         if (response.IsSuccessStatusCode)
@@ -110,7 +110,7 @@
 
     void Redirect()
     {
-        var uri = $"{_navigationManager.BaseUri}admin";
+        var uri = $"{_navigationManager.BaseUri}manageTagGroups";
         _navigationManager.NavigateTo(uri);
     }
 

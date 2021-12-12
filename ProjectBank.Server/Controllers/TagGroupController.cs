@@ -27,8 +27,7 @@ public class TagGroupController : ControllerBase
     [HttpGet]
     public async Task<IReadOnlyCollection<TagGroupDTO>> Get()
     {
-        var response = await _repository.ReadAllAsync();
-        return response;
+        return await _repository.ReadAllAsync();
     }
 
     [Authorize(Roles = "Admin")]

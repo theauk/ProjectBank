@@ -21,7 +21,17 @@ public class ProjectController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ProjectDTO?>> Get(int id)
     {
-        var response = await _repository.ReadAsync(id);
+        var projectDto = await _repository.ReadAsync(id);
+        return projectDto.ToActionResult();
+    }
+
+    [Authorize(Roles = "Admin, Supervisor")]
+    [HttpPost]
+    public async Task<IActionResult> Post(ProjectCreateDTO project)
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var name = User.FindFirstValue("name");
+        var response = await _repository.CreateAsync(project, email, name);
         return response.ToActionResult();
     }
 

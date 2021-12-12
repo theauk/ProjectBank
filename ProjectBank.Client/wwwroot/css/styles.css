@@ -33,9 +33,6 @@
     padding: 7px 0 7px;
 }
 
-.tagFilterContainer {
-}
-
 .tagFieldSet {
     border: none !important;
     overflow-wrap: break-word;
@@ -64,8 +61,6 @@
     margin-top: 25px;
 }
 
-/* Project Page */
-
 /* Project Creation */
 
 .formLabelTextCreateProject {
@@ -88,24 +83,68 @@
     height: 230px;
 }
 
-/* Admin Page */
+/* Manage Tag Groups */
 
-.TagGroupContainer, .CreateProjectContainer {
-    position: absolute;
-    margin: auto;
-    border: solid 2px lightgrey;
-    border-radius: 8px;
-    bottom: 70px;
-    top: 75px;
-    left: 20%;
-    right: 20%;
-    overflow: scroll;
-    overflow-x: hidden;
-    padding: 1%;
+.adminPageContainer {
+    width: 70%;
 }
 
-.TagGroupEntry {
-    padding-bottom: 10px;
+.tgCard {
+    width: 100%;
+}
+
+.adminPageTopBar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.adminPageButtonContainer {
+    display: flex;
+    align-items: center;
+}
+.selectGrid {
+    height: 150px;
+}
+
+.tagGroupSelections {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tagGroupChecks {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rz-spinner {
+    width: 100px !important;
+}
+
+.tgCard {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.selectLeftItem {
+    margin-right: 5px;
+}
+
+.adminPageTags {
+    margin-top: 15px;
+    width: 50%;
+}
+
+.adminAutocomplete {
+    position: absolute !important;
+    z-index: 2000 !important;
+    width: 50% !important;
+}
+
+.createTagGroupButton {
+    margin-right: 20px;
+    background-color: #613cbe !important;
 }
 
 /* Create Tag Group */
@@ -114,9 +153,17 @@
     font-weight: bold;
 }
 
+.tagGroupName {
+    width: 100%
+}
+
 .autocompleteTags {
     background-color: white;
     font-size: 18px;
+}
+
+.autoCompleteCreateTg {
+    width: 100% !important;
 }
 
 .badge.badge-primary.ml-2, .rz-chkbox-box.rz-state-active {
@@ -139,10 +186,20 @@
 }
 
 .lowerSubmitCancelButtons {
+    margin-top: 50px;
     margin-bottom: 70px;
 }
 
 .form-control {
     width: 100% !important;
     max-width: none !important;
+}
+
+.tagFieldSet, .tagGroupFieldSet {
+    border: none !important;
+    overflow-wrap: break-word;
+}
+
+.rz-paginator-last, .rz-paginator-next {
+    background-color: var(--submitButton) !important;
 }
