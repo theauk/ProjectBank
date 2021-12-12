@@ -82,7 +82,7 @@ namespace ProjectBank.Infrastructure.Repositories
             entity.SupervisorCanAddTag = tagGroup.SupervisorCanAddTag;
             entity.TagLimit = tagGroup.TagLimit;
             
-            await DeleteTagAsync(tagGroupId, tagGroup.DeletedTagIds);
+            //await DeleteTagAsync(tagGroupId, tagGroup.DeletedTagIds); //todo: fix
             await AddTagAsync(tagGroupId, tagGroup.NewTagsDTOs);
             
             //TODO : handle responses from delete tag and add tag
@@ -96,8 +96,8 @@ namespace ProjectBank.Infrastructure.Repositories
             foreach (var id in tagsToDelete)
             {
                 var entity = await _context.Tags.FindAsync(id);
-
-                if (entity == null) return Response.Conflict; //TODO Spørgsmål: Burde det her ikke være en NotFound/den burde vel ikke returnere - nok ikke så vigtigt, men tænkte over det under testing
+                
+                if (entity == null) return Response.Conflict; 
 
                 _context.Tags.Remove(entity);
             }

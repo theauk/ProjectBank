@@ -16,22 +16,12 @@
         </div>
         <AuthorizeView Roles="Admin">
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="admin">
+                <NavLink class="nav-link" href="manageTagGroups">
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Manage Tag Groups
                 </NavLink>
             </div>
         </AuthorizeView>
         <AuthorizeView Roles="Admin, Supervisor">
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="tagGroupCreation">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Create Tag Group
-                </NavLink>
-            </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="supervisorOverview">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Your Projects
-                </NavLink>
-            </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="projectCreation">
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Create Project

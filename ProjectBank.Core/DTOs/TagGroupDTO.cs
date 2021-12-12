@@ -37,7 +37,7 @@ namespace ProjectBank.Core.DTOs
     {
         public int Id { get; init; }
         
-        public ISet<int> DeletedTagIds { get; set; } = new HashSet<int>();
+        public ISet<string> SelectedTagValues { get; set; } = new HashSet<string>();
 
     }
 }

@@ -3,6 +3,7 @@
 @inject NavigationManager _navigationManager
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin, Supervisor")]
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Create Project</PageTitle>
 
@@ -71,21 +72,21 @@
                 }
             </div>
             <div class="col">
+            
                 @foreach (var tg in TagGroups)
                 {
-                    @if (!tg.SupervisorCanAddTag && tg.TagDTOs.Any())
+                    @if (!tg.SupervisorCanAddTag)
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
-                        @if (tg.TagDTOs.Count() <= 5)
-                        {
-                            <RadzenCheckBoxList class="tagCheckItem" style="margin-bottom: 20px" @bind-Value="@SelectedTags[tg.Id]" TValue="int">
-                                <Items>
-                                    @foreach (var tag in tg.TagDTOs)
-                                    {
-                                        <RadzenCheckBoxListItem Style="min-width: 160px; max-width: 160px" Text=@tag.Value Value=@tag.Id/>
-                                    }
-                                </Items>
-                            </RadzenCheckBoxList>
+                        @if (tg.TagDTOs.Count() <= 8) {
+                                
+                            <RadzenCheckBoxList @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]" 
+                                                TValue="int" 
+                                                Orientation="Radzen.Orientation.Vertical"
+                                                Data="@tg.TagDTOs" 
+                                                TextProperty="Value" 
+                                                ValueProperty="Id"
+                                                />
                         }
                         else
                         {
@@ -94,9 +95,10 @@
                                 AllowFiltering="true"
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 Multiple="true"
-                                @bind-Value="@SelectedTags[tg.Id]"
+                                @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]"
                                 TextProperty="Value"
-                                ValueProperty="Id">
+                                ValueProperty="Id"
+                                >
                             </RadzenListBox>
                         }
                     }
@@ -105,15 +107,15 @@
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
                         <Autocomplete class="autocompleteTags tagCheckItem" Style="max-width: 40%"
                                       TItem="TagDTO"
-                                      TValue="TagDTO"
+                                      TValue="string"
                                       Data="tg.TagDTOs"
                                       TextField="@((item) => item.Value)"
-                                      ValueField="@((item) => item)"
+                                      ValueField="@((item) => item.Value)"
                                       Placeholder="Search or press enter to create new..."
                                       Multiple
                                       FreeTyping
-                                      @bind-SelectedValues="_multipleSelectionTagsData[tg.Id]"
-                                      @bind-SelectedTexts="_multipleSelectionTagsText[tg.Id]">
+                                      @bind-SelectedValues="_selectedExistingTagsValues[tg.Id]"
+                                      @bind-SelectedTexts="_allSelectedTagsValues[tg.Id]">
                         </Autocomplete>
                     }
                 }
@@ -132,18 +134,21 @@
 
 
 @code {
+
+    Dictionary<int,  IEnumerable<int>> _selectedPredefinedOnlyTagsId = new();
+
+
     private ProjectCreateDTO _project = new();
 
     private IEnumerable<TagGroupDTO> TagGroups { get; set; } = new List<TagGroupDTO>();
-    private Dictionary<int, TagGroupDTO> RequiredTagGroups { get; set; } = new Dictionary<int, TagGroupDTO>();
+    private Dictionary<int, TagGroupDTO> RequiredTagGroups { get; init; } = new Dictionary<int, TagGroupDTO>();
 
     private IEnumerable<UserDTO> Supervisors { get; set; } = new List<UserDTO>();
 
-    private Dictionary<int, IEnumerable<int>> SelectedTags = new();
-    private IEnumerable<int> SelectedSupervisorIds { get; set; } // cannot be inside _project because we need enumerable and not set
+    private IEnumerable<int> SelectedSupervisorIds { get; set; } = new List<int>(); // cannot be inside _project because we need enumerable and not set
 
-    Dictionary<int, List<TagDTO>> _multipleSelectionTagsData = new(); // todo: skal nok mest bruges på update
-    Dictionary<int, List<string>> _multipleSelectionTagsText = new();
+    private Dictionary<int, List<string>> _selectedExistingTagsValues = new();
+    private Dictionary<int, List<string>> _allSelectedTagsValues = new();
 
     private string _submitFormId = "submitForm";
     private IEnumerable<string> _missingTagsName = new List<string>();
@@ -151,46 +156,80 @@
     protected override async Task OnInitializedAsync()
     {
         TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
+        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); 
         
-        foreach (var tg in TagGroups)
-        {
-            _multipleSelectionTagsData[tg.Id] = new List<TagDTO>();
-            _multipleSelectionTagsText[tg.Id] = new List<string>();
-            SelectedTags.Add(tg.Id, new List<int>());
-            if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
-        }
-        
-        // TODO: Fetch Supervisors from API.
-        // TODO: Automatically add current user to SupervisorIds.
-        //Supervisors = Supervisor.SampleSupervisors;
-        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
-
         _project.UserIds = new HashSet<int>();
         await base.OnInitializedAsync();
     }
 
     private IEnumerable<string> CheckRequiredTags()
     {
-        return (from tg in RequiredTagGroups where !SelectedTags[tg.Key].Any() select tg.Value.Name).ToList();
+        var list = new List<string>();
+        foreach (var (tagGroupId, tagGroupDto) in RequiredTagGroups)
+        {
+            if (_allSelectedTagsValues.ContainsKey(tagGroupId))
+            {
+                if (!_allSelectedTagsValues[tagGroupId].Any()) list.Add(tagGroupDto.Name);
+            }
+            else if (_selectedPredefinedOnlyTagsId.ContainsKey(tagGroupId))
+            {
+                if (!_selectedPredefinedOnlyTagsId[tagGroupId].Any()) list.Add(tagGroupDto.Name);
+            }
+        }
+
+        return list;
     }
 
-    void OnInvalidSubmit()
+    async void OnInvalidSubmit()
     {
         _missingTagsName = CheckRequiredTags();
+        await JsRuntime.InvokeVoidAsync("scrollToTop");
     }
 
     private async void OnSubmit()
     {
         _missingTagsName = CheckRequiredTags();
-
         if (!_missingTagsName.Any())
         {
+            AddTags();
             var response = await _http.PostAsJsonAsync("api/Project", _project);
             if (response.IsSuccessStatusCode)
-            {
-                _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+            {_navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
             }
+            
         }
+        else
+        {
+            await JsRuntime.InvokeVoidAsync("scrollToTop");
+        }
+    }
+
+    void AddTags()
+    {
+        // New tags
+        foreach (var (tagGroupId, tagNames) in _allSelectedTagsValues)
+        {
+            var list = tagNames.Except(_selectedExistingTagsValues[tagGroupId]);
+            _project.NewTagDTOs.UnionWith(list.Select(t => new TagCreateDTO {TagGroupId = tagGroupId, Value = t}).ToHashSet());
+        }
+        // existing tags
+        foreach (var list in _selectedPredefinedOnlyTagsId)
+        {
+            _project.ExistingTagIds.UnionWith(list.Value.ToHashSet());
+        }
+        _project.UserIds = SelectedSupervisorIds.ToHashSet();
+
+        foreach (var tagDto in from tgIdStringTags in _selectedExistingTagsValues 
+            from tagGroupDto in TagGroups 
+            where tgIdStringTags.Key == tagGroupDto.Id 
+            from val in tgIdStringTags.Value 
+            select tagGroupDto.TagDTOs.FirstOrDefault(t => t.Value.Equals(val)) 
+            into tagDto 
+            where tagDto != null select tagDto)
+        {
+            _project.ExistingTagIds.Add(tagDto.Id);
+        }
+        
     }
 
     void Cancel()

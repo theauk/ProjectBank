@@ -32,6 +32,7 @@ public class ProjectController : ControllerBase
     public async Task<IActionResult> Post(ProjectCreateDTO project)
     {
         var response = await _repository.CreateAsync(project);
+        // TODO: Automatically add current user to SupervisorIds.
         return response.ToActionResult();
     }
 
