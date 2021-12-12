@@ -35,8 +35,10 @@ namespace ProjectBank.Infrastructure.Tests
             Assert.Equal(4, actualProject.Id);
             Assert.Equal("Bachelor Project", actualProject.Name);
             Assert.Equal("The final project of SWU.", actualProject.Description);
-            Assert.Equal(new List<int> { 1, }, actualProject.Tags.Select(t => t.Id));
-            Assert.Equal(new List<int> { 4, 5, }, actualProject.Supervisors.Select(s => s.Id));
+            foreach (var tagId in new List<int> { 1, })
+                Assert.Contains(tagId, actualProject.Tags.Select(t => t.Id));
+            foreach (var supeId in new List<int> { 4, 5, })
+                Assert.Contains(supeId, actualProject.Supervisors.Select(s => s.Id));
         }
 
         [Fact]
@@ -74,19 +76,15 @@ namespace ProjectBank.Infrastructure.Tests
         [Fact]
         public async Task ReadAsync_given_id_exists_returns_Project()
         {
-            var project = (await _repository.ReadAsync(4)).Value;
+            var project = (await _repository.ReadAsync(3)).Value;
 
-            Assert.Equal(4, project.Id);
-            Assert.Equal("Second Year Project", project.Name);
-            Assert.Equal("Group project in larger groups with a company.", project.Description);
-            Assert.Collection(project.Tags,
-                tag => Assert.Equal(new TagDTO { Id = 4, Value = "2nd Year Project" }, tag),
-                tag => Assert.Equal(new TagDTO { Id = 5, Value = "Spring 2022" }, tag)
-            );
-            Assert.Collection(project.Supervisors,
-                supervisor => Assert.Equal(new UserDTO { Id = 4, Name = "Paolo" }, supervisor),
-                supervisor => Assert.Equal(new UserDTO { Id = 5, Name = "Rasmus" }, supervisor)
-            );
+            Assert.Equal(3, project.Id);
+            Assert.Equal("Make an app!", project.Name);
+            Assert.Equal("Like a dating app, or something. Just something we can sell for a lot of money.", project.Description);
+            foreach (var tagId in new List<int> { 2, 3, 13, 14, })
+                Assert.Contains(tagId, project.Tags.Select(t => t.Id));
+            foreach (var supeId in new List<int> {1, 2,})
+                Assert.Contains(supeId, project.Supervisors.Select(s => s.Id));
         }
 
         [Fact]
@@ -98,17 +96,8 @@ namespace ProjectBank.Infrastructure.Tests
         }
 
         [Fact]
-        public async Task ReadAllAsync_returns_all_projects()
-        {
-            var projects = await _repository.ReadAllAsync();
-
-            Assert.Collection(projects,
-                project => Assert.Equal(new ProjectDTO{ Id = 1, Name = "Math Project", Description = "Prove a lot of stuff.", Tags = new HashSet<TagDTO>() { new TagDTO{ Id = 1, Value = "Math Theory" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 2, Name = "Birgit" } }}, project),
-                project => Assert.Equal(new ProjectDTO{ Id = 2, Name = "Database Project", Description = "Host a database with Docker.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 2, Value = "SQL", }, new TagDTO { Id = 5, Value = "Spring 2022" }}, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 3, Name = "Bjørn" } }}, project),
-                project => Assert.Equal(new ProjectDTO{ Id = 3, Name = "Go Project", Description = "Create gRPC methods and connect it to SERF.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 3, Value = "GoLang" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 1, Name = "Marco" } }}, project),
-                project => Assert.Equal(new ProjectDTO{ Id = 4, Name = "Second Year Project", Description = "Group project in larger groups with a company.", Tags = new HashSet<TagDTO>() { new TagDTO { Id = 4, Value = "2nd Year Project" }, new TagDTO { Id = 5, Value = "Spring 2022" } }, Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 4, Name = "Paolo" }, new UserDTO { Id = 5, Name = "Rasmus" }}}, project)
-            );
-        }
+        public async Task ReadAllAsync_returns_all_projects() => Assert.Equal(new List<int> {1, 2, 3,},
+            (await _repository.ReadAllAsync()).Select(p => p.Id));
 
         [Fact]
         public async Task UpdateAsync_updates_existing_character()
