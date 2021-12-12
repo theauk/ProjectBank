@@ -58,11 +58,7 @@
     protected override async Task OnParametersSetAsync()
     {
         _response = await _http.GetAsync($"api/Project/{Id}");
-        Console.WriteLine("ResponseCode is " + _response.StatusCode.ToString().ToLower() );
-        // Console.WriteLine("JsonString is: " +"@"+ (await _response.Content.ReadAsStringAsync()));
         _project = await _response.Content.ReadFromJsonAsync<ProjectDTO>();
-
-        
     }
 
 }
