@@ -78,15 +78,15 @@
                     @if (!tg.SupervisorCanAddTag)
                     {
                         <h5 class="tagCheckItemTitle">@tg.Name</h5>
-                        @if (tg.TagDTOs.Count() <= 0) {
+                        @if (tg.TagDTOs.Count() <= 8) {
                                 
-                            <RadzenCheckBoxList @bind-Value="@_selectedPredefinedOnlyTagsId" 
+                            <RadzenCheckBoxList @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]" 
                                                 TValue="int" 
                                                 Orientation="Radzen.Orientation.Vertical"
                                                 Data="@tg.TagDTOs" 
                                                 TextProperty="Value" 
                                                 ValueProperty="Id"
-                                                Change=@(args => OnChange(args, "CheckBoxList with items from data"))/>
+                                                />
                         }
                         else
                         {
@@ -95,10 +95,9 @@
                                 AllowFiltering="true"
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 Multiple="true"
-                                @bind-Value="@_selectedPredefinedOnlyTagsId"
+                                @bind-Value="@_selectedPredefinedOnlyTagsId[tg.Id]"
                                 TextProperty="Value"
                                 ValueProperty="Id"
-                                Change=@(args => OnChange2(args, "ListBox with multiple selection")) 
                                 >
                             </RadzenListBox>
                         }
@@ -136,13 +135,13 @@
 
 @code {
 
-    IEnumerable<int> _selectedPredefinedOnlyTagsId = new int[] {};
+    Dictionary<int,  IEnumerable<int>> _selectedPredefinedOnlyTagsId = new();
 
 
     private ProjectCreateDTO _project = new();
 
     private IEnumerable<TagGroupDTO> TagGroups { get; set; } = new List<TagGroupDTO>();
-    private Dictionary<int, TagGroupDTO> RequiredTagGroups { get; set; } = new Dictionary<int, TagGroupDTO>();
+    private Dictionary<int, TagGroupDTO> RequiredTagGroups { get; init; } = new Dictionary<int, TagGroupDTO>();
 
     private IEnumerable<UserDTO> Supervisors { get; set; } = new List<UserDTO>();
 
@@ -156,44 +155,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-    //TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
-
-        TagGroupDTO t = new TagGroupDTO
-        {
-            Name = "The Name",
-            Id = 99,
-            RequiredInProject = true,
-            SupervisorCanAddTag = true,
-            TagDTOs = new HashSet<TagDTO> {new TagDTO {Id = 109, TagGroupId = 99, Value = "this"}}
-        };
-        TagGroupDTO t2 = new TagGroupDTO
-        {
-            Name = "The Checkbox",
-            Id = 88,
-            RequiredInProject = true,
-            SupervisorCanAddTag = false,
-            TagDTOs = new HashSet<TagDTO> {new TagDTO {Id = 110, TagGroupId = 99, Value = "Checkbox"}, new TagDTO {Id = 101, TagGroupId = 88, Value = "Checkbox2"}}
-        };
-        TagGroups = new List<TagGroupDTO> {t, t2};
-        foreach (var tg in TagGroups)
-        {
-            _allSelectedTagsValues.Add(tg.Id, new List<string>());
-            _selectedExistingTagsValues.Add(tg.Id, new List<string>());
-            if (tg.RequiredInProject) RequiredTagGroups.Add(tg.Id, tg);
-        }
-
-    // TODO: Fetch Supervisors from API.
+        TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup");
     // TODO: Automatically add current user to SupervisorIds.
-    //Supervisors = Supervisor.SampleSupervisors;
-    //Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
-
+        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/supervisor"); //Todo fraskil at man kan finde alle users, så vi kun kan finde supervisors
+        
         _project.UserIds = new HashSet<int>();
         await base.OnInitializedAsync();
     }
 
     private IEnumerable<string> CheckRequiredTags()
     {
-        return (from tg in RequiredTagGroups where !_allSelectedTagsValues[tg.Key].Any() select tg.Value.Name).ToList();
+        var list = new List<string>();
+        foreach (var (tagGroupId, tagGroupDto) in RequiredTagGroups)
+        {
+            if (_allSelectedTagsValues.ContainsKey(tagGroupId))
+            {
+                if (!_allSelectedTagsValues[tagGroupId].Any()) list.Add(tagGroupDto.Name);
+            }
+            else if (_selectedPredefinedOnlyTagsId.ContainsKey(tagGroupId))
+            {
+                if (!_selectedPredefinedOnlyTagsId[tagGroupId].Any()) list.Add(tagGroupDto.Name);
+            }
+        }
+
+        return list;
     }
 
     async void OnInvalidSubmit()
@@ -205,41 +190,17 @@
     private async void OnSubmit()
     {
         _missingTagsName = CheckRequiredTags();
-        Console.WriteLine();
-
-        if (true)
+        if (!_missingTagsName.Any())
         {
-            
             AddTags();
-    
-            Console.WriteLine("Submit project: " + _project);
-            Console.WriteLine("Submit project w/ existing " + _project.ExistingTagIds.Count() + " tags IDS: ");
-            foreach (var VARIABLE in _project.ExistingTagIds)
-            {
-                Console.WriteLine(VARIABLE + ", ");
-            }
-
-            Console.WriteLine("Submit project w/ new " + _project.NewTagDTOs.Count() + " tags VALUES: ");
-            foreach (var VARIABLE in _project.NewTagDTOs)
-            {
-                Console.WriteLine(VARIABLE + ", ");
-            }
-
-
             var response = await _http.PostAsJsonAsync("api/Project", _project);
             if (response.IsSuccessStatusCode)
-            {
-                _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+            {_navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
             }
-            else
-            {
-                Console.WriteLine("Nested else");
-                await JsRuntime.InvokeVoidAsync("scrollToTop");
-            }
+            
         }
         else
         {
-            Console.WriteLine("Outside else");
             await JsRuntime.InvokeVoidAsync("scrollToTop");
         }
     }
@@ -247,19 +208,22 @@
     void AddTags()
     {
         // New tags
-        foreach (var keyvalue in _allSelectedTagsValues)
+        foreach (var (tagGroupId, tagNames) in _allSelectedTagsValues)
         {
-            var list = keyvalue.Value.Except(_selectedExistingTagsValues[keyvalue.Key]);
-            _project.NewTagDTOs.UnionWith(list.Select(t => new TagCreateDTO {TagGroupId = keyvalue.Key, Value = t}).ToHashSet());
+            var list = tagNames.Except(_selectedExistingTagsValues[tagGroupId]);
+            _project.NewTagDTOs.UnionWith(list.Select(t => new TagCreateDTO {TagGroupId = tagGroupId, Value = t}).ToHashSet());
         }
         // existing tags
-        _project.ExistingTagIds.UnionWith(_selectedPredefinedOnlyTagsId.ToHashSet());
+        foreach (var list in _selectedPredefinedOnlyTagsId)
+        {
+            _project.ExistingTagIds.UnionWith(list.Value.ToHashSet());
+        }
         _project.UserIds = SelectedSupervisorIds.ToHashSet();
 
-        foreach (var tagDto in from tgID_StringTags in _selectedExistingTagsValues 
+        foreach (var tagDto in from tgIdStringTags in _selectedExistingTagsValues 
             from tagGroupDto in TagGroups 
-            where tgID_StringTags.Key == tagGroupDto.Id 
-            from val in tgID_StringTags.Value 
+            where tgIdStringTags.Key == tagGroupDto.Id 
+            from val in tgIdStringTags.Value 
             select tagGroupDto.TagDTOs.FirstOrDefault(t => t.Value.Equals(val)) 
             into tagDto 
             where tagDto != null select tagDto)
@@ -272,19 +236,6 @@
     void Cancel()
     {
         _navigationManager.NavigateTo($"{_navigationManager.BaseUri}supervisorOverview");
-    }
-
-    
-    void OnChange(IEnumerable<int> value, string name)
-    {
-        Console.WriteLine($"{name} value changed to {string.Join(", ", value)}");
-    }
-    
-    void OnChange2(object value, string name)
-    {
-        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
-
-        Console.WriteLine($"{name} value changed to {str}");
     }
 
 }
