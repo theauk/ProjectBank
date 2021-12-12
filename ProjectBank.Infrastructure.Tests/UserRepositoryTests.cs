@@ -103,4 +103,18 @@ public class UserRepositoryTests : RepoTests
     [InlineData(100)]
     [InlineData(int.MaxValue)]
     public async Task Get_returns_null_on_non_existant_id(int id) => Assert.True((await _repository.ReadAsync(id)).IsNone);
+
+    [Fact]
+    public async Task Gets_active_users_correctly()
+    {
+        var users = (await _repository.ReadAllActiveAsync()).Select(u => u.Id);
+        
+        // Should include
+        foreach (var uid in new List<int> { 1, 2, 3, 4, 5, })
+            Assert.Contains(uid, users);
+        
+        // Should not include
+        foreach (var uid in new List<int> { -1, 0, 6, 100, int.MaxValue })
+            Assert.DoesNotContain(uid, users);
+    }
 }
