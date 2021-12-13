@@ -43,7 +43,7 @@ public class ProjectControllerTests
     [Fact]
     public async Task Get_returns_all_Projects_from_repository_given_no_Tags_or_Supervisors()
     {
-        // Arange
+        // Arrange
         var expected = Array.Empty<ProjectDTO>();
         var repository = new Mock<IProjectRepository>();
         repository.Setup(m => m.ReadAllAsync()).ReturnsAsync(expected);
@@ -59,7 +59,7 @@ public class ProjectControllerTests
     [Fact]
     public async Task Get_returns_all_Projects_with_Tag_MathTheory()
     {
-        // Arange
+        // Arrange
         var expected = new List<ProjectDTO>()
         {
             new ProjectDTO
@@ -85,7 +85,7 @@ public class ProjectControllerTests
     [Fact]
     public async Task Get_returns_all_Projects_with_Supervisor_Birgit()
     {
-        // Arange
+        // Arrange
         var expected = new List<ProjectDTO>()
         {
             new ProjectDTO
@@ -111,7 +111,7 @@ public class ProjectControllerTests
     [Fact]
     public async Task Get_returns_all_Projects_with_Tag_MathTheory_and_Supervisor_Birgit()
     {
-        // Arange
+        // Arrange
         var expected = new List<ProjectDTO>()
         {
             new ProjectDTO
