@@ -24,7 +24,6 @@ public class ProjectControllerTests
         {
             new Claim("name", "First Last"),
             new Claim(ClaimTypes.Email, "test@itu.dk")
-            // other required and custom claims
         }, "TestAuthentication"));
 
         controller.ControllerContext = new ControllerContext
@@ -62,7 +61,7 @@ public class ProjectControllerTests
         // Arrange
         var expected = new List<ProjectDTO>()
         {
-            new ProjectDTO
+            new()
             {
                 Id = 1,
                 Name = "Math Project",
@@ -88,7 +87,7 @@ public class ProjectControllerTests
         // Arrange
         var expected = new List<ProjectDTO>()
         {
-            new ProjectDTO
+            new()
             {
                 Id = 1,
                 Name = "Math Project",
@@ -98,11 +97,11 @@ public class ProjectControllerTests
             }
         };
         var repository = new Mock<IProjectRepository>();
-        repository.Setup(m => m.ReadFilteredAsync(new List<int>() { }, new List<int>() {1})).ReturnsAsync(expected);
+        repository.Setup(m => m.ReadFilteredAsync(new List<int>(), new List<int> {1})).ReturnsAsync(expected);
         var controller = new ProjectController(repository.Object);
 
         // Act
-        var actual = await controller.Get(new List<int>(), new List<int>() {1});
+        var actual = await controller.Get(new List<int>(), new List<int> {1});
 
         // Assert
         Assert.Equal(expected, actual);
@@ -114,7 +113,7 @@ public class ProjectControllerTests
         // Arrange
         var expected = new List<ProjectDTO>()
         {
-            new ProjectDTO
+            new()
             {
                 Id = 1,
                 Name = "Math Project",
