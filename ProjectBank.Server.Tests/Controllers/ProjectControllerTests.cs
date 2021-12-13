@@ -1,7 +1,4 @@
-using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading;
 using Microsoft.AspNetCore.Http;
 
 namespace ProjectBank.Server.Tests.Controllers;
@@ -13,25 +10,26 @@ public class ProjectControllerTests
     {
         // Arrange
         var toCreate = new ProjectCreateDTO
-        { 
+        {
             Name = "Math Project"
         };
         var response = Response.Created;
         var repository = new Mock<IProjectRepository>();
         repository.Setup(m => m.CreateAsync(toCreate, "test", "test@itu.dk")).ReturnsAsync(response);
-        
+
         var controller = new ProjectController(repository.Object);
-        
+
         // Set up the claims principal since the controller needs the logged in user's name and email
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new[] {
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
             new Claim("name", "First Last"),
             new Claim(ClaimTypes.Email, "test@itu.dk")
             // other required and custom claims
-        },"TestAuthentication"));
+        }, "TestAuthentication"));
 
         controller.ControllerContext = new ControllerContext
         {
-            HttpContext = new DefaultHttpContext { User = user }
+            HttpContext = new DefaultHttpContext {User = user}
         };
 
         // Act
@@ -69,19 +67,19 @@ public class ProjectControllerTests
                 Id = 1,
                 Name = "Math Project",
                 Description = "Prove a lot of stuff.",
-                Tags = new HashSet<TagDTO>() { new TagDTO { Id = 1, Value = "Math Theory" } },
-                Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 1, Name = "Birgit" } }
+                Tags = new HashSet<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
+                Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 1, Name = "Birgit"}}
             }
         };
         var repository = new Mock<IProjectRepository>();
-        repository.Setup(m => m.ReadFilteredAsync(new List<int>() { 1 }, new List<int>())).ReturnsAsync(expected);
+        repository.Setup(m => m.ReadFilteredAsync(new List<int>() {1}, new List<int>())).ReturnsAsync(expected);
         var controller = new ProjectController(repository.Object);
 
         // Act
-        var actual = await controller.Get(new List<int>() { 1 }, new List<int>());
+        var actual = await controller.Get(new List<int>() {1}, new List<int>());
 
         // Assert
-        Assert.Equal(expected, actual);   
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
@@ -95,19 +93,19 @@ public class ProjectControllerTests
                 Id = 1,
                 Name = "Math Project",
                 Description = "Prove a lot of stuff.",
-                Tags = new HashSet<TagDTO>() { new TagDTO { Id = 1, Value = "Math Theory" } },
-                Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 1, Name = "Birgit" } }
+                Tags = new HashSet<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
+                Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 1, Name = "Birgit"}}
             }
         };
         var repository = new Mock<IProjectRepository>();
-        repository.Setup(m => m.ReadFilteredAsync(new List<int>() { }, new List<int>() { 1 } )).ReturnsAsync(expected);
+        repository.Setup(m => m.ReadFilteredAsync(new List<int>() { }, new List<int>() {1})).ReturnsAsync(expected);
         var controller = new ProjectController(repository.Object);
 
         // Act
-        var actual = await controller.Get(new List<int>(), new List<int>() { 1 });
+        var actual = await controller.Get(new List<int>(), new List<int>() {1});
 
         // Assert
-        Assert.Equal(expected, actual);   
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
@@ -121,19 +119,19 @@ public class ProjectControllerTests
                 Id = 1,
                 Name = "Math Project",
                 Description = "Prove a lot of stuff.",
-                Tags = new HashSet<TagDTO>() { new TagDTO { Id = 1, Value = "Math Theory" } },
-                Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 3, Name = "Birgit" } }
+                Tags = new HashSet<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
+                Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 3, Name = "Birgit"}}
             }
         };
         var repository = new Mock<IProjectRepository>();
-        repository.Setup(m => m.ReadFilteredAsync(new List<int>() { 1 }, new List<int>() { 3 } )).ReturnsAsync(expected);
+        repository.Setup(m => m.ReadFilteredAsync(new List<int>() {1}, new List<int>() {3})).ReturnsAsync(expected);
         var controller = new ProjectController(repository.Object);
 
         // Act
-        var actual = await controller.Get(new List<int>() { 1 }, new List<int>() { 3 });
+        var actual = await controller.Get(new List<int>() {1}, new List<int>() {3});
 
         // Assert
-        Assert.Equal(expected, actual);   
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
@@ -146,8 +144,8 @@ public class ProjectControllerTests
             Id = 1,
             Name = "Math Project",
             Description = "Prove a lot of stuff.",
-            Tags = new HashSet<TagDTO>() { new TagDTO { Id = 1, Value = "Math Theory" } },
-            Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 3, Name = "Birgit" } }
+            Tags = new HashSet<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
+            Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 3, Name = "Birgit"}}
         };
         repository.Setup(m => m.ReadAsync(1)).ReturnsAsync(project);
         var controller = new ProjectController(repository.Object);
