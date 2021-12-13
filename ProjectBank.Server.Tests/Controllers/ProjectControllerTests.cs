@@ -1,3 +1,9 @@
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading;
+using Microsoft.AspNetCore.Http;
+
 namespace ProjectBank.Server.Tests.Controllers;
 
 public class ProjectControllerTests
@@ -11,18 +17,22 @@ public class ProjectControllerTests
             Name = "Math Project"
         };
         var response = Response.Created;
-        var created = new ProjectDTO 
-        { 
-            Id = 1,
-            Name = "Math Project",
-            Description = "Prove a lot of stuff.",
-            Tags = new HashSet<TagDTO>() { new TagDTO { Id = 1, Value = "Math Theory" } },
-            Supervisors = new HashSet<UserDTO>() { new UserDTO { Id = 1, Name = "Birgit" } }
-        };
         var repository = new Mock<IProjectRepository>();
         repository.Setup(m => m.CreateAsync(toCreate, "test", "test@itu.dk")).ReturnsAsync(response);
         
         var controller = new ProjectController(repository.Object);
+        
+        // Set up the claims principal since the controller needs the logged in user's name and email
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new[] {
+            new Claim("name", "First Last"),
+            new Claim(ClaimTypes.Email, "test@itu.dk")
+            // other required and custom claims
+        },"TestAuthentication"));
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = user }
+        };
 
         // Act
         var result = await controller.Post(toCreate) as CreatedAtActionResult;
