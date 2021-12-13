@@ -16,7 +16,6 @@ public static class EntityExtension
     public static TagDTO ToDTO(this Tag tag) => new()
     {
         Id = tag.Id,
-        TagGroupId = tag.TagGroup.Id,
         Value = tag.Value,
     };
 
@@ -28,8 +27,8 @@ public static class EntityExtension
         Id = project.Id,
         Name = project.Name,
         Description = project.Description,
+        Tags = project.Tags.ToDTO().OrderBy(t => t.Value).ToList(),
         Supervisors = project.Supervisors.ToDTO().ToHashSet(),
-        Tags = project.Tags.ToDTO().ToHashSet(),
     };
 
     public static IEnumerable<ProjectDTO> ToDTO(this IEnumerable<Project> projects) =>
