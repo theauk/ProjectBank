@@ -6,12 +6,9 @@ public class ProjectRepository : IProjectRepository
 {
     private readonly IProjectBankContext _context;
 
-    public ProjectRepository(IProjectBankContext context)
-    {
-        _context = context;
-    }
+    public ProjectRepository(IProjectBankContext context) => _context = context;
 
-    public async Task<Response> CreateAsync(ProjectCreateDTO project, string email, string name)
+        public async Task<Response> CreateAsync(ProjectCreateDTO project, string email, string name)
     {
         var (mainAndCoSupervisorsResponse, mainAndCoSupervisors) =
             await GetAllSupervisors(project, email, name);
