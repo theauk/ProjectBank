@@ -57,12 +57,7 @@ function DotnetRun {
 
     Write-Host "STARTING APPLICATION"
     
-    if ($IsWindows) {
-        dotnet watch run --project .\ProjectBank.Server\
-    }
-    elseif ($IsMacOS -or $IsLinux) {
-        dotnet watch run --project ./ProjectBank.Server/
-    }
+    dotnet watch run --project ./ProjectBank.Server/
 }
 
 Main
