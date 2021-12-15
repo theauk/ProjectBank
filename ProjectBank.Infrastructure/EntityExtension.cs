@@ -2,7 +2,6 @@
 
 public static class EntityExtension
 {
-
     public static UserDTO ToDTO(this User user) => new()
     {
         Id = user.Id,

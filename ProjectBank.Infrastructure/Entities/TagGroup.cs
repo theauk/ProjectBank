@@ -1,21 +1,20 @@
-namespace ProjectBank.Infrastructure.Entities
+namespace ProjectBank.Infrastructure.Entities;
+
+public class TagGroup
 {
-    public class TagGroup
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        public string Name { get; set; }
+    [Required]
+    public string Name { get; set; }
 
-        public ICollection<Tag> Tags { get; set; } = new SortedSet<Tag>();
+    public ICollection<Tag> Tags { get; set; } = new SortedSet<Tag>();
 
-        [Required]
-        public bool SupervisorCanAddTag { get; set; }
-        
-        [Required]
-        public bool RequiredInProject { get; set; }
+    [Required]
+    public bool SupervisorCanAddTag { get; set; }
 
-        public int? TagLimit { get; set; }
-        
-    }
+    [Required]
+    public bool RequiredInProject { get; set; }
+
+    public int? TagLimit { get; set; }
+
 }

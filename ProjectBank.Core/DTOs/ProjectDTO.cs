@@ -1,60 +1,59 @@
-namespace ProjectBank.Core.DTOs
+namespace ProjectBank.Core.DTOs;
+
+public record ProjectDTO
 {
-    public record ProjectDTO
-    {
-        public int Id { get; init; }
+    public int Id { get; init; }
 
-        [Required]
-        public string Name { get; init; }
+    [Required]
+    public string Name { get; init; }
 
-        [Required]
-        [StringLength(400)]
-        public string Description { get; init; }
+    [Required]
+    [StringLength(400)]
+    public string Description { get; init; }
 
-        [Required]
-        public ICollection<TagDTO> Tags { get; init; } = new List<TagDTO>();
-        
-        [Required]
-        public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
+    [Required]
+    public ICollection<TagDTO> Tags { get; init; } = new List<TagDTO>();
 
-        // public virtual bool Equals(ProjectDTO? p) // Outcommented to make ProjectPage work - throws Unhandled exception rendering component: Arg_NullReferenceException when accessing the page
-        // {
-        //     return (
-        //         Id.Equals(p.Id) &&
-        //         Name.Equals(p.Name) &&
-        //         Description.Equals(p.Description) &&
-        //         Tags.Equals(p.Tags) &&
-        //         Supervisors.SetEquals(p.Supervisors)
-        //     );
-        // }
+    [Required]
+    public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-    }
+    // public virtual bool Equals(ProjectDTO? p) // Outcommented to make ProjectPage work - throws Unhandled exception rendering component: Arg_NullReferenceException when accessing the page
+    // {
+    //     return (
+    //         Id.Equals(p.Id) &&
+    //         Name.Equals(p.Name) &&
+    //         Description.Equals(p.Description) &&
+    //         Tags.Equals(p.Tags) &&
+    //         Supervisors.SetEquals(p.Supervisors)
+    //     );
+    // }
 
-    public record ProjectCreateDTO
-    {
-        [Required]
-        public string Name { get; set; }
+    // public override int GetHashCode()
+    // {
+    //     return base.GetHashCode();
+    // }
+}
 
-        [Required]
-        [StringLength(400)]
-        public string Description { get; set; }
+public record ProjectCreateDTO
+{
+    [Required]
+    public string Name { get; set; }
 
-        [Required]
-        public ISet<int> ExistingTagIds { get; set; } = new HashSet<int>();
+    [Required]
+    [StringLength(400)]
+    public string Description { get; set; }
 
-        [Required] 
-        public ISet<TagCreateDTO> NewTagDTOs { get; set; } = new HashSet<TagCreateDTO>();
+    [Required]
+    public ISet<int> ExistingTagIds { get; set; } = new HashSet<int>();
 
-        [Required]
-        public ISet<int> UserIds { get; set; } = new HashSet<int>();
-    }
+    [Required]
+    public ISet<TagCreateDTO> NewTagDTOs { get; set; } = new HashSet<TagCreateDTO>();
 
-    public record ProjectUpdateDTO : ProjectCreateDTO
-    {
-        public int Id { get; init; } 
-    }
+    [Required]
+    public ISet<int> UserIds { get; set; } = new HashSet<int>();
+}
+
+public record ProjectUpdateDTO : ProjectCreateDTO
+{
+    public int Id { get; init; }
 }

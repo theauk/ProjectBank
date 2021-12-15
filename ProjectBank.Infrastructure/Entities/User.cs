@@ -1,16 +1,18 @@
-namespace ProjectBank.Infrastructure.Entities
+namespace ProjectBank.Infrastructure.Entities;
+
+public class User
 {
-    public class User
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        public string Name { get; set; }
+    [Required]
+    public string Name { get; set; }
 
-        public University University { get; set; }
+    [Required]
+    public University University { get; set; }
 
-        public ICollection<Project> Projects { get; set; } = new HashSet<Project>(); // todo: this is never used???
-        
-        public string Email { get; set; }
-    }
+    public ICollection<Project> Projects { get; set; } = new HashSet<Project>(); // todo: this is never used???
+
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
 }

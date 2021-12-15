@@ -2,10 +2,8 @@
 using System.Linq;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.TestHost;
-using ProjectBank.Core.IRepositories;
 using ProjectBank.Infrastructure;
 using ProjectBank.Infrastructure.Entities;
-using ProjectBank.Infrastructure.Repositories;
 
 namespace ProjectBank.Server.Integration.Tests;
 

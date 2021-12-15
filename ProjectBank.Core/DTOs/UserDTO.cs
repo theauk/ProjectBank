@@ -1,22 +1,23 @@
-namespace ProjectBank.Core.DTOs
+namespace ProjectBank.Core.DTOs;
+
+public record UserDTO
 {
-    public record UserDTO
-    {
-        public int Id { get; init; }
+    public int Id { get; init; }
 
-        [Required] 
-        public string Name { get; init; }
-        
-        [Required]
-        public string Email { get; set; }
-    }
+    [Required]
+    public string Name { get; init; }
 
-    public record UserCreateDTO
-    {
-        [Required] 
-        public string Name { get; set; }
-        
-        [Required]
-        public string Email { get; set; }
-    }
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
+}
+
+public record UserCreateDTO
+{
+    [Required]
+    public string Name { get; set; }
+
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
 }

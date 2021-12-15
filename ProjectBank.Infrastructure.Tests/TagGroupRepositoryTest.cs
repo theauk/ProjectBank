@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ProjectBank.Infrastructure.Repositories;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore.Sqlite;
-using ProjectBank.Core;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Infrastructure.Entities;
-using Xunit;
-
-namespace ProjectBank.Infrastructure.Tests;
+﻿namespace ProjectBank.Infrastructure.Tests;
 
 public class TagGroupRepositoryTest : RepoTests
 {

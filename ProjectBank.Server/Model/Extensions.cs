@@ -1,5 +1,7 @@
 ﻿namespace ProjectBank.Server.Model;
+
 // Modified code from Rasmus Lystrøm
+
 public static class Extensions
 {
     public static IActionResult ToActionResult(this Response response) => response switch

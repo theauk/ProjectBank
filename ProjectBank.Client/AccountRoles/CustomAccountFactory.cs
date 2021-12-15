@@ -6,12 +6,8 @@ namespace ProjectBank.Client;
 
 public class CustomAccountFactory : AccountClaimsPrincipalFactory<CustomUserAccount>
 {
-    public CustomAccountFactory(IAccessTokenProviderAccessor accessor) 
-        : base(accessor)
-    {
-    }
-    public override async ValueTask<ClaimsPrincipal> CreateUserAsync(CustomUserAccount account, 
-        RemoteAuthenticationUserOptions options)
+    public CustomAccountFactory(IAccessTokenProviderAccessor accessor) : base(accessor) { }
+    public override async ValueTask<ClaimsPrincipal> CreateUserAsync(CustomUserAccount account, RemoteAuthenticationUserOptions options)
     {
         var initialUser = await base.CreateUserAsync(account, options);
         if (initialUser.Identity.IsAuthenticated)
