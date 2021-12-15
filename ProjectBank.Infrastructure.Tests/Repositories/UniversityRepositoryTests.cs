@@ -1,4 +1,4 @@
-namespace ProjectBank.Infrastructure.Tests;
+namespace ProjectBank.Infrastructure.Tests.Repositories;
 
 public class UniversityRepositoryTests : RepoTests
 {
