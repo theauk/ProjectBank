@@ -5,11 +5,11 @@ public record ProjectDTO
     public int Id { get; init; }
 
     [Required]
-    public string Name { get; init; }
+    public string? Name { get; init; }
 
     [Required]
     [StringLength(400)]
-    public string Description { get; init; }
+    public string? Description { get; init; }
 
     [Required]
     public ICollection<TagDTO> Tags { get; init; } = new List<TagDTO>();
@@ -37,11 +37,11 @@ public record ProjectDTO
 public record ProjectCreateDTO
 {
     [Required]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [Required]
     [StringLength(400)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     [Required]
     public ISet<int> ExistingTagIds { get; set; } = new HashSet<int>();

@@ -5,7 +5,7 @@ public record TagGroupDTO
     public int Id { get; init; }
 
     [Required]
-    public string Name { get; init; }
+    public string? Name { get; init; }
 
     public IList<TagDTO> TagDTOs { get; init; } = new List<TagDTO>();
 
@@ -21,7 +21,7 @@ public record TagGroupDTO
 public record TagGroupCreateDTO
 {
     [Required]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     public ISet<TagCreateDTO> NewTagsDTOs { get; set; } = new HashSet<TagCreateDTO>();
 

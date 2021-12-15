@@ -3,7 +3,7 @@ namespace ProjectBank.Infrastructure.Entities;
 public class University
 {
     [Required]
-    public string DomainName { get; set; }
+    public string? DomainName { get; set; }
 
     public ICollection<User> Users { get; set; } = new HashSet<User>();
 

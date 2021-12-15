@@ -3,7 +3,7 @@ namespace ProjectBank.Core.DTOs;
 public record UniversityDTO
 {
     [Required]
-    public string DomainName { get; init; }
+    public string? DomainName { get; init; }
 
     public ISet<UserDTO> Users { get; init; } = new HashSet<UserDTO>();
     public ISet<ProjectDTO> Projects { get; init; } = new HashSet<ProjectDTO>();
@@ -13,7 +13,7 @@ public record UniversityDTO
 public record UniversityCreateDTO
 {
     [Required]
-    public string DomainName { get; init; }
+    public string? DomainName { get; init; }
 }
 
 public record UniversityUpdateDTO : UniversityCreateDTO
