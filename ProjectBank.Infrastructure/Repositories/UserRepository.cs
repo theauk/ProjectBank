@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 namespace ProjectBank.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
@@ -10,7 +8,20 @@ public class UserRepository : IUserRepository
 
     public async Task<Response> CreateAsync(UserCreateDTO user)
     {
-        var entity = new User {Name = user.Name, Email = user.Name, University = _context.Universities.First()};
+        var university = await GetUniversity(user.Email);
+
+        if (university == null)
+        {
+            return Response.BadRequest;
+        }
+
+        var entity = new User
+        {
+            Name = user.Name, 
+            Email = user.Email,
+            University = university,
+            Role = user.Role
+        };
 
         _context.Users.Add(entity);
 
@@ -28,4 +39,19 @@ public class UserRepository : IUserRepository
 
     public async Task<Option<UserDTO>> ReadAsync(int userId) => 
         (await _context.Users.FindAsync(userId))?.ToDTO();
+
+    public async Task<Option<UserDTO>> ReadAsync(string email)
+    {
+        return (await _context.Users.FirstOrDefaultAsync(u => u.Email == email))?.ToDTO();
+    }
+
+    public async Task<IReadOnlyCollection<UserDTO>> ReadAllByRoleAsync(string role)
+    {
+        return role == "all" ? await ReadAllAsync() : (await _context.Users.Where(u => u.Role == Roles.GetRole(role)).ToListAsync()).ToDTO().ToList().AsReadOnly();
+    }
+
+    private async Task<University?> GetUniversity(string? email) 
+    {
+        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
+    }
 }
