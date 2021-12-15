@@ -15,7 +15,7 @@ public class ProjectControllerTests
         };
         var response = Response.Created;
         var repository = new Mock<IProjectRepository>();
-        repository.Setup(m => m.CreateAsync(toCreate, "test", "test@itu.dk")).ReturnsAsync(response);
+        repository.Setup(m => m.CreateAsync(toCreate)).ReturnsAsync(response);
 
         var controller = new ProjectController(repository.Object);
 

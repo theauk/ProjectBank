@@ -47,8 +47,7 @@ public class TagGroupRepository : ITagGroupRepository
             {
                 Id = tagGroup.Id,
                 Name = tagGroup.Name,
-                TagDTOs = tagGroup.Tags.Select(t => new TagDTO {Value = t.Value, Id = t.Id}).OrderBy(t => t.Value)
-                    .ToList(),
+                TagDTOs = tagGroup.Tags.Select(t => new TagDTO {Value = t.Value, Id = t.Id}).OrderBy(t => t.Value).ToList(),
                 RequiredInProject = tagGroup.RequiredInProject,
                 SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                 TagLimit = tagGroup.TagLimit
@@ -79,7 +78,7 @@ public class TagGroupRepository : ITagGroupRepository
 
         //get rid of deleted tags
         var oldTagGroupDto = (await ReadAsync(tagGroupId)).Value;
-        var deletedTagIds = (from tagDTO in oldTagGroupDto.TagDTOs
+        var deletedTagIds = (from tagDTO in oldTagGroupDto?.TagDTOs
             where !tagGroup.SelectedTagValues.Contains(tagDTO.Value)
             select tagDTO.Id).ToList();
 
@@ -129,7 +128,7 @@ public class TagGroupRepository : ITagGroupRepository
 
         foreach (var tagCreateDto in tagsToAdd)
         {
-            tagGroup.Tags.Add(new Tag {Value = tagCreateDto.Value});
+            tagGroup?.Tags.Add(new Tag {Value = tagCreateDto.Value});
         }
 
         return Response.Created;

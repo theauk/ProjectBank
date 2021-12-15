@@ -15,10 +15,10 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Get_returns_TagGroups()
     {
-        var provider = TestClaimsProvider.WithUserClaims();
+        var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
 
-        var response = await client.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project");
+        var response = await client.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/TagGroup");
 
         Assert.NotNull(response);
         Assert.Collection(response,

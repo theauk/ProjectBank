@@ -15,5 +15,5 @@ public static class Extensions
         _ => throw new NotSupportedException($"{response} not supported")
     };
     
-    public static ActionResult<T> ToActionResult<T>(this Option<T> option) where T : class? => option.IsSome ? option.Value : new NotFoundResult();
+    public static ActionResult<T?> ToActionResult<T>(this Option<T> option) where T : class? => option.IsSome ? option.Value : new NotFoundResult();
 }

@@ -2,7 +2,7 @@
 
 //Code taken from Rasmus Lystrøm
 
-public struct Option<T> where T : class
+public struct Option<T> where T : class?
 {
     private readonly T? _value;
 

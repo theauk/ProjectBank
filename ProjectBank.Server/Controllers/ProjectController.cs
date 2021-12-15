@@ -26,15 +26,15 @@ public class ProjectController : ControllerBase
         return projectDto.ToActionResult();
     }
 
-    [Authorize(Roles = "Admin, Supervisor")]
+    [Authorize(Roles = $"{Admin}, {Supervisor}")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> Post(ProjectCreateDTO project)
     {
-        var email = User.FindFirstValue(ClaimTypes.Email);
-        var name = User.FindFirstValue("name");
-        var response = await _repository.CreateAsync(project, email, name);
+        project.OwnerEmail = User.FindFirstValue(ClaimTypes.Email);
+
+        var response = await _repository.CreateAsync(project);
         return CreatedAtAction(nameof(Get), response);
     }
 
@@ -52,7 +52,7 @@ public class ProjectController : ControllerBase
         return resp.IsNullOrEmpty() ? new List<ProjectDTO>().AsReadOnly() : resp;
     }
 
-    [Authorize(Roles = "Admin, Supervisor")]
+    [Authorize(Roles = $"{Admin}, {Supervisor}")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -60,7 +60,7 @@ public class ProjectController : ControllerBase
         return response.ToActionResult();
     }
 
-    [Authorize(Roles = "Admin, Supervisor")]
+    [Authorize(Roles = $"{Admin}, {Supervisor}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]

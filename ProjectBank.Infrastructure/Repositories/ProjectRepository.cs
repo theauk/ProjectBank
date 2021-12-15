@@ -1,5 +1,3 @@
-using System.Net.Mail;
-
 namespace ProjectBank.Infrastructure.Repositories;
 
 public class ProjectRepository : IProjectRepository
@@ -8,98 +6,41 @@ public class ProjectRepository : IProjectRepository
 
     public ProjectRepository(IProjectBankContext context) => _context = context;
 
-        public async Task<Response> CreateAsync(ProjectCreateDTO project, string email, string name)
+    public async Task<Response> CreateAsync(ProjectCreateDTO project)
     {
-        var (mainAndCoSupervisorsResponse, mainAndCoSupervisors) =
-            await GetAllSupervisors(project, email, name);
-        if (mainAndCoSupervisorsResponse == Response.BadRequest)
+        var owner = await GetUserAsync(project.OwnerEmail);
+        var supervisors = await GetUsersAsync(project.UserIds);
+        
+        if (owner == null || supervisors == null)
+        {
             return Response.BadRequest;
+        }
 
-        var (responseTags, tags) =
-            await AddTagsFromExistingTagGroupsReturnIds(project.NewTagDTOs);
+        // Add owner to supervisors
+        supervisors.Add(owner);
+
+        var (responseTags, tags) = await AddTagsFromExistingTagGroupsReturnIds(project.NewTagDTOs);
+
         if (responseTags == Response.BadRequest)
+        {
             return Response.BadRequest;
+        }
 
         var entity = new Project
         {
             Name = project.Name,
             Description = project.Description,
             Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync(),
-            Supervisors = mainAndCoSupervisors
+            Supervisors = supervisors
         };
 
         var updatedTags = entity.Tags.Concat(tags);
-        entity.Tags = updatedTags.ToHashSet();
+        entity.Tags = entity.Tags.Concat(tags).ToHashSet();
 
         _context.Projects.Add(entity);
         await _context.SaveChangesAsync();
 
         return Response.Created;
-    }
-
-    private async Task<(Response, ISet<User>)> GetAllSupervisors(
-        ProjectCreateDTO project, string email, string name)
-    {
-        var (mainSupervisorResponse, mainSupervisor) =
-            await GetMainSupervisor(email, name);
-        if (mainSupervisorResponse == Response.BadRequest)
-            return (Response.BadRequest, new HashSet<User>());
-
-        var (responseCoSupervisors, coSupervisors) =
-            await GetUsersAsync(project.UserIds);
-        if (responseCoSupervisors == Response.BadRequest)
-            return (Response.BadRequest, new HashSet<User>());
-
-        var mainAndCoSupervisors = coSupervisors.ToHashSet();
-        mainAndCoSupervisors.Add(mainSupervisor);
-        return (Response.Success, mainAndCoSupervisors);
-    }
-
-    private async Task<(Response, User)> GetMainSupervisor(string email, string name)
-    {
-        var mainSupervisor = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email.Equals(email));
-        
-        if (mainSupervisor == null)
-        {
-            if (!MailAddress.TryCreate(email, out _))
-                return (Response.BadRequest, new User());
-
-            var universityDomain = email.Split("@");
-            var university = _context.Universities.
-                FirstOrDefault(u => u.DomainName.Equals(universityDomain[1]));
-            if (university == null)
-                return (Response.BadRequest, new User());
-
-            // Creation of users would normally already had happen at the initial setup based on the users and their roles in Azure.
-            mainSupervisor = new User {Email = email, Name = name, University = university};
-            _context.Users.Add(mainSupervisor);
-        }
-
-        return (Response.Success, mainSupervisor);
-    }
-
-    private async Task<(Response, IEnumerable<Tag>)> AddTagsFromExistingTagGroupsReturnIds(
-        ISet<TagCreateDTO> projectNewTagDtos)
-    {
-        var newTags = new List<Tag>();
-
-        foreach (var tag in projectNewTagDtos)
-        {
-            var tagGroup = await _context.TagGroups
-                .FirstOrDefaultAsync(tg => tg.Id == tag.TagGroupId);
-            if (tagGroup == null)
-                return (Response.BadRequest, new List<Tag>());
-
-            var newTag = new Tag {Value = tag.Value};
-            tagGroup.Tags.Add(newTag);
-
-            newTags.Add(newTag);
-        }
-
-        await _context.SaveChangesAsync();
-
-        return (Response.Created, newTags);
     }
 
     public async Task<Response> DeleteAsync(int projectId)
@@ -135,7 +76,7 @@ public class ProjectRepository : IProjectRepository
             .ToDTO();
 
         if (tagIds.Any())
-            projects = projects.Where(p => 
+            projects = projects.Where(p =>
                 tagIds.All(tId => p.Tags.Select(t => t.Id).Contains(tId)));
         if (supervisorIds.Any())
             projects = projects.Where(p =>
@@ -157,15 +98,38 @@ public class ProjectRepository : IProjectRepository
         entity.Description = project.Description;
         entity.Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync();
 
-        var (supervisorResponse, supervisors) = await GetUsersAsync(project.UserIds);
+        var supervisors = await GetUsersAsync(project.UserIds);
 
-        if (supervisorResponse == Response.BadRequest)
+        if (supervisors == null)
             return Response.BadRequest;
-        entity.Supervisors = supervisors.ToHashSet();
+
+        entity.Supervisors = supervisors;
 
         await _context.SaveChangesAsync();
 
         return Response.Updated;
+    }
+
+    private async Task<(Response, IEnumerable<Tag>)> AddTagsFromExistingTagGroupsReturnIds(ISet<TagCreateDTO> projectNewTagDtos)
+    {
+        var newTags = new List<Tag>();
+
+        foreach (var tag in projectNewTagDtos)
+        {
+            var tagGroup = await _context.TagGroups
+                .FirstOrDefaultAsync(tg => tg.Id == tag.TagGroupId);
+            if (tagGroup == null)
+                return (Response.BadRequest, new List<Tag>());
+
+            var newTag = new Tag { Value = tag.Value };
+            tagGroup.Tags.Add(newTag);
+
+            newTags.Add(newTag);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return (Response.Created, newTags);
     }
 
     private async IAsyncEnumerable<Tag> GetTagsAsync(IEnumerable<int> tagIds)
@@ -173,23 +137,33 @@ public class ProjectRepository : IProjectRepository
         var existing = await _context.Tags.Where(t => tagIds.Contains(t.Id)).ToDictionaryAsync(t => t.Id);
 
         foreach (var tagId in tagIds)
-            yield return existing.TryGetValue(tagId, out var t) ? t : new Tag {Value = t.Value};
+            yield return existing.TryGetValue(tagId, out var t) ? t : new Tag { Value = t?.Value };
     }
 
-    private async Task<(Response, IEnumerable<User>)> GetUsersAsync(IEnumerable<int> userIds)
+    private async Task<ISet<User>?> GetUsersAsync(IEnumerable<int> userIds)
     {
         var existing = await _context.Users.Where(u => userIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id);
-        var users = new List<User>();
+        var result = new HashSet<User>();
 
         foreach (var userId in userIds)
         {
-            var user = existing.TryGetValue(userId, out var u) ? u : null;
+            existing.TryGetValue(userId, out var user);
             if (user != null)
-                users.Add(user);
+            {
+                result.Add(user);
+            }
             else
-                return (Response.BadRequest, new List<User>());
+            {
+                return null;
+            }
         }
 
-        return (Response.Success, users);
+        return result;
+    }
+
+    private async Task<User?> GetUserAsync(string? email)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        return user == null ? null : user;
     }
 }

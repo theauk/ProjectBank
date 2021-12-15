@@ -104,13 +104,13 @@ public class TagGroupRepositoryTest : RepoTests
         // Act
         var update =  await _repository.UpdateAsync(1, tagGroupUpdate);
         var readUpdatedTagGroup = await _repository.ReadAsync(1);
-        var updatedTags = readUpdatedTagGroup.Value.TagDTOs;
+        var updatedTags = readUpdatedTagGroup.Value?.TagDTOs;
         
         //Assert
         Assert.Equal(Response.Updated, update);
-        Assert.False(readUpdatedTagGroup.Value.SupervisorCanAddTag);
-        Assert.True(readUpdatedTagGroup.Value.RequiredInProject);
-        Assert.Equal("Semester (Updated)", readUpdatedTagGroup.Value.Name);
+        Assert.False(readUpdatedTagGroup.Value?.SupervisorCanAddTag);
+        Assert.True(readUpdatedTagGroup.Value?.RequiredInProject);
+        Assert.Equal("Semester (Updated)", readUpdatedTagGroup.Value?.Name);
         Assert.Contains(updatedTags, t => t.Id != 12 && t.Value != "Spring 2022");
         Assert.Contains(updatedTags, t => t.Value == "Spring 2023");
     }

@@ -13,35 +13,54 @@ public class ProjectRepositoryTests : RepoTests
         {
             Name = "Bachelor Project",
             Description = "The final project of SWU.",
+            OwnerEmail = "paolo@itu.dk",
             ExistingTagIds = new HashSet<int> { 1 },
             UserIds = new HashSet<int> { 4, 5 }
         };
 
-        var response = await _repository.CreateAsync(project, "paolo@itu.dk", "test");
+        var response = await _repository.CreateAsync(project);
         var actualProject = (await _repository.ReadAsync(4)).Value;
 
         Assert.Equal(Response.Created, response);
-        Assert.Equal(4, actualProject.Id);
-        Assert.Equal("Bachelor Project", actualProject.Name);
-        Assert.Equal("The final project of SWU.", actualProject.Description);
+        Assert.Equal(4, actualProject?.Id);
+        Assert.Equal("Bachelor Project", actualProject?.Name);
+        Assert.Equal("The final project of SWU.", actualProject?.Description);
         foreach (var tagId in new List<int> { 1, })
-            Assert.Contains(tagId, actualProject.Tags.Select(t => t.Id));
+            Assert.Contains(tagId, actualProject?.Tags.Select(t => t.Id));
         foreach (var supeId in new List<int> { 4, 5, })
-            Assert.Contains(supeId, actualProject.Supervisors.Select(s => s.Id));
+            Assert.Contains(supeId, actualProject?.Supervisors.Select(s => s.Id));
     }
 
     [Fact]
-    public async Task CreateAsync_given_invalid_user_id_returns_null()
+    public async Task CreateAsync_given_invalid_Project_Owner_email_returns_BadRequest()
     {
         var project = new ProjectCreateDTO
         {
             Name = "Bachelor Project",
             Description = "The final project of SWU.",
+            OwnerEmail = "test@itu.dk",
             ExistingTagIds = new HashSet<int>() { 1 },
             UserIds = new HashSet<int>() { 4, 6 }
         };
 
-        var actual = await _repository.CreateAsync(project, "test@itu.dk", "test");
+        var actual = await _repository.CreateAsync(project);
+
+        Assert.Equal(Response.BadRequest, actual);
+    }
+
+    [Fact]
+    public async Task CreateAsync_given_non_existing_User_Id_returns_BadRequest()
+    {
+        var project = new ProjectCreateDTO
+        {
+            Name = "Bachelor Project",
+            Description = "The final project of SWU.",
+            OwnerEmail = "paolo@itu.dk",
+            ExistingTagIds = new HashSet<int>() { 1 },
+            UserIds = new HashSet<int>() { 4, 43 }
+        };
+
+        var actual = await _repository.CreateAsync(project);
 
         Assert.Equal(Response.BadRequest, actual);
     }
@@ -67,20 +86,20 @@ public class ProjectRepositoryTests : RepoTests
     {
         var project = (await _repository.ReadAsync(3)).Value;
 
-        Assert.Equal(3, project.Id);
-        Assert.Equal("Make an app!", project.Name);
-        Assert.Equal("Like a dating app, or something. Just something we can sell for a lot of money.", project.Description);
+        Assert.NotNull(project);
+        Assert.Equal(3, project?.Id);
+        Assert.Equal("Make an app!", project?.Name);
+        Assert.Equal("Like a dating app, or something. Just something we can sell for a lot of money.", project?.Description);
         foreach (var tagId in new List<int> { 2, 3, 13, 14, })
-            Assert.Contains(tagId, project.Tags.Select(t => t.Id));
+            Assert.Contains(tagId, project?.Tags.Select(t => t.Id));
         foreach (var supeId in new List<int> { 1, 2, })
-            Assert.Contains(supeId, project.Supervisors.Select(s => s.Id));
+            Assert.Contains(supeId, project?.Supervisors.Select(s => s.Id));
     }
 
     [Fact]
-    public async Task ReadAsync_given_non_existing_id_returns_NotFound()
+    public async Task ReadAsync_given_non_existing_id_returns_Null()
     {
         var actual = (await _repository.ReadAsync(33)).Value;
-
         Assert.Null(actual);
     }
 
@@ -106,7 +125,7 @@ public class ProjectRepositoryTests : RepoTests
         var mathProject = (await _repository.ReadAsync(1)).Value;
 
         Assert.NotNull(mathProject);
-        Assert.Empty(mathProject.Tags);
+        Assert.Empty(mathProject?.Tags);
     }
 
     [Fact]

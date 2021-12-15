@@ -21,6 +21,7 @@ public class UniversityController : ControllerBase
 
     [Authorize(Roles = SuperAdmin)]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [HttpPost]
     public async Task<IActionResult> Post(UniversityCreateDTO university)
     {

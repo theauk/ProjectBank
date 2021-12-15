@@ -54,11 +54,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         // --- Test data ---
         // Supervisors
-        var marco = new User { Id = 1, Name = "Marco" };
-        var birgit = new User { Id = 2, Name = "Birgit" };
-        var bjorn = new User { Id = 3, Name = "Bjørn" };
-        var paolo = new User { Id = 4, Name = "Paolo" };
-        var rasmus = new User { Id = 5, Name = "Rasmus" };
+        var marco = new User { Id = 1, Name = "Marco", Email = "marco@itu.dk" };
+        var birgit = new User { Id = 2, Name = "Birgit", Email = "birgit@itu.dk" };
+        var bjorn = new User { Id = 3, Name = "Bjørn", Email = "bjorn@itu.dk" };
+        var paolo = new User { Id = 4, Name = "Paolo", Email = "paolo@itu.dk" };
+        var rasmus = new User { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk" };
 
         // TagGroups
         var semesterTG = new TagGroup

@@ -17,24 +17,22 @@ public class RepoTests : IDisposable
         _context.Database.EnsureCreated();
         
         // University
-
         var itu = new University()
         {
             DomainName = "itu.dk",
         };
         
         // Users
-
-        var marco  = new User { Name = "Marco" , University = itu, Email = "marco@itu.dk", };
-        var birgit = new User { Name = "Birgit", University = itu, Email = "birgit@itu.dk", };
-        var bjorn  = new User { Name = "Bjørn" , University = itu, Email = "bjorn@itu.dk", };
-        var paolo  = new User { Name = "Paolo" , University = itu, Email = "paolo@itu.dk", };
-        var rasmus = new User { Name = "Rasmus", University = itu, Email = "rasmus@itu.dk", };
+        var marco  = new User { Name = "Marco" , University = itu, Email = "marco@itu.dk",  Role = Role.Admin };
+        var birgit = new User { Name = "Birgit", University = itu, Email = "birgit@itu.dk", Role = Role.Admin };
+        var bjorn  = new User { Name = "Bjørn" , University = itu, Email = "bjorn@itu.dk",  Role = Role.Admin };
+        var paolo  = new User { Name = "Paolo" , University = itu, Email = "paolo@itu.dk",  Role = Role.Admin };
+        var rasmus = new User { Name = "Rasmus", University = itu, Email = "rasmus@itu.dk", Role = Role.Admin };
+        var jens   = new User { Name = "Jens",   University = itu, Email = "jens@itu.dk",   Role = Role.Supervisor };
         
-        _context.AddRange(new List<User> {marco, birgit, bjorn, paolo, rasmus});
+        _context.AddRange(new List<User> {marco, birgit, bjorn, paolo, rasmus, jens});
         
         // Tags
-
         var semesterTags = new List<Tag>
         {
             new() {Value = "Spring 2022"},
@@ -62,7 +60,6 @@ public class RepoTests : IDisposable
         };
         
         // TagGroups
-
         var semester = new TagGroup
         {
             Name = "Semester",
