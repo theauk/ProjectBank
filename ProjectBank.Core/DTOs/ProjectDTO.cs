@@ -50,6 +50,9 @@ public record ProjectCreateDTO
     public ISet<TagCreateDTO> NewTagDTOs { get; set; } = new HashSet<TagCreateDTO>();
 
     [Required]
+    public String? OwnerEmail { get; set; }
+
+    [Required]
     public ISet<int> UserIds { get; set; } = new HashSet<int>();
 }
 

@@ -24,19 +24,19 @@ public static class SeedExtensions
         if (!await context.Universities.AnyAsync())
         {
             // USERS
-            var gustav = new User { Name = "Gustav Metnik-Beck", Email = "gume@itu.dk" };
-            var viktor = new User { Name = "Viktor Mønster", Email = "vikm@itu.dk" };
-            var mai = new User { Name = "Mai Sigurd", Email = "maod@itu.dk" };
-            var oliver = new User { Name = "Oliver Nord", Email = "olno@itu.dk" };
-            var joanna = new User { Name = "Joanna Laursen", Email = "jskl@itu.dk" };
-            var morten = new User { Name = "Morten Nielsen", Email = "morten@itu.dk" };
-            var kasper = new User { Name = "Kasper Mørk Jensen", Email = "kasper@itu.dk" };
-            var cecilie = new User { Name = "Cecilie Rønberg", Email = "cecilie@itu.dk" };
-            var carl = new User { Name = "Carl Vestebryg", Email = "carl@itu.dk" };
-            var sille = new User { Name = "Sille Mortensen", Email = "sille@itu.dk" };
-            var josefine = new User { Name = "Josefine Nørgaard", Email = "josf@itu.dk" };
-            var paolo = new User { Name = "Paolo Tell", Email = "pate@itu.dk" }; // todo: update
-            var rasmus = new User { Name = "Rasmus Lystrøm", Email = "rnie@itu.dk" };
+            var gustav = new User { Name = "Gustav Metnik-Beck", Email = "gume@itu.dk", Role = Role.Admin };
+            var viktor = new User { Name = "Viktor Mønster", Email = "vikm@itu.dk", Role = Role.Admin };
+            var mai = new User { Name = "Mai Sigurd", Email = "maod@itu.dk", Role = Role.Admin  };
+            var oliver = new User { Name = "Oliver Nord", Email = "olno@itu.dk", Role = Role.Admin  };
+            var joanna = new User { Name = "Joanna Laursen", Email = "jskl@itu.dk", Role = Role.Admin  };
+            var morten = new User { Name = "Morten Nielsen", Email = "morten@itu.dk", Role = Role.Supervisor };
+            var kasper = new User { Name = "Kasper Mørk Jensen", Email = "kasper@itu.dk", Role = Role.Supervisor };
+            var cecilie = new User { Name = "Cecilie Rønberg", Email = "cecilie@itu.dk", Role = Role.Supervisor };
+            var carl = new User { Name = "Carl Vestebryg", Email = "carl@itu.dk", Role = Role.Supervisor };
+            var sille = new User { Name = "Sille Mortensen", Email = "sille@itu.dk", Role = Role.Supervisor };
+            var josefine = new User { Name = "Josefine Nørgaard", Email = "josf@itu.dk", Role = Role.Supervisor };
+            var paolo = new User { Name = "Paolo Tell", Email = "pate@itu.dk", Role = Role.Admin }; // todo: update
+            var rasmus = new User { Name = "Rasmus Lystrøm", Email = "rnie@itu.dk", Role = Role.Admin };
 
             var usersSet = new HashSet<User>()
             {

@@ -10,6 +10,9 @@ public record UserDTO
     [Required]
     [EmailAddress]
     public string? Email { get; set; }
+
+    [Required]
+    public Role Role { get; set; }
 }
 
 public record UserCreateDTO
@@ -20,4 +23,7 @@ public record UserCreateDTO
     [Required]
     [EmailAddress]
     public string? Email { get; set; }
+
+    [Required]
+    public Role Role { get; set; }
 }

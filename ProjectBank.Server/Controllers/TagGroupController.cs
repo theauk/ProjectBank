@@ -30,7 +30,7 @@ public class TagGroupController : ControllerBase
         return await _repository.ReadAllAsync();
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = Admin)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [HttpPost]
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
@@ -39,7 +39,7 @@ public class TagGroupController : ControllerBase
         return CreatedAtAction(nameof(Get), response);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
@@ -49,7 +49,7 @@ public class TagGroupController : ControllerBase
         return response.ToActionResult();
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]

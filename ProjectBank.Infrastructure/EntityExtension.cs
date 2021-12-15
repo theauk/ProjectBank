@@ -7,6 +7,7 @@ public static class EntityExtension
         Id = user.Id,
         Email = user.Email,
         Name = user.Name,
+        Role = user.Role
     };
 
     public static IEnumerable<UserDTO> ToDTO(this IEnumerable<User> users) =>
@@ -45,4 +46,12 @@ public static class EntityExtension
 
     public static IEnumerable<TagGroupDTO> ToDTO(this IEnumerable<TagGroup> tgs) =>
         tgs.Select(tg => tg.ToDTO());
+
+    public static UniversityDTO ToDTO(this University uni) => new()
+    {
+        DomainName = uni.DomainName,
+        Projects = uni.Projects.ToDTO().ToHashSet(),
+        Users = uni.Users.ToDTO().ToHashSet(),
+        TagGroups = uni.TagGroups.ToDTO().ToHashSet()
+    };
 }

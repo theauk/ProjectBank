@@ -17,13 +17,9 @@ public class UniversityController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(UniversityDTO), StatusCodes.Status200OK)]
     [HttpGet("{domain}")]
-    public async Task<ActionResult<UniversityDTO?>> Get(string domain)
-    {
-        var response = await _repository.ReadAsync(domain);
-        return response.ToActionResult();
-    }
+    public async Task<ActionResult<UniversityDTO?>> Get(string domain) => (await _repository.ReadAsync(domain)).ToActionResult();
 
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = SuperAdmin)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [HttpPost]
     public async Task<IActionResult> Post(UniversityCreateDTO university)
@@ -32,23 +28,15 @@ public class UniversityController : ControllerBase
         return CreatedAtAction(nameof(Get), response);
     }
 
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = SuperAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpDelete("{domain}")]
-    public async Task<IActionResult> Delete(string domain)
-    {
-        var response = await _repository.DeleteAsync(domain);
-        return response.ToActionResult();
-    }
+    public async Task<IActionResult> Delete(string domain) => (await _repository.DeleteAsync(domain)).ToActionResult();
 
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = SuperAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(string domain, [FromBody] UniversityUpdateDTO university)
-    {
-        var response = await _repository.UpdateAsync(domain, university);
-        return response.ToActionResult();
-    }
+    public async Task<IActionResult> Put(string domain, [FromBody] UniversityUpdateDTO university) => (await _repository.UpdateAsync(domain, university)).ToActionResult();
 }

@@ -8,11 +8,14 @@ public class User
     public string? Name { get; set; }
 
     [Required]
-    public University? University { get; set; }
-
-    public ICollection<Project> Projects { get; set; } = new HashSet<Project>(); // todo: this is never used???
-
-    [Required]
     [EmailAddress]
     public string? Email { get; set; }
+
+    [Required]
+    public Role Role { get; set; }
+
+    [Required]
+    public University? University { get; set; }
+
+    public ICollection<Project> Projects { get; set; } = new HashSet<Project>();
 }
