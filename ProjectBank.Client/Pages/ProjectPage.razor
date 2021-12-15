@@ -3,7 +3,8 @@
 @inject HttpClient _http
 @using Microsoft.AspNetCore.Authorization
 @using System.Net
-@attribute [Authorize(Roles = "Admin, Supervisor, Student")]
+@using static ProjectBank.Core.Roles
+@attribute [Authorize(Roles = $"{Admin}, {Supervisor}, {Student}")]
 
 <PageTitle>Project Page</PageTitle>
 

@@ -1,7 +1,8 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Authorization
+@using static ProjectBank.Core.Roles
 @inject HttpClient _http
-@attribute [Authorize(Roles = "Admin, Supervisor, Student")]
+@attribute [Authorize(Roles = $"{Admin}, {Supervisor}, {Student}")]
 
 <PageTitle>Landing Page</PageTitle>
 
@@ -27,14 +28,12 @@
                                 <ChildContent>
                                     @if (tg.TagDTOs.Count() <= 6)
                                     {
-                                        <RadzenCheckBoxList class="checkBoxList"
-                                                            @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
-                                                            TValue="int" Orientation="Radzen.Orientation.Vertical"
-                                                            Change=@ApplyFilter>
+                                        <RadzenCheckBoxList class="checkBoxList" @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
+                            TValue="int" Orientation="Radzen.Orientation.Vertical" Change=@ApplyFilter>
                                             <Items>
                                                 @foreach (var t in tg.TagDTOs)
                                                 {
-                                                    <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id/>
+                                                    <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id />
                                                 }
                                             </Items>
                                         </RadzenCheckBoxList>
@@ -42,15 +41,10 @@
                                     else
                                     {
                                         <RadzenDropDown AllowFiltering="true"
-                                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                                        @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
-                                                        Multiple="true"
-                                                        Placeholder="Select..."
-                                                        Data=@tg.TagDTOs
-                                                        TextProperty="Value"
-                                                        ValueProperty="Id"
-                                                        style="width: 100%;"
-                                                        Change=@ApplyFilter/>
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            @bind-Value=@_selectedTagsOfTagGroup[tg.Id] Multiple="true" Placeholder="Select..."
+                            Data=@tg.TagDTOs TextProperty="Value" ValueProperty="Id" style="width: 100%;"
+                            Change=@ApplyFilter />
                                     }
                                 </ChildContent>
                             </RadzenFieldset>
@@ -62,14 +56,9 @@
                         </HeaderTemplate>
                         <ChildContent>
                             <RadzenDropDown AllowFiltering="true"
-                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                            @bind-Value=@_selectedSupervisors
-                                            Multiple="true" Placeholder="Select..."
-                                            Data=@_supervisors
-                                            TextProperty="Name"
-                                            ValueProperty="Id"
-                                            style="width: 100%;"
-                                            Change=@ApplyFilter />
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            @bind-Value=@_selectedSupervisors Multiple="true" Placeholder="Select..." Data=@_supervisors
+                            TextProperty="Name" ValueProperty="Id" style="width: 100%;" Change=@ApplyFilter />
                         </ChildContent>
                     </RadzenFieldset>
                 }
@@ -88,7 +77,8 @@
                 }
                 else
                 {
-                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@VisibleProjects" TItem="ProjectDTO">
+                    <RadzenDataList class="projectCardsFlex" WrapItems="true" AllowPaging="true" Data="@VisibleProjects"
+                    TItem="ProjectDTO">
                         <Template Context="project">
                             <RadzenCard Style="width:300px; margin: 0;">
                                 <a href="index/@project.Id">
@@ -100,7 +90,9 @@
                             </RadzenCard>
                         </Template>
                     </RadzenDataList>
-                    <RadzenPager class="landingPagePager" ShowPagingSummary="true" PagingSummaryFormat="@PagingSummaryFormat" Count="@_count" PageSize="@PageSize" PageChanged="@UpdateVisibleProjects"/>
+                    <RadzenPager class="landingPagePager" ShowPagingSummary="true"
+                    PagingSummaryFormat="@PagingSummaryFormat" Count="@_count" PageSize="@PageSize"
+                    PageChanged="@UpdateVisibleProjects" />
                 }
             </div>
         </div>
@@ -109,9 +101,9 @@
 
 
 @code {
-        private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} projects)";
-        private const int PageSize = 10;
-    
+    private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} projects)";
+    private const int PageSize = 10;
+
     private int _count;
     private int _skip;
     private int _take = PageSize;
@@ -124,9 +116,9 @@
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new();
 
     private HashSet<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate(
-        new HashSet<int>(),
-        (collection, item) => collection.Concat(item.Value).ToHashSet()
-        );
+    new HashSet<int>(),
+    (collection, item) => collection.Concat(item.Value).ToHashSet()
+    );
 
     private IEnumerable<UserDTO> _supervisors = new List<UserDTO>();
     private IEnumerable<int> _selectedSupervisors = new List<int>();
@@ -162,8 +154,8 @@
             parameters.Add(string.Join("&", _selectedSupervisors.Select(s => $"supervisorIds={s.ToString()}")));
 
         _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-            "api/Project?" + string.Join("&", parameters)
-            ) ?? new List<ProjectDTO>();
+        "api/Project?" + string.Join("&", parameters)
+        ) ?? new List<ProjectDTO>();
 
         _skip = 0;
         _take = PageSize;

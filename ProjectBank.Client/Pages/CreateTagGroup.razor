@@ -2,7 +2,8 @@
 @inject HttpClient _http
 @inject NavigationManager _navigationManager
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles = "Admin")]
+@using static ProjectBank.Core.Roles
+@attribute [Authorize(Roles = Admin)]
 
 <PageTitle>Create Tag Group</PageTitle>
 
