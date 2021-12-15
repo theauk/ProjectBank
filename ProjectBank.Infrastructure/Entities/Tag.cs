@@ -1,6 +1,6 @@
 namespace ProjectBank.Infrastructure.Entities;
 
-public class Tag
+public class Tag : IComparable<Tag>
 {
     public int Id { get; set; }
 
@@ -11,4 +11,9 @@ public class Tag
     public TagGroup? TagGroup { get; set; }
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
+
+    public int CompareTo(Tag? other)
+    {
+        return Value.CompareTo(other?.Value);
+    }
 }
