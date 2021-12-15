@@ -69,8 +69,9 @@ namespace ProjectBank.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    UniversityDomainName = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false)
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false),
+                    UniversityDomainName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,7 +91,7 @@ namespace ProjectBank.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Value = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    TagGroupId = table.Column<int>(type: "integer", nullable: false)
+                    TagGroupId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -99,8 +100,7 @@ namespace ProjectBank.Infrastructure.Migrations
                         name: "FK_Tags_TagGroups_TagGroupId",
                         column: x => x.TagGroupId,
                         principalTable: "TagGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -195,15 +195,15 @@ namespace ProjectBank.Infrastructure.Migrations
                 column: "TagGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_Value",
-                table: "Tags",
-                column: "Value",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Universities_DomainName",
                 table: "Universities",
                 column: "DomainName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(

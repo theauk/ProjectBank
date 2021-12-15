@@ -12,7 +12,7 @@ using ProjectBank.Infrastructure;
 namespace ProjectBank.Infrastructure.Migrations
 {
     [DbContext(typeof(ProjectBankContext))]
-    [Migration("20211215101840_InitialCreate")]
+    [Migration("20211215205113_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,7 +63,7 @@ namespace ProjectBank.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("TagGroupId")
+                    b.Property<int?>("TagGroupId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Value")
@@ -77,9 +77,6 @@ namespace ProjectBank.Infrastructure.Migrations
                         .IsUnique();
 
                     b.HasIndex("TagGroupId");
-
-                    b.HasIndex("Value")
-                        .IsUnique();
 
                     b.ToTable("Tags");
                 });
@@ -147,11 +144,18 @@ namespace ProjectBank.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("UniversityDomainName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("Id")
                         .IsUnique();
@@ -202,9 +206,7 @@ namespace ProjectBank.Infrastructure.Migrations
                 {
                     b.HasOne("ProjectBank.Infrastructure.Entities.TagGroup", "TagGroup")
                         .WithMany("Tags")
-                        .HasForeignKey("TagGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TagGroupId");
 
                     b.Navigation("TagGroup");
                 });
