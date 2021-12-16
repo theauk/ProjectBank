@@ -13,12 +13,11 @@ public class ProjectRepositoryTests : RepoTests
         {
             Name = "Bachelor Project",
             Description = "The final project of SWU.",
-            OwnerEmail = "paolo@itu.dk",
             ExistingTagIds = new HashSet<int> { 1 },
             UserIds = new HashSet<int> { 4, 5 }
         };
 
-        var response = await _repository.CreateAsync(project);
+        var response = await _repository.CreateAsync(project, "paolo@itu.dk");
         var actualProject = (await _repository.ReadAsync(4)).Value;
 
         Assert.Equal(Response.Created, response);
@@ -38,12 +37,11 @@ public class ProjectRepositoryTests : RepoTests
         {
             Name = "Bachelor Project",
             Description = "The final project of SWU.",
-            OwnerEmail = "test@itu.dk",
             ExistingTagIds = new HashSet<int>() { 1 },
             UserIds = new HashSet<int>() { 4, 6 }
         };
 
-        var actual = await _repository.CreateAsync(project);
+        var actual = await _repository.CreateAsync(project, "test@itu.dk");
 
         Assert.Equal(Response.BadRequest, actual);
     }
@@ -55,12 +53,11 @@ public class ProjectRepositoryTests : RepoTests
         {
             Name = "Bachelor Project",
             Description = "The final project of SWU.",
-            OwnerEmail = "paolo@itu.dk",
             ExistingTagIds = new HashSet<int>() { 1 },
             UserIds = new HashSet<int>() { 4, 43 }
         };
 
-        var actual = await _repository.CreateAsync(project);
+        var actual = await _repository.CreateAsync(project, "paolo@itu.dk");
 
         Assert.Equal(Response.BadRequest, actual);
     }

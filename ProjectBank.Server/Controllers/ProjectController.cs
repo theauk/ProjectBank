@@ -32,9 +32,7 @@ public class ProjectController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(ProjectCreateDTO project)
     {
-        project.OwnerEmail = User.FindFirstValue(ClaimTypes.Email);
-
-        var response = await _repository.CreateAsync(project);
+        var response = await _repository.CreateAsync(project, User.FindFirstValue(ClaimTypes.Email));
         return CreatedAtAction(nameof(Get), response);
     }
 

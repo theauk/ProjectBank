@@ -6,9 +6,9 @@ public class ProjectRepository : IProjectRepository
 
     public ProjectRepository(IProjectBankContext context) => _context = context;
 
-    public async Task<Response> CreateAsync(ProjectCreateDTO project)
+    public async Task<Response> CreateAsync(ProjectCreateDTO project, string ownerEmail)
     {
-        var owner = await GetUserAsync(project.OwnerEmail);
+        var owner = await GetUserAsync(ownerEmail);
         var supervisors = await GetUsersAsync(project.UserIds);
         
         if (owner == null || supervisors == null)
