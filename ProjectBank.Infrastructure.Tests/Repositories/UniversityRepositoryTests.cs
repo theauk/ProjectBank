@@ -81,7 +81,8 @@ public class UniversityRepositoryTests : RepoTests
             user => Assert.Equal(new UserDTO { Id = 3, Name = "Bjørn", Email = "bjorn@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 4, Name = "Paolo", Email = "paolo@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin }, user),
-            user => Assert.Equal(new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }, user)
+            user => Assert.Equal(new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }, user),
+            user => Assert.Equal(new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }, user)
         );
     }
 

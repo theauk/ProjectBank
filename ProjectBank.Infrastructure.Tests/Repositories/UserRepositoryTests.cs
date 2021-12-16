@@ -20,7 +20,7 @@ public class UserRepositoryTests : RepoTests
         var actual = _context.Users.FirstOrDefault(u => u.Email == "doe@itu.dk")?.ToDTO();
 
         Assert.Equal(Response.Created, response);
-        Assert.Equal(new UserDTO { Id = 7, Name = "John Doe", Email = "doe@itu.dk", Role = Role.Student }, actual);
+        Assert.Equal(new UserDTO { Id = 8, Name = "John Doe", Email = "doe@itu.dk", Role = Role.Student }, actual);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class UserRepositoryTests : RepoTests
 
         await _repository.CreateAsync(user);
 
-        Assert.Equal(7, _context.Users.Count());
+        Assert.Equal(8, _context.Users.Count());
     }
 
     [Fact]
@@ -84,7 +84,8 @@ public class UserRepositoryTests : RepoTests
             user => Assert.Equal(new UserDTO { Id = 3, Name = "Bjørn", Email = "bjorn@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 4, Name = "Paolo", Email = "paolo@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin }, user),
-            user => Assert.Equal(new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }, user)
+            user => Assert.Equal(new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }, user),
+            user => Assert.Equal(new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }, user)
         );
     }
 
@@ -202,7 +203,8 @@ public class UserRepositoryTests : RepoTests
                 new UserDTO { Id = 3, Name = "Bjørn" , Email = "bjorn@itu.dk",  Role = Role.Admin },
                 new UserDTO { Id = 4, Name = "Paolo" , Email = "paolo@itu.dk",  Role = Role.Admin },
                 new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin },
-                new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }
+                new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor },
+                new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }
             }.AsReadOnly()
         };
 
@@ -225,6 +227,15 @@ public class UserRepositoryTests : RepoTests
             new List<UserDTO>()
             {
                 new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }
+            }.AsReadOnly()
+        };
+
+        yield return new object[]
+        {
+            "Student",
+            new List<UserDTO>()
+            {
+                new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }
             }.AsReadOnly()
         };
 

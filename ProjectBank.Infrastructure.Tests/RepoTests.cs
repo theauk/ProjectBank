@@ -29,8 +29,9 @@ public class RepoTests : IDisposable
         var paolo  = new User { Name = "Paolo" , University = itu, Email = "paolo@itu.dk",  Role = Role.Admin };
         var rasmus = new User { Name = "Rasmus", University = itu, Email = "rasmus@itu.dk", Role = Role.Admin };
         var jens   = new User { Name = "Jens",   University = itu, Email = "jens@itu.dk",   Role = Role.Supervisor };
+        var ib     = new User { Name = "Ib",     University = itu, Email = "ib@itu.dk",     Role = Role.Student };
         
-        _context.AddRange(new List<User> {marco, birgit, bjorn, paolo, rasmus, jens});
+        _context.AddRange(new List<User> {marco, birgit, bjorn, paolo, rasmus, jens, ib});
         
         // Tags
         var semesterTags = new List<Tag>

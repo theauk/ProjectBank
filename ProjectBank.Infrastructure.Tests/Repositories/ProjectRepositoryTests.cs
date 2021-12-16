@@ -152,7 +152,7 @@ public class ProjectRepositoryTests : RepoTests
             Name = "Extreme Math Project",
             Description = "Prove even harder stuff.",
             ExistingTagIds = new HashSet<int>() { 1 },
-            UserIds = new HashSet<int>() { 1, 7 }
+            UserIds = new HashSet<int>() { 1, 8 }
         };
 
         var actual = await _repository.UpdateAsync(1, project);
