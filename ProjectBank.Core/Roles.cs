@@ -2,9 +2,10 @@ namespace ProjectBank.Core;
 
 public enum Role
 {
-    Student,
+    Unknown,
     Admin,
     Supervisor,
+    Student,
 }
 
 public static class Roles
@@ -18,12 +19,14 @@ public static class Roles
     {
         switch (role)
         {
-            case Roles.Admin:
+            case Admin:
                 return Role.Admin;
-            case Roles.Supervisor:
+            case Supervisor:
                 return Role.Supervisor;
-            default:
+            case Student:
                 return Role.Student;
+            default:
+                return Role.Unknown;
         }
     }
 }
