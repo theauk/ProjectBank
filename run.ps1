@@ -58,6 +58,11 @@ function DotnetRun {
     Write-Host "STARTING APPLICATION"
     
     dotnet watch run --project ./ProjectBank.Server/
+
+    Write-Host
+    Write-Host "STOPPING AND DELETING DATABASE"
+    docker stop db
+    Write-Host "DONE."
 }
 
 Main
