@@ -11,7 +11,7 @@ public static class EntityExtension
     };
 
     public static IEnumerable<UserDTO> ToDTO(this IEnumerable<User> users) =>
-        users.Select(u => u.ToDTO()).OrderBy(u => u.Name);
+        users.Select(u => u.ToDTO());
 
     public static TagDTO ToDTO(this Tag tag) => new()
     {

@@ -16,5 +16,5 @@ public class UserController : ControllerBase
     
     [Authorize]
     [HttpGet("roles")]
-    public async Task<IReadOnlyCollection<UserDTO>> Get([FromQuery] ISet<string> roles) => await _repository.ReadAllByRoleAsync(roles);
+    public async Task<IReadOnlyCollection<UserDTO>> Get([FromQuery] IList<string> roles) => await _repository.ReadAllByRoleAsync(roles.ToHashSet());
 }

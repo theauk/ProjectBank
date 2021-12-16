@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace ProjectBank.Server.Tests.Controllers;
 
 public class UserControllerTests
@@ -20,52 +22,82 @@ public class UserControllerTests
 
     [Theory]
     [MemberData(nameof(GetRoles))]
-    public async Task Get_Role_returns_all_Users_with_the_specified_role(ISet<string> roles)
+    public async Task Get_Role_returns_all_Users_with_the_specified_role(IList<string> roles, IReadOnlyCollection<UserDTO> expected)
     {
         // Arrange
-        var expected = Array.Empty<UserDTO>();
         var repository = new Mock<IUserRepository>();
-        repository.Setup(m => m.ReadAllByRoleAsync(roles)).ReturnsAsync(expected);
+        repository.Setup(m => m.ReadAllByRoleAsync(roles.ToHashSet())).ReturnsAsync(expected);
         var controller = new UserController(repository.Object);
 
         // Act
         var actual = await controller.Get(roles);
 
         // Assert
-        Assert.Equal(expected, actual);
+        Assert.Null(actual);
     }
     
-
     public static IEnumerable<object[]> GetRoles()
     {
         yield return new object[]
         {
-            new HashSet<String>() { "Supervisor" },
+            new List<string>() { "Supervisor" },
+            new List<UserDTO>
+            {
+                new UserDTO 
+                {
+                    Name = "Jens",
+                    Email = "jens@itu.dk",
+                    Role = Role.Supervisor
+                }
+            }.AsReadOnly()
         };
 
         yield return new object[]
         {
-            new HashSet<string>() { "Admin" },
+            new List<string>() { "Admin" },
+            new List<UserDTO>
+            {
+                new UserDTO 
+                {
+                    Name = "Jens",
+                    Email = "jens@itu.dk",
+                    Role = Role.Admin
+                }
+            }.AsReadOnly()
         };
 
         yield return new object[]
         {
-            new HashSet<string>() { "Supervisor" },
+            new List<string>() { "Student" },
+            new List<UserDTO>
+            {
+                new UserDTO 
+                {
+                    Name = "Jens",
+                    Email = "jens@itu.dk",
+                    Role = Role.Student
+                }
+            }.AsReadOnly()
         };
 
         yield return new object[]
         {
-            new HashSet<string>() { "Student" },
+            new List<string>() { "All" },
+            new List<UserDTO>
+            {
+                new UserDTO 
+                {
+                    Name = "Jens",
+                    Email = "jens@itu.dk",
+                    Role = Role.Student
+                }
+            }.AsReadOnly()
         };
 
         yield return new object[]
         {
-            new HashSet<string>() { "All" },
-        };
-
-        yield return new object[]
-        {
-            new HashSet<string>() { "Idk" },
+            new List<string>() { "Idk" },
+            new List<UserDTO>().AsReadOnly()
         };
     }
 }
