@@ -38,8 +38,7 @@ public class ProjectController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds,
-        [FromQuery] IList<int> supervisorIds)
+    public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds, [FromQuery] IList<int> supervisorIds)
     {
         IReadOnlyCollection<ProjectDTO> resp;
         if (!tagIds.Any() && !supervisorIds.Any())

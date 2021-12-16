@@ -45,9 +45,14 @@ public class UserRepository : IUserRepository
         return (await _context.Users.FirstOrDefaultAsync(u => u.Email == email))?.ToDTO();
     }
 
-    public async Task<IReadOnlyCollection<UserDTO>> ReadAllByRoleAsync(string role)
+    public async Task<IReadOnlyCollection<UserDTO>> ReadAllByRoleAsync(ISet<string> roles)
     {
-        return role == "all" ? await ReadAllAsync() : (await _context.Users.Where(u => u.Role == Roles.GetRole(role)).ToListAsync()).ToDTO().ToList().AsReadOnly();
+        if (roles == null || !roles.Any())
+        {
+            return await ReadAllAsync();
+        }
+
+        return (await _context.Users.Where(u => roles.Select(r => Roles.GetRole(r)).ToHashSet().Contains(u.Role)).ToListAsync()).ToDTO().ToList().AsReadOnly();
     }
 
     private async Task<University?> GetUniversity(string? email) 

@@ -105,9 +105,9 @@ public class UserRepositoryTests : RepoTests
 
     [Theory]
     [MemberData(nameof(GetUsersWithRoles))]
-    public async Task ReadAllByRole_returns_all_Users_with_role(string role, IReadOnlyCollection<UserDTO> expected)
+    public async Task ReadAllByRole_returns_all_Users_with_role(ISet<string> roles, IReadOnlyCollection<UserDTO> expected)
     {
-        var users = await _repository.ReadAllByRoleAsync(role);
+        var users = await _repository.ReadAllByRoleAsync(roles);
 
         Assert.Equal(expected, users);
     }
@@ -193,9 +193,10 @@ public class UserRepositoryTests : RepoTests
 
     public static IEnumerable<object[]> GetUsersWithRoles()
     {
+        // No input returns all
         yield return new object[]
         {
-            "all",
+            new HashSet<String>(),
             new List<UserDTO>()
             {
                 new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
@@ -208,9 +209,10 @@ public class UserRepositoryTests : RepoTests
             }.AsReadOnly()
         };
 
+        // Only Admins
         yield return new object[]
         {
-            "Admin",
+            new HashSet<string>() { "Admin" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
@@ -221,27 +223,87 @@ public class UserRepositoryTests : RepoTests
             }.AsReadOnly()
         };
 
+        // Only Supervisors
         yield return new object[]
         {
-            "Supervisor",
+            new HashSet<string>() { "Supervisor" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }
             }.AsReadOnly()
         };
 
+        // Only Students
         yield return new object[]
         {
-            "Student",
+            new HashSet<string>() { "Student" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }
             }.AsReadOnly()
         };
 
+        // Admin, supervisor
         yield return new object[]
         {
-            "idk",
+            new HashSet<string>() { "Admin", "Supervisor" },
+            new List<UserDTO>()
+            {
+                new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
+                new UserDTO { Id = 2, Name = "Birgit", Email = "birgit@itu.dk", Role = Role.Admin },
+                new UserDTO { Id = 3, Name = "Bjørn" , Email = "bjorn@itu.dk",  Role = Role.Admin },
+                new UserDTO { Id = 4, Name = "Paolo" , Email = "paolo@itu.dk",  Role = Role.Admin },
+                new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin },
+                new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }
+            }.AsReadOnly()
+        };
+
+        // Admin, Student
+        yield return new object[]
+        {
+            new HashSet<string>() { "Admin", "Student" },
+            new List<UserDTO>()
+            {
+                new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
+                new UserDTO { Id = 2, Name = "Birgit", Email = "birgit@itu.dk", Role = Role.Admin },
+                new UserDTO { Id = 3, Name = "Bjørn" , Email = "bjorn@itu.dk",  Role = Role.Admin },
+                new UserDTO { Id = 4, Name = "Paolo" , Email = "paolo@itu.dk",  Role = Role.Admin },
+                new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin },
+                new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }
+            }.AsReadOnly()
+        };
+
+        // Supervisor, Student
+        yield return new object[]
+        {
+            new HashSet<string>() { "Supervisor", "Student" },
+            new List<UserDTO>()
+            {
+                new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor },
+                new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }
+            }.AsReadOnly()
+        };
+
+        // All roles
+        yield return new object[]
+        {
+            new HashSet<string>() { "Admin", "Supervisor", "Student" },
+            new List<UserDTO>()
+            {
+                new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
+                new UserDTO { Id = 2, Name = "Birgit", Email = "birgit@itu.dk", Role = Role.Admin },
+                new UserDTO { Id = 3, Name = "Bjørn" , Email = "bjorn@itu.dk",  Role = Role.Admin },
+                new UserDTO { Id = 4, Name = "Paolo" , Email = "paolo@itu.dk",  Role = Role.Admin },
+                new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin },
+                new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor },
+                new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }
+            }.AsReadOnly()
+        };
+
+        // Unknown roles returns none
+        yield return new object[]
+        {
+            new HashSet<string>() { "Idk" },
             new List<UserDTO>().AsReadOnly()
         };
     }

@@ -150,7 +150,11 @@
     protected override async Task OnInitializedAsync()
     {
         TagGroups = await _http.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>("api/TagGroup") ?? new List<TagGroupDTO>();
-        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles/Supervisor") ?? new List<UserDTO>();
+        
+        var parameters = new List<string>();
+        parameters.Add(string.Join("&", $"roles={Admin}"));
+        parameters.Add(string.Join("&", $"roles={Supervisor}"));
+        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles?" + string.Join("&", parameters)) ?? new List<UserDTO>();
 
         foreach (var tg in TagGroups)
         {
