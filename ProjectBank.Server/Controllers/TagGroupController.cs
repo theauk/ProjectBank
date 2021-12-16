@@ -32,10 +32,11 @@ public class TagGroupController : ControllerBase
 
     [Authorize(Roles = Admin)]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
     {
-        var response = await _repository.CreateAsync(tagGroup);
+        var response = await _repository.CreateAsync(tagGroup, User.FindFirstValue(ClaimTypes.Email));
         return CreatedAtAction(nameof(Get), response);
     }
 

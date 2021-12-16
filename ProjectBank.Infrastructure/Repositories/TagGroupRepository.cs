@@ -4,13 +4,17 @@ public class TagGroupRepository : ITagGroupRepository
 {
     private readonly IProjectBankContext _context;
 
-    public TagGroupRepository(IProjectBankContext context)
-    {
-        _context = context;
-    }
+    public TagGroupRepository(IProjectBankContext context) => _context = context;
 
-    public async Task<Response> CreateAsync(TagGroupCreateDTO tagGroup)
+    public async Task<Response> CreateAsync(TagGroupCreateDTO tagGroup, string ownerEmail)
     {
+        var university = await GetUniversityAsync(ownerEmail);
+
+        if (university == null)
+        {
+            return Response.BadRequest;
+        }
+
         var entity = new TagGroup
         {
             Name = tagGroup.Name,
@@ -18,6 +22,7 @@ public class TagGroupRepository : ITagGroupRepository
             RequiredInProject = tagGroup.RequiredInProject,
             TagLimit = tagGroup.TagLimit,
             Tags = tagGroup.NewTagsDTOs.Select(t => new Tag {Value = t.Value}).ToHashSet(),
+            University = university
         };
 
         _context.TagGroups.Add(entity);
@@ -132,5 +137,10 @@ public class TagGroupRepository : ITagGroupRepository
         }
 
         return Response.Created;
+    }
+
+    private async Task<University?> GetUniversityAsync(string? email) 
+    {
+        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
     }
 }

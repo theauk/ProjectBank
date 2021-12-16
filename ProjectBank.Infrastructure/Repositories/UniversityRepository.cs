@@ -4,10 +4,7 @@ public class UniversityRepository : IUniversityRepository
 {
     private readonly IProjectBankContext _context;
 
-    public UniversityRepository(IProjectBankContext context)
-    {
-        _context = context;
-    }
+    public UniversityRepository(IProjectBankContext context) => _context = context;
 
     public async Task<Response> CreateAsync(UniversityCreateDTO university)
     {

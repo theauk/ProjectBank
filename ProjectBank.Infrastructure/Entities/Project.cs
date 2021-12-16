@@ -14,4 +14,7 @@ public class Project
 
     public ICollection<Tag> Tags { get; set; } = new HashSet<Tag>();
     public ICollection<User> Supervisors { get; set; } = new HashSet<User>();
+
+    [Required]
+    public University? University { get; set; }
 }

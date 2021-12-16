@@ -4,6 +4,7 @@ global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.Identity.Web;
 global using Microsoft.Identity.Web.Resource;
 global using Microsoft.AspNetCore.Mvc;
+global using System.Security.Claims;
 
 global using ProjectBank.Core;
 global using ProjectBank.Core.DTOs;

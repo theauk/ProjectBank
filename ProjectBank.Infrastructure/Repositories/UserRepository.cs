@@ -8,7 +8,7 @@ public class UserRepository : IUserRepository
 
     public async Task<Response> CreateAsync(UserCreateDTO user)
     {
-        var university = await GetUniversity(user.Email);
+        var university = await GetUniversityAsync(user.Email);
 
         if (university == null)
         {
@@ -55,7 +55,7 @@ public class UserRepository : IUserRepository
         return (await _context.Users.Where(u => roles.Select(r => Roles.GetRole(r)).ToHashSet().Contains(u.Role)).ToListAsync()).ToDTO().ToList().AsReadOnly();
     }
 
-    private async Task<University?> GetUniversity(string? email) 
+    private async Task<University?> GetUniversityAsync(string? email) 
     {
         return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
     }

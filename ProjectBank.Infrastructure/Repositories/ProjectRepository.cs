@@ -8,10 +8,11 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<Response> CreateAsync(ProjectCreateDTO project, string ownerEmail)
     {
+        var university = await GetUniversityAsync(ownerEmail);
         var owner = await GetUserAsync(ownerEmail);
         var supervisors = await GetUsersAsync(project.UserIds);
         
-        if (owner == null || supervisors == null)
+        if (university == null || owner == null || supervisors == null)
         {
             return Response.BadRequest;
         }
@@ -31,7 +32,8 @@ public class ProjectRepository : IProjectRepository
             Name = project.Name,
             Description = project.Description,
             Tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync(),
-            Supervisors = supervisors
+            Supervisors = supervisors,
+            University = university
         };
 
         var updatedTags = entity.Tags.Concat(tags);
@@ -165,5 +167,10 @@ public class ProjectRepository : IProjectRepository
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         return user == null ? null : user;
+    }
+
+    private async Task<University?> GetUniversityAsync(string? email) 
+    {
+        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
     }
 }

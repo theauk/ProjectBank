@@ -17,4 +17,6 @@ public class TagGroup
 
     public int? TagLimit { get; set; }
 
+    [Required]
+    public University? University { get; set; }
 }

@@ -41,6 +41,7 @@ namespace ProjectBank.Infrastructure.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("UniversityDomainName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -101,6 +102,7 @@ namespace ProjectBank.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("UniversityDomainName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -195,9 +197,13 @@ namespace ProjectBank.Infrastructure.Migrations
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Project", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.University", "University")
                         .WithMany("Projects")
-                        .HasForeignKey("UniversityDomainName");
+                        .HasForeignKey("UniversityDomainName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("University");
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Tag", b =>
@@ -211,9 +217,13 @@ namespace ProjectBank.Infrastructure.Migrations
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.TagGroup", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.University", "University")
                         .WithMany("TagGroups")
-                        .HasForeignKey("UniversityDomainName");
+                        .HasForeignKey("UniversityDomainName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("University");
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.User", b =>

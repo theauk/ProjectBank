@@ -68,6 +68,7 @@ public class RepoTests : IDisposable
             RequiredInProject = true,
             SupervisorCanAddTag = false,
             TagLimit = 2,
+            University = itu
         };
         var plangs = new TagGroup
         {
@@ -76,6 +77,7 @@ public class RepoTests : IDisposable
             RequiredInProject = false,
             SupervisorCanAddTag = true,
             TagLimit = 3,
+            University = itu
         };
         var levels = new TagGroup
         {
@@ -84,6 +86,7 @@ public class RepoTests : IDisposable
             RequiredInProject = true,
             SupervisorCanAddTag = false,
             TagLimit = null,
+            University = itu
         };
         
         _context.AddRange(new List<TagGroup> {semester, plangs, levels});
@@ -98,6 +101,7 @@ public class RepoTests : IDisposable
                 Description = "Your task, should you choose to accept it, is to threaten the existence of life on earth.",
                 Supervisors = new List<User> {rasmus, bjorn},
                 Tags = new List<Tag> {semesterTags[0], plangTags[3], plangTags[4], levelTags[2]},
+                University = itu
             },
             new()
             {
@@ -105,6 +109,7 @@ public class RepoTests : IDisposable
                 Description = "Replace our current system.",
                 Supervisors = new List<User> {rasmus, paolo},
                 Tags = new List<Tag> {semesterTags[0], plangTags[0], levelTags[0]},
+                University = itu
             },
             new()
             {
@@ -112,6 +117,7 @@ public class RepoTests : IDisposable
                 Description = "Like a dating app, or something. Just something we can sell for a lot of money.",
                 Supervisors = new List<User> {birgit, marco},
                 Tags = new List<Tag> {semesterTags[1], semesterTags[2], plangTags[6], levelTags[0]},
+                University = itu
             },
         };
         

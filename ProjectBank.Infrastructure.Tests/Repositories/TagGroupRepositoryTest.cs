@@ -54,7 +54,7 @@ public class TagGroupRepositoryTest : RepoTests
         };
         
         //Act
-        var response  = await _repository.CreateAsync(taggroup);
+        var response  = await _repository.CreateAsync(taggroup, "test@itu.dk");
         var actual = (await _repository.ReadAllAsync()).First(tg => tg.Name == taggroup.Name);
         
         //Assert 
