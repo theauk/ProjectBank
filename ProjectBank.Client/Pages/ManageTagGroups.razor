@@ -72,7 +72,6 @@
                                             <Autocomplete class="autocompleteTags adminAutocomplete" TItem="TagDTO"
                                             TValue="string" Data="@_tagGroups.First(t => t.Id == tg.Id).TagDTOs"
                                             TextField="@((item) => item.Value)" ValueField="@((item) => item.Value)"
-                                            SelectedTextChanged="@(_ => _edited[tg.Id] = true)"
                                             Placeholder="Search or press enter to create new..." Multiple FreeTyping
                                             @bind-SelectedValues="_selectedExistingTags[tg.Id]"
                                             @bind-SelectedTexts="_allSelectedTagsValues[tg.Id]">
@@ -109,6 +108,9 @@
 
     Dictionary<int, List<string>> _selectedExistingTags = new();
     Dictionary<int, List<string>> _allSelectedTagsValues = new();
+    
+    Dictionary<int, int> _selectedExistingTagsInitialSize = new();
+    Dictionary<int, int> _allSelectedTagsValuesInitialSize = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,6 +123,8 @@
         {
             _selectedExistingTags[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
             _allSelectedTagsValues[tg.Id] = tg.TagDTOs.Select(t => t.Value).ToList();
+            _selectedExistingTagsInitialSize[tg.Id] = tg.TagDTOs.Count();
+            _allSelectedTagsValuesInitialSize[tg.Id] = tg.TagDTOs.Count();
         }
 
         TagGroupsUpdateDtos = _tagGroups.Select(tg => tg.ToUpdateDto()).ToList();
@@ -159,18 +163,14 @@
 
     private async void Save()
     {
+        CheckForTagChange();
         foreach (var tg in TagGroupsUpdateDtos)
         {
             
             if (!_edited[tg.Id]) continue;
-            Console.WriteLine(tg.Id + "has been editet");
+            
             UpdateTagGroup(tg);
-            foreach (var tag in _allSelectedTagsValues[tg.Id])
-            {
-                
-                Console.WriteLine(tag);
-            }
-             
+
             await _http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
         }
 
@@ -178,6 +178,16 @@
             await _http.DeleteAsync($"api/TagGroup/{id}");
 
         _nav.NavigateTo(_nav.Uri, forceLoad: true);
+    }
+
+    private void CheckForTagChange()
+    {
+        foreach (var tg in _tagGroups)
+        {
+            if (_selectedExistingTags[tg.Id].Count != _selectedExistingTagsInitialSize[tg.Id] || 
+                _allSelectedTagsValues[tg.Id].Count != _allSelectedTagsValuesInitialSize[tg.Id]) 
+                _edited[tg.Id] = true;
+        }
     }
 
     private void UpdateTagGroup(TagGroupUpdateDTO tg)
