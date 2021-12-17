@@ -3,6 +3,7 @@
 @inject NavigationManager _navigationManager
 @using Microsoft.AspNetCore.Authorization
 @using static ProjectBank.Core.Roles
+@using System.Net
 @attribute [Authorize(Roles = $"{Admin}, {Supervisor}")]
 @inject IJSRuntime _jsRuntime
 
@@ -10,7 +11,7 @@
 
 <h1 style="margin-bottom: 48px">Create Project</h1>
 
-@if (_response is { IsSuccessStatusCode: false })
+@if (_response is {StatusCode: HttpStatusCode.BadRequest })
 {
     <h2>Something went wrong, please try again!</h2>
 }
