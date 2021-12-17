@@ -11,7 +11,8 @@ public static class Extensions
         Response.NotFound => new NotFoundResult(),
         Response.Conflict => new ConflictResult(),
         Response.BadRequest => new BadRequestResult(),
-        
+        Response.Created => new AcceptedResult(),
+
         _ => throw new NotSupportedException($"{response} not supported")
     };
     

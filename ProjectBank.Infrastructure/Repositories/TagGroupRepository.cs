@@ -77,6 +77,7 @@ public class TagGroupRepository : ITagGroupRepository
 
     public async Task<Response> UpdateAsync(int tagGroupId, TagGroupUpdateDTO tagGroup)
     {
+        Console.WriteLine(tagGroup.SelectedTagValues.Count);
         var entity = await _context.TagGroups.Include(tg => tg.Tags).FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
 
         if (entity == null) return Response.NotFound;
@@ -107,6 +108,7 @@ public class TagGroupRepository : ITagGroupRepository
         entity.TagLimit = tagGroup.TagLimit;
 
         await _context.SaveChangesAsync();
+        Console.WriteLine(entity.Tags.Count);
 
         return Response.Updated;
     }
