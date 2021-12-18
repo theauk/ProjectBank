@@ -124,15 +124,14 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
         var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
         
-        var language = new TagGroupDTO
+        var language = new TagGroupCreateDTO()
         {
-            Id = 5,
             Name = "Language",
             RequiredInProject = true,
             SupervisorCanAddTag = true,
             TagLimit = 2,
-            TagDTOs = new List<TagDTO>() { new TagDTO(){Id = 5, Value = "Danish", TagGroupId = 5},
-                new TagDTO(){Id = 6, Value = "English", TagGroupId = 5}}
+            NewTagsDTOs = new HashSet<TagCreateDTO>() { new TagCreateDTO(){ Value = "Danish", TagGroupId = 5},
+                new TagCreateDTO(){ Value = "English", TagGroupId = 5}}
         };
         
         //Act
@@ -176,8 +175,10 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Post_with_illegal_contents_returns_BadRequest()
     {
-        throw new NotImplementedException(); //Mht. hvis RequiredInProject så skal der være mindst 1 tag / eller det skal håndteres i frontend / eller begge
+        //For futher
+        //Mht. hvis RequiredInProject så skal der være mindst 1 tag / eller det skal håndteres i frontend / eller begge
     }
+    
     [Fact]
     public async Task Delete_from_id_deletes_tagGroup()
     {
