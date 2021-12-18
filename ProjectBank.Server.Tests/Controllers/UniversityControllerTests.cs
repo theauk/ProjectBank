@@ -3,7 +3,7 @@ namespace ProjectBank.Server.Tests.Controllers;
 public class UniversityControllerTests
 {
     [Fact]
-    public async Task Post_creates_University()
+    public async Task Post_given_not_already_existing_domain_creates_University()
     {
         // Arrange
         var toCreate = new UniversityCreateDTO
@@ -29,6 +29,27 @@ public class UniversityControllerTests
         // Assert
         Assert.Equal(Response.Created, result?.Value);
         Assert.Equal("Get", result?.ActionName);
+    }
+
+    [Fact]
+    public async Task Post_given_already_existing_domain_does_not_create_University()
+    {
+        // Arrange
+        var toCreate = new UniversityCreateDTO
+        {
+            DomainName = "itu.dk",
+        };
+        var response = Response.Conflict;
+        var repository = new Mock<IUniversityRepository>();
+        repository.Setup(m => m.CreateAsync(toCreate)).ReturnsAsync(response);
+
+        var controller = new UniversityController(repository.Object);
+
+        // Act
+        var result = await controller.Post(toCreate) as CreatedAtActionResult;
+
+        // Assert
+        Assert.Equal(Response.Conflict, result?.Value);
     }
 
     [Fact]

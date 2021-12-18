@@ -2,10 +2,7 @@
 
 # Migrations
 Write-Host "CREATING MIGRATIONS..."
-if ($IsWindows) {
-    dotnet ef --startup-project ..\ProjectBank.Server\ migrations add InitialCreate --project ..\ProjectBank.InfraStructure
-}
-elseif ($IsMacOS -or $IsLinux) {
-    dotnet ef --startup-project ../ProjectBank.Server/ migrations add InitialCreate --project ../ProjectBank.InfraStructure
-}
+
+dotnet ef --startup-project ../ProjectBank.Server/ migrations add InitialCreate --project ../ProjectBank.InfraStructure
+
 Write-Host "DONE."

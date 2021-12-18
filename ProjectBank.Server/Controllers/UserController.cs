@@ -8,25 +8,13 @@ public class UserController : ControllerBase
 {
     private readonly IUserRepository _repository;
 
-    public UserController(IUserRepository repository)
-    {
-        _repository = repository;
-    }
+    public UserController(IUserRepository repository) => _repository = repository;
 
     [Authorize]
-    [HttpGet("roles/{role}")]
-    public async Task<IReadOnlyCollection<UserDTO>> Get(string role = "all")
-    {
-        if (role == "all")
-        {
-            var supervisorUserDTOs = await _repository.ReadAllAsync();
-            return supervisorUserDTOs;
-        }
-        else
-        {
-            var supervisorUserDTOs = await _repository.ReadAllAsync();
-            // var supervisorUserDTOs = await _repository.ReadBasedOnRoleAsync(role); // ToDo Need implementation in User database/repository  via Azure API Call
-            return supervisorUserDTOs;
-        }
-    }
+    [HttpGet("filter")]
+    public async Task<IReadOnlyCollection<UserDTO>> Get() => await _repository.ReadAllActiveAsync();
+    
+    [Authorize]
+    [HttpGet("roles")]
+    public async Task<IReadOnlyCollection<UserDTO>> Get([FromQuery] IList<string> roles) => await _repository.ReadAllByRoleAsync(roles.ToHashSet());
 }

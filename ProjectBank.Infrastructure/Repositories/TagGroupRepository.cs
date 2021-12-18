@@ -4,13 +4,17 @@ public class TagGroupRepository : ITagGroupRepository
 {
     private readonly IProjectBankContext _context;
 
-    public TagGroupRepository(IProjectBankContext context)
-    {
-        _context = context;
-    }
+    public TagGroupRepository(IProjectBankContext context) => _context = context;
 
-    public async Task<Response> CreateAsync(TagGroupCreateDTO tagGroup)
+    public async Task<Response> CreateAsync(TagGroupCreateDTO tagGroup, string ownerEmail)
     {
+        var university = await GetUniversityAsync(ownerEmail);
+
+        if (university == null)
+        {
+            return Response.BadRequest;
+        }
+
         var entity = new TagGroup
         {
             Name = tagGroup.Name,
@@ -18,6 +22,7 @@ public class TagGroupRepository : ITagGroupRepository
             RequiredInProject = tagGroup.RequiredInProject,
             TagLimit = tagGroup.TagLimit,
             Tags = tagGroup.NewTagsDTOs.Select(t => new Tag {Value = t.Value}).ToHashSet(),
+            University = university
         };
 
         _context.TagGroups.Add(entity);
@@ -47,8 +52,7 @@ public class TagGroupRepository : ITagGroupRepository
             {
                 Id = tagGroup.Id,
                 Name = tagGroup.Name,
-                TagDTOs = tagGroup.Tags.Select(t => new TagDTO {Value = t.Value, Id = t.Id}).OrderBy(t => t.Value)
-                    .ToList(),
+                TagDTOs = tagGroup.Tags.Select(t => new TagDTO {Value = t.Value, Id = t.Id}).OrderBy(t => t.Value).ToList(),
                 RequiredInProject = tagGroup.RequiredInProject,
                 SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
                 TagLimit = tagGroup.TagLimit
@@ -73,13 +77,14 @@ public class TagGroupRepository : ITagGroupRepository
 
     public async Task<Response> UpdateAsync(int tagGroupId, TagGroupUpdateDTO tagGroup)
     {
+        Console.WriteLine(tagGroup.SelectedTagValues.Count);
         var entity = await _context.TagGroups.Include(tg => tg.Tags).FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
 
         if (entity == null) return Response.NotFound;
 
         //get rid of deleted tags
         var oldTagGroupDto = (await ReadAsync(tagGroupId)).Value;
-        var deletedTagIds = (from tagDTO in oldTagGroupDto.TagDTOs
+        var deletedTagIds = (from tagDTO in oldTagGroupDto?.TagDTOs
             where !tagGroup.SelectedTagValues.Contains(tagDTO.Value)
             select tagDTO.Id).ToList();
 
@@ -103,6 +108,7 @@ public class TagGroupRepository : ITagGroupRepository
         entity.TagLimit = tagGroup.TagLimit;
 
         await _context.SaveChangesAsync();
+        Console.WriteLine(entity.Tags.Count);
 
         return Response.Updated;
     }
@@ -129,9 +135,14 @@ public class TagGroupRepository : ITagGroupRepository
 
         foreach (var tagCreateDto in tagsToAdd)
         {
-            tagGroup.Tags.Add(new Tag {Value = tagCreateDto.Value});
+            tagGroup?.Tags.Add(new Tag {Value = tagCreateDto.Value});
         }
 
         return Response.Created;
+    }
+
+    private async Task<University?> GetUniversityAsync(string? email) 
+    {
+        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
     }
 }

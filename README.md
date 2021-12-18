@@ -1,30 +1,32 @@
 # ProjectBank
 
-## How to run
+## 1. Before you run
 
-To run the ProjectBank Application do the following:
+Before you can run ProjectBank ensure the following three things are setup on your machine.
 
 ---
 
-### Ensure Docker is installed
+### 1.1 Ensure Docker is installed and running
 
 You can install Docker from: [https://www.docker.com/get-started](https://www.docker.com/get-started)
 
+When installed start "Docker Desktop".
+
 ---
 
-### Ensure Certificate is present
+### 1.2 Ensure Certificate is present
 
-First ensure that you have created a valid developer certificate. This is done by running the following script in PowerShell in the directory ``.\scripts`` :
+Ensure that you have created a valid developer certificate. This is done by running the following script in PowerShell in the directory ``.\scripts`` :
 
 >``create-certificate.ps1``
 
 ---
 
-### Ensure .local folder contents
+### 1.3 Ensure .local folder with contents
 
 In order to run the program you will have to create some local files in the project directory.
 
-Create a folder: ``.local``
+Create a folder called ``.local``
 
 Now create the following files in the ``.local`` directory:
 
@@ -34,7 +36,9 @@ Now create the following files in the ``.local`` directory:
 
 Remember to fill in the respective files with the content needed. (It will be provided in a seperate file XXX)
 
-### Run Project
+---
+
+## 2. Run Project
 
 Run the project with the following script in PowerShell:
 
@@ -46,7 +50,7 @@ To run the project in production mode write:
 
 >``run.ps1 -production $true``
 
-When the project is up will be the message:
+When the project is up you will be shown the message:
 
 > ``projectbank_db_1       docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp``
 

@@ -1,19 +1,27 @@
-using System.Collections.ObjectModel;
-
 namespace ProjectBank.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
     private readonly IProjectBankContext _context;
 
-    public UserRepository(IProjectBankContext context)
-    {
-        _context = context;
-    }
+    public UserRepository(IProjectBankContext context) => _context = context;
 
     public async Task<Response> CreateAsync(UserCreateDTO user)
     {
-        var entity = new User {Name = user.Name, Email = user.Name, University = _context.Universities.First()};
+        var university = await GetUniversityAsync(user.Email);
+
+        if (university == null)
+        {
+            return Response.BadRequest;
+        }
+
+        var entity = new User
+        {
+            Name = user.Name, 
+            Email = user.Email,
+            University = university,
+            Role = user.Role
+        };
 
         _context.Users.Add(entity);
 
@@ -22,57 +30,33 @@ public class UserRepository : IUserRepository
         return Response.Created;
     }
 
-    public async Task<IReadOnlyCollection<UserDTO>> ReadAllAsync()
-    {
-        var users = (await _context.Users.Select(u => new UserDTO
-        {
-            Id = u.Id,
-            Name = u.Name
-        }).ToListAsync()).AsReadOnly();
+    public async Task<IReadOnlyCollection<UserDTO>> ReadAllAsync() => (await _context.Users
+        .ToListAsync()).ToDTO().ToList().AsReadOnly();
+        
+    public async Task<IReadOnlyCollection<UserDTO>> ReadAllActiveAsync() => (await _context.Users
+        .Where(u => u.Projects.Count > 0)
+        .ToListAsync()).ToDTO().ToList().AsReadOnly();
 
-        return users;
+    public async Task<Option<UserDTO>> ReadAsync(int userId) => 
+        (await _context.Users.FindAsync(userId))?.ToDTO();
+
+    public async Task<Option<UserDTO>> ReadAsync(string email)
+    {
+        return (await _context.Users.FirstOrDefaultAsync(u => u.Email == email))?.ToDTO();
     }
 
-    public async Task<IReadOnlyCollection<UserDTO>> ReadBasedOnRoleAsync(string role)
+    public async Task<IReadOnlyCollection<UserDTO>> ReadAllByRoleAsync(ISet<string> roles)
     {
-        //TODO Lave Azure API kald her (Eller hvor det nu giver bedst mening) - Implementér at den sammenligner med databasen, og opretter ny supervisor hvis der mangler
-
-        // var users = (await _context.Users.Where(u => u.Role == role ).Select(u => new UserDTO //todo Role skal måske oversættes/omskrives til enum - dette var bare det hurtige som var mest gennemskueligt.
-        // {
-        //     Id = u.Id,
-        //     Name = u.Name
-        // }).ToListAsync()).AsReadOnly();
-
-        // TEMP SUPERVISOR LIST for testing
-        var marco = new UserDTO {Id = 1, Name = "Marco", Email = "marco@itu.dk"};
-        var birgit = new UserDTO {Id = 2, Name = "Birgit", Email = "birgit@itu.dk"};
-        var bjorn = new UserDTO {Id = 3, Name = "Bjørn", Email = "bjoern@itu.dk"};
-        var paolo = new UserDTO {Id = 4, Name = "Klaus", Email = "klaus@itu.dk"};
-        var rasmus = new UserDTO {Id = 5, Name = "Mette", Email = "mette@itu.dk"};
-
-        var usersList = new List<UserDTO>
+        if (roles == null || !roles.Any())
         {
-            marco,
-            birgit,
-            bjorn,
-            paolo,
-            rasmus
-        };
-        var users = new ReadOnlyCollection<UserDTO>(usersList);
+            return await ReadAllAsync();
+        }
 
-        return users;
+        return (await _context.Users.Where(u => roles.Select(r => Roles.GetRole(r)).ToHashSet().Contains(u.Role)).ToListAsync()).ToDTO().ToList().AsReadOnly();
     }
 
-    public async Task<Option<UserDTO>> ReadAsync(int userId)
+    private async Task<University?> GetUniversityAsync(string? email) 
     {
-        var entity = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-
-        return entity == null
-            ? null
-            : new UserDTO
-            {
-                Id = entity.Id,
-                Name = entity.Name
-            };
+        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
     }
 }

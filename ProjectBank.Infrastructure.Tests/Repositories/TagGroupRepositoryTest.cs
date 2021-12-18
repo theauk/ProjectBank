@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ProjectBank.Infrastructure.Repositories;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore.Sqlite;
-using ProjectBank.Core;
-using ProjectBank.Core.DTOs;
-using ProjectBank.Infrastructure.Entities;
-using Xunit;
-
-namespace ProjectBank.Infrastructure.Tests;
+﻿namespace ProjectBank.Infrastructure.Tests.Repositories;
 
 public class TagGroupRepositoryTest : RepoTests
 {
@@ -27,15 +13,15 @@ public class TagGroupRepositoryTest : RepoTests
         var result = await _repository.ReadAsync(3);
         if (result.IsNone)
             throw new MissingMemberException("Could not find TagGroup with id 3");
-        TagGroupDTO tg = result.Value;
+        TagGroupDTO? tg = result.Value;
         
         //Assert
-        Assert.Equal(3, tg.Id);
-        Assert.Equal("Level", tg.Name);
-        Assert.Equal(3, tg.TagDTOs.Count); //Ser om de har samme længde
-        Assert.False(tg.SupervisorCanAddTag);
-        Assert.True(tg.RequiredInProject);
-        Assert.Null(tg.TagLimit);
+        Assert.Equal(3, tg?.Id);
+        Assert.Equal("Level", tg?.Name);
+        Assert.Equal(3, tg?.TagDTOs.Count); //Ser om de har samme længde
+        Assert.False(tg?.SupervisorCanAddTag);
+        Assert.True(tg?.RequiredInProject);
+        Assert.Null(tg?.TagLimit);
     }
 
     [Theory]
@@ -68,7 +54,7 @@ public class TagGroupRepositoryTest : RepoTests
         };
         
         //Act
-        var response  = await _repository.CreateAsync(taggroup);
+        var response  = await _repository.CreateAsync(taggroup, "test@itu.dk");
         var actual = (await _repository.ReadAllAsync()).First(tg => tg.Name == taggroup.Name);
         
         //Assert 
@@ -118,13 +104,13 @@ public class TagGroupRepositoryTest : RepoTests
         // Act
         var update =  await _repository.UpdateAsync(1, tagGroupUpdate);
         var readUpdatedTagGroup = await _repository.ReadAsync(1);
-        var updatedTags = readUpdatedTagGroup.Value.TagDTOs;
+        var updatedTags = readUpdatedTagGroup.Value?.TagDTOs;
         
         //Assert
         Assert.Equal(Response.Updated, update);
-        Assert.False(readUpdatedTagGroup.Value.SupervisorCanAddTag);
-        Assert.True(readUpdatedTagGroup.Value.RequiredInProject);
-        Assert.Equal("Semester (Updated)", readUpdatedTagGroup.Value.Name);
+        Assert.False(readUpdatedTagGroup.Value?.SupervisorCanAddTag);
+        Assert.True(readUpdatedTagGroup.Value?.RequiredInProject);
+        Assert.Equal("Semester (Updated)", readUpdatedTagGroup.Value?.Name);
         Assert.Contains(updatedTags, t => t.Id != 12 && t.Value != "Spring 2022");
         Assert.Contains(updatedTags, t => t.Value == "Spring 2023");
     }

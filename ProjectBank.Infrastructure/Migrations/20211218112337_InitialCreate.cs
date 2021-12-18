@@ -28,7 +28,7 @@ namespace ProjectBank.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
-                    UniversityDomainName = table.Column<string>(type: "text", nullable: true)
+                    UniversityDomainName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,7 +37,8 @@ namespace ProjectBank.Infrastructure.Migrations
                         name: "FK_Projects_Universities_UniversityDomainName",
                         column: x => x.UniversityDomainName,
                         principalTable: "Universities",
-                        principalColumn: "DomainName");
+                        principalColumn: "DomainName",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -50,7 +51,7 @@ namespace ProjectBank.Infrastructure.Migrations
                     SupervisorCanAddTag = table.Column<bool>(type: "boolean", nullable: false),
                     RequiredInProject = table.Column<bool>(type: "boolean", nullable: false),
                     TagLimit = table.Column<int>(type: "integer", nullable: true),
-                    UniversityDomainName = table.Column<string>(type: "text", nullable: true)
+                    UniversityDomainName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -59,7 +60,8 @@ namespace ProjectBank.Infrastructure.Migrations
                         name: "FK_TagGroups_Universities_UniversityDomainName",
                         column: x => x.UniversityDomainName,
                         principalTable: "Universities",
-                        principalColumn: "DomainName");
+                        principalColumn: "DomainName",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,8 +71,9 @@ namespace ProjectBank.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    UniversityDomainName = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false)
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false),
+                    UniversityDomainName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -195,15 +198,15 @@ namespace ProjectBank.Infrastructure.Migrations
                 column: "TagGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_Value",
-                table: "Tags",
-                column: "Value",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Universities_DomainName",
                 table: "Universities",
                 column: "DomainName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(

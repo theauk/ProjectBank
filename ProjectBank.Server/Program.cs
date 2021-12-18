@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using ProjectBank.Infrastructure;
-using ProjectBank.Core.IRepositories;
 using ProjectBank.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);

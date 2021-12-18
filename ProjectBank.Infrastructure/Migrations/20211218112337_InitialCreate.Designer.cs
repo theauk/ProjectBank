@@ -12,7 +12,7 @@ using ProjectBank.Infrastructure;
 namespace ProjectBank.Infrastructure.Migrations
 {
     [DbContext(typeof(ProjectBankContext))]
-    [Migration("20211212183450_InitialCreate")]
+    [Migration("20211218112337_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,6 +43,7 @@ namespace ProjectBank.Infrastructure.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("UniversityDomainName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -78,9 +79,6 @@ namespace ProjectBank.Infrastructure.Migrations
 
                     b.HasIndex("TagGroupId");
 
-                    b.HasIndex("Value")
-                        .IsUnique();
-
                     b.ToTable("Tags");
                 });
 
@@ -106,6 +104,7 @@ namespace ProjectBank.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("UniversityDomainName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -147,11 +146,18 @@ namespace ProjectBank.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("UniversityDomainName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("Id")
                         .IsUnique();
@@ -193,9 +199,13 @@ namespace ProjectBank.Infrastructure.Migrations
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Project", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.University", "University")
                         .WithMany("Projects")
-                        .HasForeignKey("UniversityDomainName");
+                        .HasForeignKey("UniversityDomainName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("University");
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.Tag", b =>
@@ -211,9 +221,13 @@ namespace ProjectBank.Infrastructure.Migrations
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.TagGroup", b =>
                 {
-                    b.HasOne("ProjectBank.Infrastructure.Entities.University", null)
+                    b.HasOne("ProjectBank.Infrastructure.Entities.University", "University")
                         .WithMany("TagGroups")
-                        .HasForeignKey("UniversityDomainName");
+                        .HasForeignKey("UniversityDomainName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("University");
                 });
 
             modelBuilder.Entity("ProjectBank.Infrastructure.Entities.User", b =>

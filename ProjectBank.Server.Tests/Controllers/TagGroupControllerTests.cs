@@ -1,3 +1,6 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+
 namespace ProjectBank.Server.Tests.Controllers;
 
 public class TagGroupControllerTests
@@ -15,19 +18,21 @@ public class TagGroupControllerTests
             NewTagsDTOs = new HashSet<TagCreateDTO>() { new TagCreateDTO { Value = "Fall", TagGroupId = 1 } }
         };
         var response = Response.Created;
-        var created = new TagGroupDTO
-        {
-            Id = 1,
-            Name = "Semester",
-            RequiredInProject = true,
-            SupervisorCanAddTag = false,
-            TagLimit = 2,
-            TagDTOs = new List<TagDTO>() { new TagDTO { Id = 1, Value = "Fall", TagGroupId = 1 } }
-        };
+
         var repository = new Mock<ITagGroupRepository>();
-        repository.Setup(m => m.CreateAsync(toCreate)).ReturnsAsync(response);
+        repository.Setup(m => m.CreateAsync(toCreate, "test@itu.dk")).ReturnsAsync(response);
 
         var controller = new TagGroupController(repository.Object);
+
+        // Set up the claims principal since the controller needs the logged in user's name and email
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.Email, "test@itu.dk")
+        }, "TestAuthentication"));
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext {User = user}
+        };
 
         // Act
         var result = await controller.Post(toCreate) as CreatedAtActionResult;
