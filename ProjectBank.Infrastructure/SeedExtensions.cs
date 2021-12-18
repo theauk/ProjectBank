@@ -121,6 +121,9 @@ public static class SeedExtensions
             var logicTopic = new Tag { Value = "Logic" };
             var algorithmsTopic = new Tag { Value = "Algorithms" };
 
+            // Fake
+            var fake = new Tag { Value = "Fake" };
+
             // TAGGROUPS
             var semesterTG = new TagGroup
             {
@@ -267,6 +270,15 @@ public static class SeedExtensions
                 topicsTG
             };
 
+            var fakeTG = new TagGroup
+            {
+                Name = "Fake Filter",
+                RequiredInProject = false,
+                SupervisorCanAddTag = false,
+                TagLimit = null,
+                Tags = new HashSet<Tag>() { fake }
+            };
+
             // PROJECTS
             var firstYearP = new Project
             {
@@ -400,7 +412,9 @@ public static class SeedExtensions
             var fakeUni = new University
             {
                 DomainName = "hotmail.com",
-                Users = new HashSet<User> { peanutbutter }
+                TagGroups = new HashSet<TagGroup> { fakeTG },
+                Users = new HashSet<User> { peanutbutter },
+                Projects = new HashSet<Project> { fakeProject }
             };
 
             context.Universities.AddRange(ituUni, fakeUni);
