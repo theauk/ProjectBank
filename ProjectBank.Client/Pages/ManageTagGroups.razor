@@ -22,9 +22,13 @@
 
     <div class="row tagGroupContainer" style="margin-bottom: 20px">
         <div class="col">
-            @if (!_tagGroups.Any())
+            @if (!_loaded)
             {
-                <p>Loading...</p>
+                <p>Loading Tag Groups...</p>
+            }
+            else if (!_tagGroups.Any())
+            {
+                <p>No Tag Groups found!</p>
             }
             else
             {
@@ -92,6 +96,7 @@
 </div>
 
 @code {
+    private bool _loaded;
     private const string PagingSummaryFormat = "Displaying page {0} of {1} (total {2} tag groups)";
     private const int PageSize = 5;
 
@@ -137,6 +142,7 @@
         _lastTake = PageSize;
 
         await base.OnInitializedAsync();
+        _loaded = true;
     }
 
     async Task CloseTagCards(string elementId, string style, string styleValue)
