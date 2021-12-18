@@ -6,8 +6,6 @@ public record TagDTO
 
     [Required]
     public string? Value { get; init; }
-
-    public int TagGroupId { get; init; }
 }
 
 public record TagCreateDTO
@@ -15,5 +13,6 @@ public record TagCreateDTO
     [Required]
     public string? Value { get; init; }
 
+    [Required]
     public int TagGroupId { get; init; }
 }

@@ -17,7 +17,7 @@ public record ProjectDTO
     [Required]
     public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
 
-    public virtual bool Equals(ProjectDTO? p) // Outcommented to make ProjectPage work - throws Unhandled exception rendering component: Arg_NullReferenceException when accessing the page
+    public virtual bool Equals(ProjectDTO? p)
     {
         if (p == null)
             return false;
@@ -27,7 +27,7 @@ public record ProjectDTO
                 Id.Equals(p.Id) &&
                 Name.Equals(p.Name) &&
                 Description.Equals(p.Description) &&
-                Tags.Equals(p.Tags) &&
+                Tags.SequenceEqual(p.Tags) &&
                 Supervisors.SetEquals(p.Supervisors)
             );
         }
