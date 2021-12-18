@@ -12,7 +12,7 @@ using ProjectBank.Infrastructure;
 namespace ProjectBank.Infrastructure.Migrations
 {
     [DbContext(typeof(ProjectBankContext))]
-    [Migration("20211216200518_InitialCreate")]
+    [Migration("20211218112337_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,7 +64,7 @@ namespace ProjectBank.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("TagGroupId")
+                    b.Property<int>("TagGroupId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Value")
@@ -212,7 +212,9 @@ namespace ProjectBank.Infrastructure.Migrations
                 {
                     b.HasOne("ProjectBank.Infrastructure.Entities.TagGroup", "TagGroup")
                         .WithMany("Tags")
-                        .HasForeignKey("TagGroupId");
+                        .HasForeignKey("TagGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("TagGroup");
                 });

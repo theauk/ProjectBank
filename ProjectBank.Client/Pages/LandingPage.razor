@@ -11,43 +11,46 @@
         <div class="col-md-3 align-right">
             <h1 class="landingPageTitle">Filter</h1>
             <div class="tagFilterContainer">
-                @if (!_tagGroups.Any())
+                @if (!_loaded)
                 {
                     <p>Loading Filters...</p>
                 }
                 else
                 {
-                    @foreach (var tg in _tagGroups)
+                    if (_tagGroups.Any())
                     {
-                        if (tg.TagDTOs.Any())
+                        @foreach (var tg in _tagGroups)
                         {
-                            <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
-                                <HeaderTemplate>
-                                    <b class="tagFieldTitle">@tg.Name.ToUpper()</b>
-                                </HeaderTemplate>
-                                <ChildContent>
-                                    @if (tg.TagDTOs.Count() <= 6)
-                                    {
-                                        <RadzenCheckBoxList class="checkBoxList" @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
+                            if (tg.TagDTOs.Any())
+                            {
+                                <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
+                                    <HeaderTemplate>
+                                        <b class="tagFieldTitle">@tg.Name.ToUpper()</b>
+                                    </HeaderTemplate>
+                                    <ChildContent>
+                                        @if (tg.TagDTOs.Count() <= 6)
+                                        {
+                                            <RadzenCheckBoxList class="checkBoxList" @bind-Value=@_selectedTagsOfTagGroup[tg.Id]
                             TValue="int" Orientation="Radzen.Orientation.Vertical" Change=@ApplyFilter>
-                                            <Items>
-                                                @foreach (var t in tg.TagDTOs)
-                                                {
-                                                    <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id />
-                                                }
-                                            </Items>
-                                        </RadzenCheckBoxList>
-                                    }
-                                    else
-                                    {
-                                        <RadzenDropDown AllowFiltering="true"
+                                                <Items>
+                                                    @foreach (var t in tg.TagDTOs)
+                                                    {
+                                                        <RadzenCheckBoxListItem Text=@t.Value Value=@t.Id />
+                                                    }
+                                                </Items>
+                                            </RadzenCheckBoxList>
+                                        }
+                                        else
+                                        {
+                                            <RadzenDropDown AllowFiltering="true"
                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                             @bind-Value=@_selectedTagsOfTagGroup[tg.Id] Multiple="true" Placeholder="Select..."
                             Data=@tg.TagDTOs TextProperty="Value" ValueProperty="Id" style="width: 100%;"
                             Change=@ApplyFilter />
-                                    }
-                                </ChildContent>
-                            </RadzenFieldset>
+                                        }
+                                    </ChildContent>
+                                </RadzenFieldset>
+                            }
                         }
                     }
                     <RadzenFieldset AllowCollapse="true" Collapsed="true" class="tagFieldSet">
@@ -62,6 +65,7 @@
                         </ChildContent>
                     </RadzenFieldset>
                 }
+
             </div>
         </div>
         <div class="col">

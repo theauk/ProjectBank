@@ -93,7 +93,7 @@ namespace ProjectBank.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Value = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    TagGroupId = table.Column<int>(type: "integer", nullable: true)
+                    TagGroupId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -102,7 +102,8 @@ namespace ProjectBank.Infrastructure.Migrations
                         name: "FK_Tags_TagGroups_TagGroupId",
                         column: x => x.TagGroupId,
                         principalTable: "TagGroups",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

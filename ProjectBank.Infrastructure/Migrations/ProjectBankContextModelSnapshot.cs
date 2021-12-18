@@ -62,7 +62,7 @@ namespace ProjectBank.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("TagGroupId")
+                    b.Property<int>("TagGroupId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Value")
@@ -210,7 +210,9 @@ namespace ProjectBank.Infrastructure.Migrations
                 {
                     b.HasOne("ProjectBank.Infrastructure.Entities.TagGroup", "TagGroup")
                         .WithMany("Tags")
-                        .HasForeignKey("TagGroupId");
+                        .HasForeignKey("TagGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("TagGroup");
                 });

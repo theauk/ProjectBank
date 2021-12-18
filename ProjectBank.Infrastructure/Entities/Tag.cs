@@ -8,6 +8,7 @@ public class Tag : IComparable<Tag>
     [StringLength(100)]
     public string? Value { get; set; }
 
+    [Required]
     public TagGroup? TagGroup { get; set; }
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
