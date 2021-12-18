@@ -54,4 +54,6 @@ public static class EntityExtension
         Users = uni.Users.ToDTO().ToHashSet(),
         TagGroups = uni.TagGroups.ToDTO().ToHashSet()
     };
+
+    public static IEnumerable<UniversityDTO> ToDTO(this IEnumerable<University> universities) => universities.Select(u => u.ToDTO());
 }
