@@ -1,10 +1,19 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-
 namespace ProjectBank.Server.Tests.Controllers;
 
 public class TagGroupControllerTests
 {
+    private readonly ClaimsPrincipal _user;
+
+    public TagGroupControllerTests()
+    {
+        // Set up the claims principal since the controller needs the logged in user's name and email
+        _user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim("name", "First Last"),
+            new Claim(ClaimTypes.Email, "test@itu.dk")
+        }, "TestAuthentication"));
+    }
+
     [Fact]
     public async Task Post_creates_TagGroup()
     {
@@ -31,7 +40,7 @@ public class TagGroupControllerTests
         }, "TestAuthentication"));
         controller.ControllerContext = new ControllerContext
         {
-            HttpContext = new DefaultHttpContext {User = user}
+            HttpContext = new DefaultHttpContext { User = user }
         };
 
         // Act
@@ -43,6 +52,36 @@ public class TagGroupControllerTests
     }
 
     [Fact]
+    public async Task Post_given_non_existing_University_returns_BadRequest()
+    {
+        // Arrange
+        var toCreate = new TagGroupCreateDTO
+        {
+            Name = "Semester",
+            RequiredInProject = true,
+            SupervisorCanAddTag = false,
+            TagLimit = 2,
+            NewTagsDTOs = new HashSet<TagCreateDTO>() { new TagCreateDTO { Value = "Fall", TagGroupId = 1 } }
+        };
+
+        var repository = new Mock<ITagGroupRepository>();
+        repository.Setup(m => m.CreateAsync(toCreate, "test@itu.dk")).ReturnsAsync(Response.BadRequest);
+
+        var controller = new TagGroupController(repository.Object);
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = _user }
+        };
+
+        // Act
+        var result = await controller.Post(toCreate) as CreatedAtActionResult;
+
+        // Assert
+        Assert.Equal(Response.BadRequest, result?.Value);
+        Assert.Equal("Get", result?.ActionName);
+    }
+
+    [Fact]
     public async Task Get_returns_all_TagGroups_from_Repository()
     {
         // Arrange
@@ -50,9 +89,33 @@ public class TagGroupControllerTests
         var repository = new Mock<ITagGroupRepository>();
         repository.Setup(m => m.ReadAllAsync()).ReturnsAsync(expected);
         var controller = new TagGroupController(repository.Object);
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = _user }
+        };
 
         // Act
-        var actual = await controller.Get();
+        var actual = await controller.GetAll();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async Task Get_returns_all_TagGroups_from_University()
+    {
+        // Arrange
+        var expected = Array.Empty<TagGroupDTO>();
+        var repository = new Mock<ITagGroupRepository>();
+        repository.Setup(m => m.ReadAllByUniversityAsync("test@itu.dk")).ReturnsAsync(expected);
+        var controller = new TagGroupController(repository.Object);
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = _user }
+        };
+
+        // Act
+        var actual = await controller.GetAll();
 
         // Assert
         Assert.Equal(expected, actual);
@@ -70,7 +133,7 @@ public class TagGroupControllerTests
             RequiredInProject = true,
             SupervisorCanAddTag = false,
             TagLimit = 2,
-            TagDTOs = new List<TagDTO>() { new TagDTO { Id = 1, Value = "Fall", TagGroupId = 1 } }
+            TagDTOs = new List<TagDTO>() { new TagDTO { Id = 1, Value = "Fall" } }
         };
         repository.Setup(m => m.ReadAsync(1)).ReturnsAsync(tagGroup);
         var controller = new TagGroupController(repository.Object);
@@ -127,6 +190,22 @@ public class TagGroupControllerTests
 
         // Assert
         Assert.IsType<NotFoundResult>(response);
+    }
+
+    [Fact]
+    public async Task Put_given_non_existing_Tag_id_returns_BadRequest()
+    {
+        // Arrange
+        var tagGroup = new TagGroupUpdateDTO { Id = 1 };
+        var repository = new Mock<ITagGroupRepository>();
+        repository.Setup(m => m.UpdateAsync(1, tagGroup)).ReturnsAsync(Response.BadRequest);
+        var controller = new TagGroupController(repository.Object);
+
+        // Act
+        var response = await controller.Put(1, tagGroup);
+
+        // Assert
+        Assert.IsType<BadRequestResult>(response);
     }
 
     [Fact]

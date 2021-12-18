@@ -20,7 +20,7 @@ public class UserRepositoryTests : RepoTests
         var actual = _context.Users.FirstOrDefault(u => u.Email == "doe@itu.dk")?.ToDTO();
 
         Assert.Equal(Response.Created, response);
-        Assert.Equal(new UserDTO { Id = 8, Name = "John Doe", Email = "doe@itu.dk", Role = Role.Student }, actual);
+        Assert.Equal(new UserDTO { Id = 9, Name = "John Doe", Email = "doe@itu.dk", Role = Role.Student }, actual);
     }
 
     [Fact]
@@ -70,11 +70,11 @@ public class UserRepositoryTests : RepoTests
 
         await _repository.CreateAsync(user);
 
-        Assert.Equal(8, _context.Users.Count());
+        Assert.Equal(9, _context.Users.Count());
     }
 
     [Fact]
-    public async Task ReadAllAsync_returns_all_Users()
+    public async Task ReadAllAsync_returns_all_Users_across_all_Universities()
     {
         var users = await _repository.ReadAllAsync();
 
@@ -85,7 +85,8 @@ public class UserRepositoryTests : RepoTests
             user => Assert.Equal(new UserDTO { Id = 4, Name = "Paolo", Email = "paolo@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }, user),
-            user => Assert.Equal(new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }, user)
+            user => Assert.Equal(new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }, user),
+            user => Assert.Equal(new UserDTO { Id = 8, Name = "Heidi", Email = "heidi@ruc.dk", Role = Role.Supervisor }, user)
         );
     }
 
@@ -99,15 +100,16 @@ public class UserRepositoryTests : RepoTests
             user => Assert.Equal(new UserDTO { Id = 2, Name = "Birgit", Email = "birgit@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 3, Name = "Bjørn", Email = "bjorn@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 4, Name = "Paolo", Email = "paolo@itu.dk", Role = Role.Admin }, user),
-            user => Assert.Equal(new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin }, user)
+            user => Assert.Equal(new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin }, user),
+            user => Assert.Equal(new UserDTO { Id = 8, Name = "Heidi", Email = "heidi@ruc.dk", Role = Role.Supervisor }, user)
         );
     }
 
     [Theory]
     [MemberData(nameof(GetUsersWithRoles))]
-    public async Task ReadAllByRole_returns_all_Users_with_role(ISet<string> roles, IReadOnlyCollection<UserDTO> expected)
+    public async Task ReadAllByRole_returns_all_Users_with_role(IList<string> roles, IReadOnlyCollection<UserDTO> expected)
     {
-        var users = await _repository.ReadAllByRoleAsync(roles);
+        var users = await _repository.ReadAllByRoleAsync("test@itu.dk", roles);
 
         Assert.Equal(expected, users);
     }
@@ -196,7 +198,7 @@ public class UserRepositoryTests : RepoTests
         // No input returns all
         yield return new object[]
         {
-            new HashSet<String>(),
+            new List<String>(),
             new List<UserDTO>()
             {
                 new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
@@ -212,7 +214,7 @@ public class UserRepositoryTests : RepoTests
         // Only Admins
         yield return new object[]
         {
-            new HashSet<string>() { "Admin" },
+            new List<string>() { "Admin" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
@@ -226,7 +228,7 @@ public class UserRepositoryTests : RepoTests
         // Only Supervisors
         yield return new object[]
         {
-            new HashSet<string>() { "Supervisor" },
+            new List<string>() { "Supervisor" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor }
@@ -236,7 +238,7 @@ public class UserRepositoryTests : RepoTests
         // Only Students
         yield return new object[]
         {
-            new HashSet<string>() { "Student" },
+            new List<string>() { "Student" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 7, Name = "Ib", Email = "ib@itu.dk", Role = Role.Student }
@@ -246,7 +248,7 @@ public class UserRepositoryTests : RepoTests
         // Admin, supervisor
         yield return new object[]
         {
-            new HashSet<string>() { "Admin", "Supervisor" },
+            new List<string>() { "Admin", "Supervisor" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
@@ -261,7 +263,7 @@ public class UserRepositoryTests : RepoTests
         // Admin, Student
         yield return new object[]
         {
-            new HashSet<string>() { "Admin", "Student" },
+            new List<string>() { "Admin", "Student" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
@@ -276,7 +278,7 @@ public class UserRepositoryTests : RepoTests
         // Supervisor, Student
         yield return new object[]
         {
-            new HashSet<string>() { "Supervisor", "Student" },
+            new List<string>() { "Supervisor", "Student" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 6, Name = "Jens", Email = "jens@itu.dk", Role = Role.Supervisor },
@@ -287,7 +289,7 @@ public class UserRepositoryTests : RepoTests
         // All roles
         yield return new object[]
         {
-            new HashSet<string>() { "Admin", "Supervisor", "Student" },
+            new List<string>() { "Admin", "Supervisor", "Student" },
             new List<UserDTO>()
             {
                 new UserDTO { Id = 1, Name = "Marco",  Email = "marco@itu.dk",  Role = Role.Admin },
@@ -303,7 +305,7 @@ public class UserRepositoryTests : RepoTests
         // Unknown roles returns none
         yield return new object[]
         {
-            new HashSet<string>() { "Idk" },
+            new List<string>() { "Idk" },
             new List<UserDTO>().AsReadOnly()
         };
     }
