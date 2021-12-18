@@ -76,7 +76,7 @@ public class UserControllerTests
         // Arrange
         var expected = Array.Empty<UserDTO>();
         var repository = new Mock<IUserRepository>();
-        repository.Setup(m => m.ReadAllActiveAsync()).ReturnsAsync(expected);
+        repository.Setup(m => m.ReadAllActiveAsync("test@itu.dk")).ReturnsAsync(expected);
         var controller = new UserController(repository.Object);
         controller.ControllerContext = new ControllerContext
         {

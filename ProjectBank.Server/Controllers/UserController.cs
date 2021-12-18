@@ -40,7 +40,7 @@ public class UserController : ControllerBase
     [HttpGet("filter")]
     public async Task<IReadOnlyCollection<UserDTO>> GetActive() 
     {
-        var users = await _repository.ReadAllActiveAsync();
+        var users = await _repository.ReadAllActiveAsync(User.FindFirstValue(ClaimTypes.Email));
         return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
     }
     

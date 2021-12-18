@@ -93,7 +93,7 @@ public class UserRepositoryTests : RepoTests
     [Fact]
     public async Task ReadAllActiveAsync_returns_all_Users_with_minimum_1_Project()
     {
-        var users = await _repository.ReadAllActiveAsync();
+        var users = await _repository.ReadAllActiveAsync("test@itu.dk");
 
         Assert.Collection(users,
             user => Assert.Equal(new UserDTO { Id = 1, Name = "Marco", Email = "marco@itu.dk", Role = Role.Admin }, user),
@@ -182,7 +182,7 @@ public class UserRepositoryTests : RepoTests
     [Fact]
     public async Task Gets_active_users_correctly()
     {
-        var users = (await _repository.ReadAllActiveAsync()).Select(u => u.Id);
+        var users = (await _repository.ReadAllActiveAsync("test@itu.dk")).Select(u => u.Id);
 
         // Should include
         foreach (var uid in new List<int> { 1, 2, 3, 4, 5, })

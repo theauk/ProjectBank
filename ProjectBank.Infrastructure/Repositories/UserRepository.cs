@@ -33,9 +33,11 @@ public class UserRepository : IUserRepository
     public async Task<IReadOnlyCollection<UserDTO>> ReadAllAsync() => (await _context.Users
         .ToListAsync()).ToDTO().ToList().AsReadOnly();
 
-    public async Task<IReadOnlyCollection<UserDTO>> ReadAllActiveAsync() => (await _context.Users
-        .Where(u => u.Projects.Count > 0)
-        .ToListAsync()).ToDTO().ToList().AsReadOnly();
+    public async Task<IReadOnlyCollection<UserDTO>> ReadAllActiveAsync(string email)
+    {
+        var uni = await GetUniversityAsync(email);
+        return (await _context.Users.Where(u => u.Projects.Count > 0).Where(u => u.University.DomainName == uni.DomainName).ToListAsync()).ToDTO().ToList().AsReadOnly();
+    } 
 
     public async Task<Option<UserDTO>> ReadAsync(int userId) =>
         (await _context.Users.FindAsync(userId))?.ToDTO();
@@ -52,7 +54,7 @@ public class UserRepository : IUserRepository
             return await ReadAllByUniversityAsync(email);
         }
 
-        return (await ReadAllByUniversityAsync(email)).Where(u => roles.Select(r => Roles.GetRole(r)).ToHashSet().Contains(u.Role)).ToList().AsReadOnly();;
+        return (await ReadAllByUniversityAsync(email)).Where(u => roles.Select(r => Roles.GetRole(r)).ToHashSet().Contains(u.Role)).ToList().AsReadOnly();
     }
 
     public async Task<IReadOnlyCollection<UserDTO>> ReadAllByUniversityAsync(string email)
@@ -61,8 +63,9 @@ public class UserRepository : IUserRepository
         return university == null ? new List<UserDTO>() : university.Users.ToDTO().ToList().AsReadOnly();
     }
 
-    private async Task<University?> GetUniversityAsync(string? email)
+    private async Task<University?> GetUniversityAsync(string email)
     {
-        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
+        var domain = email.Split("@")[1];
+        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.Include(u => u.Users).Include(u => u.Projects).Include(u => u.TagGroups).FirstOrDefaultAsync(u => u.DomainName == domain);
     }
 }
