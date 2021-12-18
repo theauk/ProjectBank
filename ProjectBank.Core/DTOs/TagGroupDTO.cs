@@ -16,6 +16,26 @@ public record TagGroupDTO
     public bool RequiredInProject { get; init; }
 
     public int? TagLimit { get; init; }
+    
+    
+    public virtual bool Equals(TagGroupDTO? tg) 
+    {
+        if (tg == null)
+            return false;
+        return (
+            Id.Equals(tg.Id) &&
+            Name.Equals(tg.Name) &&
+            TagDTOs.All(tg.TagDTOs.Contains) && TagDTOs.Count.Equals(tg.TagDTOs.Count) && // Currently we do not care about sequence
+            // TagDTOs.SequenceEqual(tg.TagDTOs) &&
+            SupervisorCanAddTag.Equals(tg.SupervisorCanAddTag) &&
+            RequiredInProject.Equals(tg.RequiredInProject) &&
+            TagLimit.Equals(tg.TagLimit)
+        );
+    }
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }
 
 public record TagGroupCreateDTO

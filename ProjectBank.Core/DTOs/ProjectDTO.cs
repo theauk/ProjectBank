@@ -17,22 +17,18 @@ public record ProjectDTO
     [Required]
     public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
 
-    public virtual bool Equals(ProjectDTO? p) // Outcommented to make ProjectPage work - throws Unhandled exception rendering component: Arg_NullReferenceException when accessing the page
+    public virtual bool Equals(ProjectDTO? p) 
     {
         if (p == null)
             return false;
-        else
-        {
-            return (
-                Id.Equals(p.Id) &&
-                Name.Equals(p.Name) &&
-                Description.Equals(p.Description) &&
-                Tags.Equals(p.Tags) &&
-                Supervisors.SetEquals(p.Supervisors)
-            );
-        }
+        return (
+            Id.Equals(p.Id) &&
+            Name.Equals(p.Name) &&
+            Description.Equals(p.Description) &&
+            Tags.Equals(p.Tags) &&
+            Supervisors.SetEquals(p.Supervisors)
+        );
     }
-
     public override int GetHashCode()
     {
         return base.GetHashCode();

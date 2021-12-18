@@ -70,7 +70,7 @@ public class TagGroupControllerTests
             RequiredInProject = true,
             SupervisorCanAddTag = false,
             TagLimit = 2,
-            TagDTOs = new List<TagDTO>() { new TagDTO { Id = 1, Value = "Fall", TagGroupId = 1 } }
+            TagDTOs = new List<TagDTO>() { new TagDTO { Id = 1, Value = "Fall"} }
         };
         repository.Setup(m => m.ReadAsync(1)).ReturnsAsync(tagGroup);
         var controller = new TagGroupController(repository.Object);
@@ -79,7 +79,7 @@ public class TagGroupControllerTests
         var response = await controller.Get(1);
 
         // Assert
-        Assert.Equal(tagGroup, response.Value);
+        Assert.True(tagGroup.Equals(response.Value));
     }
 
     [Fact]
