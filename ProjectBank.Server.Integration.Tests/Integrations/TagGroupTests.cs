@@ -33,7 +33,7 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
             RequiredInProject = true,
             SupervisorCanAddTag = false,
             TagLimit = 2,
-            TagDTOs = new List<TagDTO>() {new TagDTO(){Id = 5, Value = "Spring 2022", TagGroupId = 1}}
+            TagDTOs = new List<TagDTO>() {new TagDTO(){Id = 5, Value = "Spring 2022"}}
         };
         var programmingLanguage = new TagGroupDTO
         {
@@ -42,8 +42,8 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
             RequiredInProject = false,
             SupervisorCanAddTag = true,
             TagLimit = 10,
-            TagDTOs = new List<TagDTO>() { new TagDTO(){Id = 2, Value = "SQL", TagGroupId = 2},
-                                           new TagDTO(){Id = 3, Value = "GoLang", TagGroupId = 2}}
+            TagDTOs = new List<TagDTO>() { new TagDTO(){Id = 2, Value = "SQL"},
+                                           new TagDTO(){Id = 3, Value = "GoLang"}}
         };
         var mandatoryProjects = new TagGroupDTO
         {
@@ -52,7 +52,7 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
             RequiredInProject = false,
             SupervisorCanAddTag = false,
             TagLimit = 1,
-            TagDTOs = new List<TagDTO>() {new TagDTO(){Id = 4, Value = "2nd Year Project", TagGroupId = 3}}
+            TagDTOs = new List<TagDTO>() {new TagDTO(){Id = 4, Value = "2nd Year Project"}}
         };
         var topic = new TagGroupDTO
         {
@@ -61,7 +61,7 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
             RequiredInProject = false,
             SupervisorCanAddTag = true,
             TagLimit = 10,
-            TagDTOs = new List<TagDTO>() {new TagDTO(){Id = 1, Value = "Math Theory", TagGroupId = 4}}
+            TagDTOs = new List<TagDTO>() {new TagDTO(){Id = 1, Value = "Math Theory"}}
         };
         
         //Act
@@ -91,8 +91,8 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
             RequiredInProject = false,
             SupervisorCanAddTag = true,
             TagLimit = 10,
-            TagDTOs = new List<TagDTO>() { new TagDTO(){Id = 2, Value = "SQL", TagGroupId = 2},
-                new TagDTO(){Id = 3, Value = "GoLang", TagGroupId = 2}}
+            TagDTOs = new List<TagDTO>() { new TagDTO(){Id = 2, Value = "SQL"},
+                new TagDTO(){Id = 3, Value = "GoLang"}}
         };
     
         //Act
@@ -124,7 +124,7 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
         var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
         
-        var language = new TagGroupCreateDTO()
+        var languageCreateDto = new TagGroupCreateDTO()
         {
             Name = "Language",
             RequiredInProject = true,
@@ -133,22 +133,29 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
             NewTagsDTOs = new HashSet<TagCreateDTO>() { new TagCreateDTO(){ Value = "Danish", TagGroupId = 5},
                 new TagCreateDTO(){ Value = "English", TagGroupId = 5}}
         };
+        var languageDto = new TagGroupDTO()
+        {
+            Id = 5,
+            Name = "Language",
+            RequiredInProject = true,
+            SupervisorCanAddTag = true,
+            TagLimit = 2,
+            TagDTOs = new List<TagDTO>() { new TagDTO(){ Id = 6 ,Value = "Danish"},
+                new TagDTO(){ Id = 7, Value = "English"}}
+        };
+        
         
         //Act
-        var response = await client.PostAsJsonAsync("api/TagGroup", language);
-        var tgList = await client.GetFromJsonAsync<IReadOnlyCollection<TagGroupDTO>>($"api/TagGroup");
+        var response = await client.PostAsJsonAsync("api/TagGroup", languageCreateDto);
+        
         var createdResponse = await client.GetAsync($"api/TagGroup/{5}");
         var created = await createdResponse.Content.ReadFromJsonAsync<TagGroupDTO>();
         
         //Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        // Assert.Equal(HttpStatusCode.OK, createdResponse.StatusCode); //Fejler pga. 404 NotFound
-        // Assert.Equal(language, created); //Fejler fordi den ikke kan findes
-        Assert.Collection(tgList, tg => Assert.True(true), //TODO Fejler - henter kun de 4 originale
-            tg => Assert.True(true),
-            tg => Assert.True(true),
-            tg => Assert.True(true), 
-            tg => Assert.True(language.Equals(tg)));
+        
+        Assert.Equal(HttpStatusCode.OK, createdResponse.StatusCode);
+        Assert.Equal(languageDto, created);
     }
 
     [Fact]
@@ -240,7 +247,7 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
                 RequiredInProject = false,
                 SupervisorCanAddTag = true,
                 TagLimit = 10,
-                TagDTOs = new List<TagDTO>() {new TagDTO(){Id = 2, Value = "SQL", TagGroupId = 2}}
+                TagDTOs = new List<TagDTO>() {new TagDTO(){Id = 2, Value = "SQL"}}
             }),updated
         );
     }
