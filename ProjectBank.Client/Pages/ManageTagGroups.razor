@@ -41,6 +41,7 @@
                                     @if (!_editingName[tg.Id])
                                     {
                                         <b class="tagFieldTitle" @onclick=@(_ => _editingName[tg.Id] = true)>@tg.Name</b>
+                                        <RadzenIcon Icon="edit" @onclick=@(_ => _editingName[tg.Id] = true) />
                                     }
                                     else
                                     {
