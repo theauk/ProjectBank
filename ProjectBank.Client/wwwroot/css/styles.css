@@ -161,6 +161,11 @@
     height: auto !important;
 }
 
+.missingFieldsText {
+    color: #f9777f;
+    font-size: 18px;
+}
+
 /* Create Tag Group */
 
 .formLabelText {
