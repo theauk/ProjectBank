@@ -8,6 +8,26 @@ public record UniversityDTO
     public ISet<UserDTO> Users { get; init; } = new HashSet<UserDTO>();
     public ISet<ProjectDTO> Projects { get; init; } = new HashSet<ProjectDTO>();
     public ISet<TagGroupDTO> TagGroups { get; init; } = new HashSet<TagGroupDTO>();
+
+    public virtual bool Equals(UniversityDTO? uni)
+    {
+        if (uni == null)
+            return false;
+        else
+        {
+            return (
+                DomainName.Equals(uni.DomainName) &&
+                Users.SetEquals(uni.Users) &&
+                Projects.SetEquals(uni.Projects) &&
+                TagGroups.SetEquals(uni.TagGroups)
+            );
+        }
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }
 
 public record UniversityCreateDTO

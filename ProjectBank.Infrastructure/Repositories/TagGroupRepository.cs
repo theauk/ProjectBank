@@ -43,41 +43,25 @@ public class TagGroupRepository : ITagGroupRepository
         return Response.Deleted;
     }
 
-    public async Task<Option<TagGroupDTO?>> ReadAsync(int tagGroupId)
+    public async Task<Option<TagGroupDTO>> ReadAsync(int tagGroupId)
     {
-        var tagGroup = await _context.TagGroups.Include(tg => tg.Tags ).FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
-        return tagGroup == null
-            ? null
-            : new TagGroupDTO
-            {
-                Id = tagGroup.Id,
-                Name = tagGroup.Name,
-                TagDTOs = tagGroup.Tags.Select(t => new TagDTO {Value = t.Value, Id = t.Id}).OrderBy(t => t.Value).ToList(),
-                RequiredInProject = tagGroup.RequiredInProject,
-                SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
-                TagLimit = tagGroup.TagLimit
-            };
+        var tagGroup = await _context.TagGroups.FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
+        return tagGroup == null ? null : tagGroup.ToDTO();
     }
 
     public async Task<IReadOnlyCollection<TagGroupDTO>> ReadAllAsync()
     {
-        return (await _context.TagGroups.Select(tagGroup => new TagGroupDTO
-                {
-                    Id = tagGroup.Id,
-                    Name = tagGroup.Name,
-                    TagDTOs = tagGroup.Tags.Select(t => new TagDTO {Value = t.Value, Id = t.Id})
-                        .OrderBy(t => t.Value).ToList(),
-                    RequiredInProject = tagGroup.RequiredInProject,
-                    SupervisorCanAddTag = tagGroup.SupervisorCanAddTag,
-                    TagLimit = tagGroup.TagLimit
-                })
-                .ToListAsync())
-            .AsReadOnly();
+        return (await _context.TagGroups.Select(tg => tg).ToListAsync()).ToDTO().ToList().AsReadOnly();
+    }
+
+    public async Task<IReadOnlyCollection<TagGroupDTO>> ReadAllByUniversityAsync(string email)
+    {
+        var domain = email.Split("@")[1];
+        return (await _context.TagGroups.Select(tg => tg).Include(tg => tg.Tags).Where(tg => tg.University.DomainName == domain).ToListAsync()).ToDTO().ToList().AsReadOnly();
     }
 
     public async Task<Response> UpdateAsync(int tagGroupId, TagGroupUpdateDTO tagGroup)
     {
-        Console.WriteLine(tagGroup.SelectedTagValues.Count);
         var entity = await _context.TagGroups.Include(tg => tg.Tags).FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
 
         if (entity == null) return Response.NotFound;
@@ -89,7 +73,7 @@ public class TagGroupRepository : ITagGroupRepository
             select tagDTO.Id).ToList();
 
         var deleteResponse = await DeleteTagAsync(deletedTagIds);
-        if (deleteResponse == Response.NotFound)
+        if (deleteResponse == Response.BadRequest)
         {
             return deleteResponse;
         }
@@ -101,14 +85,12 @@ public class TagGroupRepository : ITagGroupRepository
 
         await AddTagAsync(tagGroupId, newTagDTOs);
 
-
         entity.Name = tagGroup.Name;
         entity.RequiredInProject = tagGroup.RequiredInProject;
         entity.SupervisorCanAddTag = tagGroup.SupervisorCanAddTag;
         entity.TagLimit = tagGroup.TagLimit;
 
         await _context.SaveChangesAsync();
-        Console.WriteLine(entity.Tags.Count);
 
         return Response.Updated;
     }
@@ -119,7 +101,7 @@ public class TagGroupRepository : ITagGroupRepository
         {
             var entity = await _context.Tags.FindAsync(id);
 
-            if (entity == null) return Response.NotFound;
+            if (entity == null) return Response.BadRequest;
 
             _context.Tags.Remove(entity);
         }
@@ -141,7 +123,7 @@ public class TagGroupRepository : ITagGroupRepository
         return Response.Created;
     }
 
-    private async Task<University?> GetUniversityAsync(string? email) 
+    private async Task<University?> GetUniversityAsync(string email) 
     {
         return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
     }

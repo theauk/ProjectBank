@@ -1,5 +1,3 @@
-using Blazorise.Extensions;
-
 namespace ProjectBank.Server.Controllers;
 
 [Authorize]
@@ -15,16 +13,6 @@ public class ProjectController : ControllerBase
         _repository = repository;
     }
 
-    [Authorize]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProjectDTO), StatusCodes.Status200OK)]
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectDTO?>> Get(int id)
-    {
-        var projectDto = await _repository.ReadAsync(id);
-        return projectDto.ToActionResult();
-    }
-
     [Authorize(Roles = $"{Admin}, {Supervisor}")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -35,15 +23,34 @@ public class ProjectController : ControllerBase
         return CreatedAtAction(nameof(Get), response);
     }
 
+    [Authorize(Roles = SuperAdmin)]
+    [HttpGet("all")]
+    public async Task<IReadOnlyCollection<ProjectDTO>> GetAll()
+    {
+        var projects = await _repository.ReadAllAsync();
+        return projects.IsNullOrEmpty() ? new List<ProjectDTO>().AsReadOnly() : projects;
+    }
+
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProjectDTO), StatusCodes.Status200OK)]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ProjectDTO>> Get(int id)
+    {
+        var project = await _repository.ReadAsync(id);
+        return project.ToActionResult();
+    }
+
     [Authorize]
     [HttpGet]
     public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds, [FromQuery] IList<int> supervisorIds)
     {
+        var userEmail = User.FindFirstValue(ClaimTypes.Email);
         IReadOnlyCollection<ProjectDTO> resp;
         if (!tagIds.Any() && !supervisorIds.Any())
-            resp = await _repository.ReadAllAsync();
+            resp = await _repository.ReadAllByUniversityAsync(userEmail);
         else
-            resp = await _repository.ReadFilteredAsync(tagIds, supervisorIds);
+            resp = await _repository.ReadFilteredAsync(userEmail, tagIds, supervisorIds);
 
         return resp.IsNullOrEmpty() ? new List<ProjectDTO>().AsReadOnly() : resp;
     }
@@ -59,6 +66,7 @@ public class ProjectController : ControllerBase
     [Authorize(Roles = $"{Admin}, {Supervisor}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] ProjectUpdateDTO project)
     {

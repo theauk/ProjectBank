@@ -17,7 +17,7 @@ public record ProjectDTO
     [Required]
     public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
 
-    public virtual bool Equals(ProjectDTO? p) 
+    public virtual bool Equals(ProjectDTO? p)
     {
         if (p == null)
             return false;

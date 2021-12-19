@@ -144,7 +144,7 @@
 
     private IEnumerable<int> SelectedSupervisorIds { get; set; } = new List<int>(); // cannot be inside _project because we need enumerable and not set
 
-private Dictionary<int, List<string>> _selectedExistingTagsValues = new();
+    private Dictionary<int, List<string>> _selectedExistingTagsValues = new();
     private Dictionary<int, List<string>> _allSelectedTagsValues = new();
 
     private string _submitFormId = "submitForm";
@@ -159,9 +159,8 @@ private Dictionary<int, List<string>> _selectedExistingTagsValues = new();
         var parameters = new List<string>();
         parameters.Add(string.Join("&", $"roles={Admin}"));
         parameters.Add(string.Join("&", $"roles={Supervisor}"));
-        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles?" + string.Join("&",
-        parameters)) ?? new List<UserDTO>();
-
+        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles?" + string.Join("&", parameters)) ?? new List<UserDTO>();
+        
         foreach (var tg in TagGroups)
         {
             if (tg.SupervisorCanAddTag)

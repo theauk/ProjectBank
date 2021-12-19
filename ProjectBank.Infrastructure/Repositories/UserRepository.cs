@@ -17,7 +17,7 @@ public class UserRepository : IUserRepository
 
         var entity = new User
         {
-            Name = user.Name, 
+            Name = user.Name,
             Email = user.Email,
             University = university,
             Role = user.Role
@@ -32,12 +32,14 @@ public class UserRepository : IUserRepository
 
     public async Task<IReadOnlyCollection<UserDTO>> ReadAllAsync() => (await _context.Users
         .ToListAsync()).ToDTO().ToList().AsReadOnly();
-        
-    public async Task<IReadOnlyCollection<UserDTO>> ReadAllActiveAsync() => (await _context.Users
-        .Where(u => u.Projects.Count > 0)
-        .ToListAsync()).ToDTO().ToList().AsReadOnly();
 
-    public async Task<Option<UserDTO>> ReadAsync(int userId) => 
+    public async Task<IReadOnlyCollection<UserDTO>> ReadAllActiveAsync(string email)
+    {
+        var uni = await GetUniversityAsync(email);
+        return (await _context.Users.Where(u => u.Projects.Count > 0).Where(u => u.University.DomainName == uni.DomainName).ToListAsync()).ToDTO().ToList().AsReadOnly();
+    } 
+
+    public async Task<Option<UserDTO>> ReadAsync(int userId) =>
         (await _context.Users.FindAsync(userId))?.ToDTO();
 
     public async Task<Option<UserDTO>> ReadAsync(string email)
@@ -45,18 +47,25 @@ public class UserRepository : IUserRepository
         return (await _context.Users.FirstOrDefaultAsync(u => u.Email == email))?.ToDTO();
     }
 
-    public async Task<IReadOnlyCollection<UserDTO>> ReadAllByRoleAsync(ISet<string> roles)
+    public async Task<IReadOnlyCollection<UserDTO>> ReadAllByRoleAsync(string email, IList<string> roles)
     {
         if (roles == null || !roles.Any())
         {
-            return await ReadAllAsync();
+            return await ReadAllByUniversityAsync(email);
         }
 
-        return (await _context.Users.Where(u => roles.Select(r => Roles.GetRole(r)).ToHashSet().Contains(u.Role)).ToListAsync()).ToDTO().ToList().AsReadOnly();
+        return (await ReadAllByUniversityAsync(email)).Where(u => roles.Select(r => Roles.GetRole(r)).ToHashSet().Contains(u.Role)).ToList().AsReadOnly();
     }
 
-    private async Task<University?> GetUniversityAsync(string? email) 
+    public async Task<IReadOnlyCollection<UserDTO>> ReadAllByUniversityAsync(string email)
     {
-        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
+        var university = await GetUniversityAsync(email);
+        return university == null ? new List<UserDTO>() : university.Users.ToDTO().ToList().AsReadOnly();
+    }
+
+    private async Task<University?> GetUniversityAsync(string email)
+    {
+        var domain = email.Split("@")[1];
+        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.Include(u => u.Users).Include(u => u.Projects).Include(u => u.TagGroups).FirstOrDefaultAsync(u => u.DomainName == domain);
     }
 }
