@@ -15,6 +15,11 @@ public record TagDTO
             Id.Equals(t.Id) &&
             Value.Equals(t.Value));
     }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }
 
 public record TagCreateDTO
@@ -22,5 +27,6 @@ public record TagCreateDTO
     [Required]
     public string? Value { get; init; }
 
+    [Required]
     public int TagGroupId { get; init; }
 }

@@ -27,22 +27,9 @@ public class UniversityRepository : IUniversityRepository
         return Response.Created;
     }
 
-    // TODO Not implemented
-    public async Task<Response> UpdateAsync(string universityDomain, UniversityUpdateDTO university)
+    public async Task<Response> DeleteAsync(string domain)
     {
-        var entity = await _context.Universities.FindAsync(universityDomain);
-
-        if (entity == null)
-        {
-            return Response.NotFound;
-        }
-
-        throw new NotImplementedException();
-    }
-
-    public async Task<Response> DeleteAsync(string universityDomain)
-    {
-        var entity = await _context.Universities.FindAsync(universityDomain);
+        var entity = await _context.Universities.FindAsync(domain);
 
         if (entity == null)
         {
@@ -55,33 +42,13 @@ public class UniversityRepository : IUniversityRepository
         return Response.Deleted;
     }
 
-    public async Task<Option<UniversityDTO?>> ReadAsync(string? universityDomain)
+    public async Task<Option<UniversityDTO>> ReadAsync(string domain)
     {
-        var entity = await _context.Universities.FindAsync(universityDomain);
+        return (await _context.Universities.FindAsync(domain))?.ToDTO();
+    }
 
-        return entity == null ? null : entity.ToDTO();
-            // : new UniversityDTO
-            // {
-            //     DomainName = entity.DomainName,
-            //     Users = entity.Users.Select(u => new UserDTO {Id = u.Id, Name = u.Name}).ToHashSet(),
-            //     Projects = entity.Projects.Select(p => new ProjectDTO
-            //     {
-            //         Id = p.Id,
-            //         Name = p.Name,
-            //         Description = p.Description,
-            //         Supervisors = p.Supervisors.Select(u => new UserDTO {Id = u.Id, Name = u.Name}).ToHashSet(),
-            //         Tags = p.Tags.Select(t => new TagDTO {Id = t.Id, Value = t.Value}).OrderBy(t => t.Value).ToList()
-            //     }).ToHashSet(),
-            //     TagGroups = entity.TagGroups.Select(tg => new TagGroupDTO
-            //     {
-            //         Id = tg.Id,
-            //         Name = tg.Name,
-            //         TagLimit = tg.TagLimit,
-            //         SupervisorCanAddTag = tg.SupervisorCanAddTag,
-            //         RequiredInProject = tg.RequiredInProject,
-            //         TagDTOs = tg.Tags.Select(t => new TagDTO {Id = t.Id, Value = t.Value}).OrderBy(t => t.Value)
-            //             .ToList()
-            //     }).ToHashSet()
-            // };
+    public async Task<IReadOnlyCollection<UniversityDTO>> ReadAllAsync()
+    {
+        return (await _context.Universities.ToListAsync()).ToDTO().ToList().AsReadOnly();
     }
 }

@@ -90,35 +90,19 @@ public class UniversityControllerTests
     }
 
     [Fact]
-    public async Task Put_given_existing_domain_updates_University()
+    public async Task Get_returns_all_Universities()
     {
         // Arrange
-        var university = new UniversityUpdateDTO();
         var repository = new Mock<IUniversityRepository>();
-        repository.Setup(m => m.UpdateAsync("itu.dk", university)).ReturnsAsync(Response.Updated);
+        var expected = Array.Empty<UniversityDTO>();
+        repository.Setup(m => m.ReadAllAsync()).ReturnsAsync(expected);
         var controller = new UniversityController(repository.Object);
 
         // Act
-        var response = await controller.Put("itu.dk", university);
+        var actual = await controller.GetAll();
 
         // Assert
-        Assert.IsType<NoContentResult>(response);
-    }
-
-    [Fact]
-    public async Task Put_given_non_existing_domain_returns_NotFound()
-    {
-        // Arrange
-        var university = new UniversityUpdateDTO();
-        var repository = new Mock<IUniversityRepository>();
-        repository.Setup(m => m.UpdateAsync("dtu.dk", university)).ReturnsAsync(Response.NotFound);
-        var controller = new UniversityController(repository.Object);
-
-        // Act
-        var response = await controller.Put("dtu.dk", university);
-
-        // Assert
-        Assert.IsType<NotFoundResult>(response);
+        Assert.Equal(expected, actual);
     }
 
     [Fact]

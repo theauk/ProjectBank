@@ -7,5 +7,6 @@ public interface IProjectRepository
     Task<Response> DeleteAsync(int projectId);
     Task<Option<ProjectDTO>> ReadAsync(int projectId);
     Task<IReadOnlyCollection<ProjectDTO>> ReadAllAsync();
-    Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(IList<int> tagIds, IList<int> supervisorIds);
+    Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(string email, IList<int> tagIds, IList<int> supervisorIds);
+    Task<IReadOnlyCollection<ProjectDTO>> ReadAllByUniversityAsync(string email);
 }

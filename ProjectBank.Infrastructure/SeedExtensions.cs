@@ -39,6 +39,8 @@ public static class SeedExtensions
             var rasmus = new User { Name = "Rasmus Lystrøm", Email = "rnie@itu.dk", Role = Role.Admin };
             var soren = new User { Name = "Søren Brostrøm", Email = "soren@itu.dk", Role = Role.Student };
 
+            var peanutbutter = new User { Name = "Peanut Butter", Email = "peanutbutterpb@hotmail.com", Role = Role.Admin };
+
             var usersSet = new HashSet<User>()
             {
                 gustav,
@@ -118,6 +120,9 @@ public static class SeedExtensions
             var webTopic = new Tag { Value = "Web Development" };
             var logicTopic = new Tag { Value = "Logic" };
             var algorithmsTopic = new Tag { Value = "Algorithms" };
+
+            // Fake
+            var fake = new Tag { Value = "Fake" };
 
             // TAGGROUPS
             var semesterTG = new TagGroup
@@ -265,6 +270,15 @@ public static class SeedExtensions
                 topicsTG
             };
 
+            var fakeTG = new TagGroup
+            {
+                Name = "Fake Filter",
+                RequiredInProject = false,
+                SupervisorCanAddTag = false,
+                TagLimit = null,
+                Tags = new HashSet<Tag>() { fake }
+            };
+
             // PROJECTS
             var firstYearP = new Project
             {
@@ -362,6 +376,14 @@ public static class SeedExtensions
                 Supervisors = new HashSet<User>() { carl }
             };
 
+            var fakeProject = new Project
+            {
+                Name = "Fake Project",
+                Description = "This is a fake project for testing",
+                Tags = new HashSet<Tag>(),
+                Supervisors = new HashSet<User>() { peanutbutter }
+            };
+
             var projectsSet = new HashSet<Project>()
             {
                 firstYearP,
@@ -387,7 +409,15 @@ public static class SeedExtensions
                 Projects = projectsSet
             };
 
-            context.Universities.Add(ituUni);
+            var fakeUni = new University
+            {
+                DomainName = "hotmail.com",
+                TagGroups = new HashSet<TagGroup> { fakeTG },
+                Users = new HashSet<User> { peanutbutter },
+                Projects = new HashSet<Project> { fakeProject }
+            };
+
+            context.Universities.AddRange(ituUni, fakeUni);
         }
 
         await context.SaveChangesAsync();

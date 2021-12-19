@@ -37,23 +37,6 @@ public class UniversityRepositoryTests : RepoTests
         Assert.Equal(Response.Conflict, response);
     }
 
-    // [Fact]
-    // public async Task UpdateASync_given_existing_domain_updates_University_and_returns_Updated()
-    // {
-
-    // }
-
-    [Fact]
-    public async Task UpdateAsync_given_non_existing_domain_returns_NotFound()
-    {
-        var uniUpdate = new UniversityUpdateDTO
-        {
-            DomainName = "dtu.dk",
-        };
-        var response = await _repository.UpdateAsync("dtu.dk", uniUpdate);
-        Assert.Equal(Response.NotFound, response);
-    }
-
     [Fact]
     public async Task DeleteAsync_given_existing_domain_deletes_University_and_returns_Deleted()
     {
@@ -92,5 +75,12 @@ public class UniversityRepositoryTests : RepoTests
         var actual = await _repository.ReadAsync("dtu.dk");
         Assert.True(actual.IsNone);
         Assert.Null(actual.Value);
+    }
+
+    [Fact]
+    public async Task ReadAllAsync_returns_all_Universities()
+    {
+        var actual = await _repository.ReadAllAsync();
+        Assert.Equal(2, actual.Count);
     }
 }
