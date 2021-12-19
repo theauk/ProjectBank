@@ -39,6 +39,17 @@ public class TestClaimsProvider
         Claims = new List<Claim>();
     }
 
+    public static TestClaimsProvider WithSuperAdminClaims()
+    {
+        var provider = new TestClaimsProvider();
+        provider.Claims.Add(new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()));
+        provider.Claims.Add(new Claim(ClaimTypes.Name, "ProjectBank Employee"));
+        provider.Claims.Add(new Claim(ClaimTypes.Role, "SuperAdmin"));
+        provider.Claims.Add(new Claim("http://schemas.microsoft.com/identity/claims/scope", "API.Access"));
+
+        return provider;
+    }
+
     public static TestClaimsProvider WithAdminClaims()
     {
         var provider = new TestClaimsProvider();
