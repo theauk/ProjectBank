@@ -25,7 +25,6 @@ public record TagGroupDTO
         return (
             Id.Equals(tg.Id) &&
             Name.Equals(tg.Name) &&
-            // TagDTOs.All(tg.TagDTOs.Contains) && TagDTOs.Count.Equals(tg.TagDTOs.Count) && // Currently we do not care about sequence
             TagDTOs.SequenceEqual(tg.TagDTOs) &&
             SupervisorCanAddTag.Equals(tg.SupervisorCanAddTag) &&
             RequiredInProject.Equals(tg.RequiredInProject) &&
