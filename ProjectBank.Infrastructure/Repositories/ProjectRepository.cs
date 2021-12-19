@@ -89,7 +89,7 @@ public class ProjectRepository : IProjectRepository
     public async Task<IReadOnlyCollection<ProjectDTO>> ReadAllByUniversityAsync(string email)
     {
         var domain = email.Split("@")[1];
-        return (await _context.Projects.Select(p => p).Include(p => p.Tags).Where(p => p.University.DomainName == domain).ToListAsync()).ToDTO().ToList().AsReadOnly();
+        return (await _context.Projects.Select(p => p).Include(p => p.Tags).Include(p => p.Supervisors).Where(p => p.University.DomainName == domain).ToListAsync()).ToDTO().ToList().AsReadOnly();
     }
 
     public async Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)

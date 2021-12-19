@@ -54,7 +54,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         var response = await client.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project/");
         
         //Assert
-        Assert.Collection(response, actualProjectDTO => Assert.True(mathProjectDTO.Equals(actualProjectDTO)),
+        Assert.Collection(response, actualProjectDTO => Assert.Collection(actualProjectDTO.Supervisors, Supervisors => Assert.Equal(birgit, Supervisors)),
             actualProjectDTO => Assert.Equal(databaseProjectDTO, actualProjectDTO),
             actualProjectDTO => Assert.Equal(goProjectDTO, actualProjectDTO),
             actualProjectDTO => Assert.Equal(secondYearProjectDTO, actualProjectDTO));
@@ -69,7 +69,8 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
 
         //Act
         var response = await client.GetAsync("api/Project/");
-        
+        throw new NotImplementedException();
+
     }
 
     [Fact]
@@ -130,17 +131,11 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         
         //Act
         var response = await client.PostAsJsonAsync($"api/Project/", projectCreateDTO);
-        // var createdProjectDTO = await client.GetFromJsonAsync<ProjectDTO>($"api/Project/{5}");
-        var allProjectDTOs = await client.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>("api/Project");
+        var createdProjectDTO = await client.GetFromJsonAsync<ProjectDTO>($"api/Project/{5}");
         
         //Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        // Assert.Equal(expectedProjectDTO, createdProjectDTO);
-        Assert.Collection(allProjectDTOs, dto => Assert.True(true),
-            dto => Assert.True(true),
-            dto => Assert.True(true),
-            dto => Assert.True(true),
-            dto => Assert.Equal(expectedProjectDTO, dto));
+        Assert.Equal(expectedProjectDTO, createdProjectDTO);
 
     }
 
@@ -156,6 +151,8 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
             Name = "New project 1", Description = "New project for integration testing",
             ExistingTagIds = new HashSet<int>(), NewTagDTOs = new HashSet<TagCreateDTO>()
         };
+        
+        throw new NotImplementedException();
 
     }
     
@@ -165,7 +162,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         //Arrange
         var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
-
+        throw new NotImplementedException();
     }
 
     [Fact]
@@ -174,7 +171,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         //Arrange
         var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
-
+        throw new NotImplementedException();
     }
 
     [Fact]
@@ -183,7 +180,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         //Arrange
         var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
-
+        throw new NotImplementedException();
     }
 
     [Fact]
@@ -192,7 +189,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         //Arrange
         var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
-
+        throw new NotImplementedException();
     }
 
     [Fact]
@@ -201,7 +198,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         //Arrange
         var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
-
+        throw new NotImplementedException();
     }
 
     [Fact]
@@ -210,6 +207,6 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         //Arrange
         var provider = TestClaimsProvider.WithAdminClaims();
         var client = _factory.CreateClientWithTestAuth(provider);
-
+        throw new NotImplementedException();
     }
 }

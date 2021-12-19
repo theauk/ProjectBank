@@ -27,13 +27,12 @@ public record ProjectDTO
         foreach (var supe in Supervisors)
             if (!p.Supervisors.ToList().Contains(supe))
                 return false;
-        
         return (
             Id.Equals(p.Id) &&
             Name.Equals(p.Name) &&
             Description.Equals(p.Description) &&
             Tags.SequenceEqual(p.Tags) //&& 
-            //Supervisors.SetEquals(p.Supervisors)
+            // Supervisors.SetEquals(p.Supervisors)
         );
     }
     public override int GetHashCode()

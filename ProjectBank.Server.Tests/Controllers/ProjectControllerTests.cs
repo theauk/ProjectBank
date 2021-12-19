@@ -163,7 +163,7 @@ public class ProjectControllerTests
             Name = "Math Project",
             Description = "Prove a lot of stuff.",
             Tags = new HashSet<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
-            Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 3, Name = "Birgit"}}
+            Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 3, Name = "Birgit", Email = "birgit@itu.dk"}}
         };
         repository.Setup(m => m.ReadAsync(1)).ReturnsAsync(project);
         var controller = new ProjectController(repository.Object);

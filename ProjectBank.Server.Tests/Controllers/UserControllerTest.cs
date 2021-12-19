@@ -114,7 +114,7 @@ public class UserControllerTests
     public async Task Get_given_existing_id_returns_User()
     {
         // Arrange
-        var expected = new UserDTO { Id = 1 };
+        var expected = new UserDTO { Id = 1, Email = "test@itu.dk"};
         var repository = new Mock<IUserRepository>();
         repository.Setup(m => m.ReadAsync(1)).ReturnsAsync(expected);
         var controller = new UserController(repository.Object);

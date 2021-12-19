@@ -45,7 +45,7 @@ public class TagGroupRepository : ITagGroupRepository
 
     public async Task<Option<TagGroupDTO>> ReadAsync(int tagGroupId)
     {
-        var tagGroup = await _context.TagGroups.FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
+        var tagGroup = await _context.TagGroups.Include(tg => tg.Tags).FirstOrDefaultAsync(tg => tg.Id == tagGroupId);
         return tagGroup == null ? null : tagGroup.ToDTO();
     }
 
