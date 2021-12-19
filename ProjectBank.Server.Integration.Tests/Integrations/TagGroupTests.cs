@@ -42,8 +42,8 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
             RequiredInProject = false,
             SupervisorCanAddTag = true,
             TagLimit = 10,
-            TagDTOs = new List<TagDTO>() { new TagDTO(){Id = 2, Value = "SQL"},
-                                           new TagDTO(){Id = 3, Value = "GoLang"}}
+            TagDTOs = new List<TagDTO>() { new TagDTO(){Id = 3, Value = "GoLang"},
+                                           new TagDTO(){Id = 2, Value = "SQL"}}
         };
         var mandatoryProjects = new TagGroupDTO
         {
@@ -91,8 +91,8 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
             RequiredInProject = false,
             SupervisorCanAddTag = true,
             TagLimit = 10,
-            TagDTOs = new List<TagDTO>() { new TagDTO(){Id = 2, Value = "SQL"},
-                new TagDTO(){Id = 3, Value = "GoLang"}}
+            TagDTOs = new List<TagDTO>() { new TagDTO(){Id = 3, Value = "GoLang"},
+                new TagDTO(){Id = 2, Value = "SQL"}}
         };
     
         //Act
