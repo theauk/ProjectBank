@@ -91,7 +91,7 @@ public class UserRepositoryTests : RepoTests
     }
 
     [Fact]
-    public async Task ReadAllActiveAsync_returns_all_Users_with_minimum_1_Project()
+    public async Task ReadAllActiveAsync_returns_all_Users_with_minimum_1_Project_From_University()
     {
         var users = await _repository.ReadAllActiveAsync("test@itu.dk");
 
@@ -100,8 +100,7 @@ public class UserRepositoryTests : RepoTests
             user => Assert.Equal(new UserDTO { Id = 2, Name = "Birgit", Email = "birgit@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 3, Name = "Bjørn", Email = "bjorn@itu.dk", Role = Role.Admin }, user),
             user => Assert.Equal(new UserDTO { Id = 4, Name = "Paolo", Email = "paolo@itu.dk", Role = Role.Admin }, user),
-            user => Assert.Equal(new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin }, user),
-            user => Assert.Equal(new UserDTO { Id = 8, Name = "Heidi", Email = "heidi@ruc.dk", Role = Role.Supervisor }, user)
+            user => Assert.Equal(new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Admin }, user)
         );
     }
 
