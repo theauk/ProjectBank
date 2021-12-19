@@ -67,7 +67,7 @@ public class ProjectControllerTests
                 Name = "Math Project",
                 Description = "Prove a lot of stuff.",
                 Tags = new HashSet<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
-                Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 1, Name = "Birgit"}}
+                Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 1, Name = "Birgit", Email = "birgit@itu.dk"}}
             }
         };
         var repository = new Mock<IProjectRepository>();
@@ -92,8 +92,8 @@ public class ProjectControllerTests
                 Id = 1,
                 Name = "Math Project",
                 Description = "Prove a lot of stuff.",
-                Tags = new HashSet<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
-                Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 1, Name = "Birgit"}}
+                Tags = new List<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
+                Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 1, Name = "Birgit", Email = "birgit@itu.dk"}}
             }
         };
         var repository = new Mock<IProjectRepository>();
@@ -105,6 +105,7 @@ public class ProjectControllerTests
 
         // Assert
         Assert.Equal(expected, actual);
+        Assert.Collection(actual, actualProjectDTO => Assert.Equal(expected[0], actualProjectDTO));
     }
 
     [Fact]
@@ -119,7 +120,7 @@ public class ProjectControllerTests
                 Name = "Math Project",
                 Description = "Prove a lot of stuff.",
                 Tags = new HashSet<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
-                Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 3, Name = "Birgit"}}
+                Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 3, Name = "Birgit", Email = "birgit@itu.dk"}}
             }
         };
         var repository = new Mock<IProjectRepository>();
@@ -144,7 +145,7 @@ public class ProjectControllerTests
             Name = "Math Project",
             Description = "Prove a lot of stuff.",
             Tags = new HashSet<TagDTO>() {new TagDTO {Id = 1, Value = "Math Theory"}},
-            Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 3, Name = "Birgit"}}
+            Supervisors = new HashSet<UserDTO>() {new UserDTO {Id = 3, Name = "Birgit", Email = "birgit@itu.dk"}}
         };
         repository.Setup(m => m.ReadAsync(1)).ReturnsAsync(project);
         var controller = new ProjectController(repository.Object);

@@ -21,12 +21,19 @@ public record ProjectDTO
     {
         if (p == null)
             return false;
+        
+        if (Supervisors.Count() != p.Supervisors.Count())
+            return false;
+        foreach (var supe in Supervisors)
+            if (!p.Supervisors.ToList().Contains(supe))
+                return false;
+        
         return (
             Id.Equals(p.Id) &&
             Name.Equals(p.Name) &&
             Description.Equals(p.Description) &&
-            Tags.Equals(p.Tags) &&
-            Supervisors.SetEquals(p.Supervisors)
+            Tags.SequenceEqual(p.Tags) //&& 
+            //Supervisors.SetEquals(p.Supervisors)
         );
     }
     public override int GetHashCode()

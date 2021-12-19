@@ -1,11 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using Blazorise.Extensions;
-using Microsoft.AspNetCore.Mvc;
 using ProjectBank.Core.DTOs;
-using Xunit.Abstractions;
 
 namespace ProjectBank.Server.Integration.Tests;
 public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
@@ -78,7 +73,7 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task Get_from_id_returns_correct_TagGroup() // Currently isn't used in our application frontend
+    public async Task Get_from_id_returns_correct_TagGroup() // Currently not used in our application 
     {
         //Arrange
         var provider = TestClaimsProvider.WithAdminClaims();
@@ -182,7 +177,7 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Post_with_illegal_contents_returns_BadRequest()
     {
-        //For futher
+        //For futher development - not implemented yet
         //Mht. hvis RequiredInProject så skal der være mindst 1 tag / eller det skal håndteres i frontend / eller begge
     }
     
@@ -277,7 +272,7 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task Update_with_name_as_emptyString_returns_BadRequest() //Bliver pt ikke håndteret på en måde, så en (dum) bruger får at vide hvad problemet er
+    public async Task Update_with_name_as_emptyString_returns_BadRequest() 
     {
         //Arrange
         var provider = TestClaimsProvider.WithAdminClaims();
