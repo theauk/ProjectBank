@@ -20,7 +20,7 @@ public class ProjectController : ControllerBase
     public async Task<IActionResult> Post(ProjectCreateDTO project)
     {
         var response = await _repository.CreateAsync(project, User.FindFirstValue(ClaimTypes.Email));
-        return CreatedAtAction(nameof(Get), response);
+        return response.ToActionResult(nameof(Get), response);
     }
 
     [Authorize(Roles = SuperAdmin)]
