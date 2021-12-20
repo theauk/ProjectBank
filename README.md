@@ -1,5 +1,8 @@
 # ProjectBank
+# About this project..
 
+
+# Running the program:
 ## 1. Before you run
 
 Before you can run ProjectBank ensure the following three things are setup on your machine.
