@@ -160,7 +160,7 @@
         parameters.Add(string.Join("&", $"roles={Admin}"));
         parameters.Add(string.Join("&", $"roles={Supervisor}"));
         Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles?" + string.Join("&", parameters)) ?? new List<UserDTO>();
-        
+        Console.WriteLine(string.Join("&", parameters));
         foreach (var tg in TagGroups)
         {
             if (tg.SupervisorCanAddTag)

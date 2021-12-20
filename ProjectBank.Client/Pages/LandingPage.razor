@@ -160,6 +160,7 @@
         _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
         "api/Project?" + string.Join("&", parameters)
         ) ?? new List<ProjectDTO>();
+        Console.WriteLine(string.Join("&", parameters));
 
         _skip = 0;
         _take = PageSize;

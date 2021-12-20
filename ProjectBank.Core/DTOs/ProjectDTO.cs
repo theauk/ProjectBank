@@ -22,7 +22,7 @@ public record ProjectDTO
         if (p == null)
             return false;
         
-        if (Supervisors.Count() != p.Supervisors.Count())
+        if (Supervisors.Count() != p.Supervisors.Count()) //Bypassing tests failing when comparings sets
             return false;
         foreach (var supe in Supervisors)
             if (!p.Supervisors.ToList().Contains(supe))
@@ -32,7 +32,7 @@ public record ProjectDTO
             Name.Equals(p.Name) &&
             Description.Equals(p.Description) &&
             Tags.SequenceEqual(p.Tags) //&& 
-            // Supervisors.SetEquals(p.Supervisors)
+            // Supervisors.SetEquals(p.Supervisors) //For some reason doesnt work on tests under Integration.Tests
         );
     }
     public override int GetHashCode()
