@@ -61,8 +61,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         var paolo = new User { Id = 4, Name = "Paolo", Email = "paolo@itu.dk", Role = Role.Supervisor };
         var rasmus = new User { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Supervisor };
         var dummy1 = new User { Id = 6, Name = "dummy1", Email = "dummy1@itu.dk", Role = Role.Supervisor }; //Dummies are for testing GetActive method/integration in UserController
-        var dummy2 = new User { Id = 7, Name = "dummy2", Email = "dummy2@itu.dk", Role = Role.Supervisor };
-        var dummy3 = new User { Id = 8, Name = "dummy3", Email = "dummy3@itu.dk", Role = Role.Supervisor };
+        var dummy2 = new User { Id = 7, Name = "dummy2", Email = "dummy2@itu.dk", Role = Role.Student };
+        var dummy3 = new User { Id = 8, Name = "dummy3", Email = "dummy3@itu.dk", Role = Role.Admin };
 
         // TagGroups
         var semesterTG = new TagGroup

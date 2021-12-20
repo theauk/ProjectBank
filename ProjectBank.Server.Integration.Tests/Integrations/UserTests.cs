@@ -14,8 +14,8 @@ public class UserTests : IClassFixture<CustomWebApplicationFactory>
     private UserDTO paolo = new UserDTO { Id = 4, Name = "Paolo", Email = "paolo@itu.dk", Role = Role.Supervisor };
     private UserDTO rasmus = new UserDTO { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Supervisor };
     private UserDTO dummy1 = new UserDTO { Id = 6, Name = "dummy1", Email = "dummy1@itu.dk", Role = Role.Supervisor }; //Dummies are for testing GetActive method/integration in UserController
-    private UserDTO dummy2 = new UserDTO { Id = 7, Name = "dummy2", Email = "dummy2@itu.dk", Role = Role.Supervisor };
-    private UserDTO dummy3 = new UserDTO { Id = 8, Name = "dummy3", Email = "dummy3@itu.dk", Role = Role.Supervisor };
+    private UserDTO dummy2 = new UserDTO { Id = 7, Name = "dummy2", Email = "dummy2@itu.dk", Role = Role.Student };
+    private UserDTO dummy3 = new UserDTO { Id = 8, Name = "dummy3", Email = "dummy3@itu.dk", Role = Role.Admin };
     
     public UserTests(CustomWebApplicationFactory factory)
     {
@@ -60,9 +60,7 @@ public class UserTests : IClassFixture<CustomWebApplicationFactory>
             bjorn,
             paolo,
             rasmus,
-            dummy1,
-            dummy2,
-            dummy3
+            dummy1
         };
         
         //Act
@@ -71,7 +69,4 @@ public class UserTests : IClassFixture<CustomWebApplicationFactory>
         //Assert
         Assert.Equal(SupervisorsList, actual);
     }
-
-    
-    
 }
