@@ -11,9 +11,7 @@ public class UserRepository : IUserRepository
         var university = await GetUniversityAsync(user.Email);
 
         if (university == null)
-        {
             return Response.BadRequest;
-        }
 
         var entity = new User
         {

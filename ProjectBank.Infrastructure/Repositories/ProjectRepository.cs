@@ -13,9 +13,7 @@ public class ProjectRepository : IProjectRepository
         var supervisors = await GetUsersAsync(project.UserIds);
         
         if (university == null || owner == null || supervisors == null)
-        {
             return Response.BadRequest;
-        }
 
         // Add owner as supervisors
         supervisors.Add(owner);
@@ -25,9 +23,7 @@ public class ProjectRepository : IProjectRepository
         tags.UnionWith(await CreateTagsAsync(project.NewTagDTOs).ToSetAsync());
 
         if (tags.Contains(null))
-        {
             return Response.BadRequest;
-        }
 
         var entity = new Project
         {
@@ -70,7 +66,6 @@ public class ProjectRepository : IProjectRepository
 
     public Task<IReadOnlyCollection<ProjectDTO>> ReadFilteredAsync(string email, IList<int> tagIds, IList<int> supervisorIds)
     {
-
         var projects = _context.Projects
             .Include(p => p.Supervisors)
             .Include(p => p.Tags)
@@ -89,7 +84,12 @@ public class ProjectRepository : IProjectRepository
     public async Task<IReadOnlyCollection<ProjectDTO>> ReadAllByUniversityAsync(string email)
     {
         var domain = email.Split("@")[1];
-        return (await _context.Projects.Select(p => p).Include(p => p.Tags).Include(p => p.Supervisors).Where(p => p.University.DomainName == domain).ToListAsync()).ToDTO().ToList().AsReadOnly();
+        return (await _context.Projects
+            .Select(p => p)
+            .Include(p => p.Tags)
+            .Include(p => p.Supervisors)
+            .Where(p => p.University.DomainName == domain)
+            .ToListAsync()).ToDTO().ToList().AsReadOnly();
     }
 
     public async Task<Response> UpdateAsync(int projectId, ProjectUpdateDTO project)
@@ -98,7 +98,8 @@ public class ProjectRepository : IProjectRepository
             .Include(p => p.Tags)
             .FirstOrDefaultAsync(p => p.Id == projectId);
 
-        if (entity == null) return Response.NotFound;
+        if (entity == null)
+            return Response.NotFound;
 
         entity.Name = project.Name;
         entity.Description = project.Description;
@@ -107,14 +108,16 @@ public class ProjectRepository : IProjectRepository
         var tags = await GetTagsAsync(project.ExistingTagIds).ToSetAsync();
         tags.UnionWith(await CreateTagsAsync(project.NewTagDTOs).ToSetAsync());
         
-        if (tags.Contains(null)) return Response.BadRequest;
+        if (tags.Contains(null))
+            return Response.BadRequest;
 
         entity.Tags = tags;
 
         // Update Supervisors
         var supervisors = await GetUsersAsync(project.UserIds);
 
-        if (supervisors == null) return Response.BadRequest;
+        if (supervisors == null)
+            return Response.BadRequest;
 
         entity.Supervisors = supervisors;
 
@@ -128,9 +131,7 @@ public class ProjectRepository : IProjectRepository
         var existing = await _context.Tags.Where(t => existingTagIds.Contains(t.Id)).ToDictionaryAsync(t => t.Id);
 
         foreach (var tagId in existingTagIds)
-        {
             yield return existing.TryGetValue(tagId, out var t) ? t : null;
-        }
     }
 
     private async IAsyncEnumerable<Tag?> CreateTagsAsync(IEnumerable<TagCreateDTO> tags)
@@ -146,35 +147,31 @@ public class ProjectRepository : IProjectRepository
                 await _context.SaveChangesAsync();
                 yield return t;
             }
-            else yield return null;
+            else 
+                yield return null;
         }        
     }
 
-    private async Task<TagGroup?> GetTagGroupAsync(int id)
-    {
-        return await _context.TagGroups.FindAsync(id);
-    }
+    private async Task<TagGroup?> GetTagGroupAsync(int id) => await _context.TagGroups.FindAsync(id);
 
     private async Task<ISet<User>?> GetUsersAsync(IEnumerable<int> userIds)
     {
-        var existing = await _context.Users.Where(u => userIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id);
+        var existing = await _context.Users
+            .Where(u => userIds.Contains(u.Id))
+            .ToDictionaryAsync(u => u.Id);
         var result = new HashSet<User>();
 
         foreach (var userId in userIds)
         {
             existing.TryGetValue(userId, out var user);
             if (user != null)
-            {
                 result.Add(user);
-            }
-            else return null;
+            else
+                return null;
         }
 
         return result;
     }
 
-    private async Task<University?> GetUniversityAsync(string email) 
-    {
-        return string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
-    }
+    private async Task<University?> GetUniversityAsync(string email) => string.IsNullOrWhiteSpace(email) ? null : await _context.Universities.FindAsync(email.Split("@")[1]);
 }

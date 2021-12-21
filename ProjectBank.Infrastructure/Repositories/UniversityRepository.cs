@@ -11,9 +11,7 @@ public class UniversityRepository : IUniversityRepository
         // Check if university already exists
         var existing = (await ReadAsync(university.DomainName)).Value;
         if (existing != null)
-        {
             return Response.Conflict;
-        }
 
         var entity = new University
         {
@@ -32,9 +30,7 @@ public class UniversityRepository : IUniversityRepository
         var entity = await _context.Universities.FindAsync(domain);
 
         if (entity == null)
-        {
             return Response.NotFound;
-        }
 
         _context.Universities.Remove(entity);
         await _context.SaveChangesAsync();
@@ -42,13 +38,8 @@ public class UniversityRepository : IUniversityRepository
         return Response.Deleted;
     }
 
-    public async Task<Option<UniversityDTO>> ReadAsync(string domain)
-    {
-        return (await _context.Universities.FindAsync(domain))?.ToDTO();
-    }
+    public async Task<Option<UniversityDTO>> ReadAsync(string domain) => (await _context.Universities.FindAsync(domain))?.ToDTO();
 
-    public async Task<IReadOnlyCollection<UniversityDTO>> ReadAllAsync()
-    {
-        return (await _context.Universities.ToListAsync()).ToDTO().ToList().AsReadOnly();
-    }
+    public async Task<IReadOnlyCollection<UniversityDTO>> ReadAllAsync() => (await _context.Universities.ToListAsync())
+        .ToDTO().ToList().AsReadOnly();
 }
