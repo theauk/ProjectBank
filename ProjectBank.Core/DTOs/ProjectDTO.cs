@@ -22,11 +22,12 @@ public record ProjectDTO
         if (p == null)
             return false;
         
-        if (Supervisors.Count() != p.Supervisors.Count()) //Bypassing tests failing when comparings sets
+        if (Supervisors.Count != p.Supervisors.Count) //Bypassing tests failing when comparings sets
             return false;
-        foreach (var supe in Supervisors)
-            if (!p.Supervisors.ToList().Contains(supe))
-                return false;
+        if (Supervisors.Any(super => !p.Supervisors.ToList().Contains(super)))
+        {
+            return false;
+        }
         return (
             Id.Equals(p.Id) &&
             Name.Equals(p.Name) &&

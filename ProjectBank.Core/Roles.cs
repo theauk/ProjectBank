@@ -17,16 +17,12 @@ public static class Roles
 
     public static Role GetRole(string role)
     {
-        switch (role)
+        return role switch
         {
-            case Admin:
-                return Role.Admin;
-            case Supervisor:
-                return Role.Supervisor;
-            case Student:
-                return Role.Student;
-            default:
-                return Role.Unknown;
-        }
+            Admin => Role.Admin,
+            Supervisor => Role.Supervisor,
+            Student => Role.Student,
+            _ => Role.Unknown
+        };
     }
 }

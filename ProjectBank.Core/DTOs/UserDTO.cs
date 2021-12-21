@@ -15,11 +15,9 @@ public record UserDTO
     public Role Role { get; set; }
     
     
-    public virtual bool Equals(UserDTO? u) 
+    public virtual bool Equals(UserDTO? u)
     {
-        if (u == null)
-            return false;
-        return Email.Equals(u.Email);
+        return u != null && Email.Equals(u.Email);
     }
     public override int GetHashCode()
     {
