@@ -42,19 +42,17 @@ public class UserRepository : IUserRepository
     public async Task<Option<UserDTO>> ReadAsync(int userId) =>
         (await _context.Users.FindAsync(userId))?.ToDTO();
 
-    public async Task<Option<UserDTO>> ReadAsync(string email)
-    {
-        return (await _context.Users.FirstOrDefaultAsync(u => u.Email == email))?.ToDTO();
-    }
+    public async Task<Option<UserDTO>> ReadAsync(string email) =>
+        (await _context.Users.FirstOrDefaultAsync(u => u.Email == email))?.ToDTO();
 
     public async Task<IReadOnlyCollection<UserDTO>> ReadAllByRoleAsync(string email, IList<string> roles)
     {
         if (roles == null || !roles.Any())
-        {
             return await ReadAllByUniversityAsync(email);
-        }
 
-        return (await ReadAllByUniversityAsync(email)).Where(u => roles.Select(r => Roles.GetRole(r)).ToHashSet().Contains(u.Role)).ToList().AsReadOnly();
+        return (await ReadAllByUniversityAsync(email))
+            .Where(u => roles.Select(r => Roles.GetRole(r))
+                .ToHashSet().Contains(u.Role)).ToList().AsReadOnly();
     }
 
     public async Task<IReadOnlyCollection<UserDTO>> ReadAllByUniversityAsync(string email)

@@ -22,53 +22,32 @@ public class UserController : ControllerBase
 
     [Authorize(Roles = SuperAdmin)]
     [HttpGet("all")]
-    public async Task<IReadOnlyCollection<UserDTO>> GetAll()
-    {
-        var users = await _repository.ReadAllAsync();
-        return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
-    }
+    public async Task<IReadOnlyCollection<UserDTO>> GetAll() => await _repository.ReadAllAsync();
 
     [Authorize]
     [HttpGet]
-    public async Task<IReadOnlyCollection<UserDTO>> Get()
-    {
-        var users = await _repository.ReadAllByUniversityAsync(User.FindFirstValue(ClaimTypes.Email));
-        return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
-    }
+    public async Task<IReadOnlyCollection<UserDTO>> Get() => await _repository
+        .ReadAllByUniversityAsync(User.FindFirstValue(ClaimTypes.Email));
 
     [Authorize]
     [HttpGet("filter")]
-    public async Task<IReadOnlyCollection<UserDTO>> GetActive() 
-    {
-        var users = await _repository.ReadAllActiveAsync(User.FindFirstValue(ClaimTypes.Email));
-        return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
-    }
+    public async Task<IReadOnlyCollection<UserDTO>> GetActive() => await _repository
+        .ReadAllActiveAsync(User.FindFirstValue(ClaimTypes.Email));
     
     [Authorize]
     [HttpGet("roles")]
-    public async Task<IReadOnlyCollection<UserDTO>> Get([FromQuery] IList<string> roles)
-    {
-        var users = await _repository.ReadAllByRoleAsync(User.FindFirstValue(ClaimTypes.Email), roles);
-        return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
-    }
+    public async Task<IReadOnlyCollection<UserDTO>> Get([FromQuery] IList<string> roles) => await _repository
+        .ReadAllByRoleAsync(User.FindFirstValue(ClaimTypes.Email), roles);
 
     [Authorize]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(UserDTO), StatusCodes.Status200OK)]
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserDTO>> Get(int id)
-    {
-        var user = await _repository.ReadAsync(id);
-        return user.ToActionResult();
-    }
+    public async Task<ActionResult<UserDTO>> Get(int id) => (await _repository.ReadAsync(id)).ToActionResult();
 
     [Authorize]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(UserDTO), StatusCodes.Status200OK)]
     [HttpGet("{email}")]
-    public async Task<ActionResult<UserDTO>> Get(string email)
-    {
-        var user = await _repository.ReadAsync(email);
-        return user.ToActionResult();
-    }
+    public async Task<ActionResult<UserDTO>> Get(string email) => (await _repository.ReadAsync(email)).ToActionResult();
 }
