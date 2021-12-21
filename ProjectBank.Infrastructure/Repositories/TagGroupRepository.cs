@@ -106,8 +106,7 @@ public class TagGroupRepository : ITagGroupRepository
             select tagDTO.Id).ToList();
 
         // Delete the range of tags.
-        if (await DeleteTagAsync(deletedTagIds) == Response.BadRequest)
-            return Response.BadRequest;
+        await DeleteTagAsync(deletedTagIds);
 
         //Create new tags
         var newTagDTOs = (from tagValue in tagGroup.SelectedTagValues
@@ -137,12 +136,10 @@ public class TagGroupRepository : ITagGroupRepository
         {
             var entity = await _context.Tags.FindAsync(id);
 
-            if (entity == null) 
-                return Response.BadRequest;
+            if (entity != null)
 
             _context.Tags.Remove(entity);
         }
-
         await _context.SaveChangesAsync();
 
         return Response.Deleted;

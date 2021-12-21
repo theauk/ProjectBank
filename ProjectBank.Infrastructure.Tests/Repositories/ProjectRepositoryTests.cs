@@ -47,6 +47,22 @@ public class ProjectRepositoryTests : RepoTests
 
         Assert.Equal(Response.BadRequest, actual);
     }
+    
+    [Fact]
+    public async Task CreateAsync_given_null_Tag__returns_BadRequest()
+    {
+        var project = new ProjectCreateDTO
+        {
+            Name = "Bachelor Project",
+            Description = "The final project of SWU.",
+            ExistingTagIds = new HashSet<int>() { 1,999 },
+            UserIds = new HashSet<int>() { 4, 6 }
+        };
+
+        var actual = await _repository.CreateAsync(project, "paolo@itu.dk");
+
+        Assert.Equal(Response.BadRequest, actual);
+    }
 
     [Fact]
     public async Task CreateAsync_given_non_existing_User_Id_returns_BadRequest()
