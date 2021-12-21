@@ -99,8 +99,7 @@ public class TagGroupRepository : ITagGroupRepository
             var entity = await _context.Tags.FindAsync(id);
 
             if (entity != null)
-
-            _context.Tags.Remove(entity);
+                _context.Tags.Remove(entity);
         }
         await _context.SaveChangesAsync();
 
