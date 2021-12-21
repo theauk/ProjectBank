@@ -33,11 +33,11 @@ public class ProjectControllerTests
         };
 
         // Act
-        var result = await controller.Post(toCreate) as CreatedAtActionResult;
+        var result = await controller.Post(toCreate) as CreatedResult;
 
         // Assert
         Assert.Equal(Response.Created, result?.Value);
-        Assert.Equal("Get", result?.ActionName);
+        Assert.Equal("Get", result?.Location);
     }
 
     [Fact]

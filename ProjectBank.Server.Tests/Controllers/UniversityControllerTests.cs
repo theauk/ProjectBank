@@ -24,11 +24,11 @@ public class UniversityControllerTests
         var controller = new UniversityController(repository.Object);
 
         // Act
-        var result = await controller.Post(toCreate) as CreatedAtActionResult;
+        var result = await controller.Post(toCreate) as CreatedResult;
 
         // Assert
         Assert.Equal(Response.Created, result?.Value);
-        Assert.Equal("Get", result?.ActionName);
+        Assert.Equal("Get", result?.Location);
     }
 
     [Fact]
@@ -46,10 +46,10 @@ public class UniversityControllerTests
         var controller = new UniversityController(repository.Object);
 
         // Act
-        var result = await controller.Post(toCreate) as CreatedAtActionResult;
+        var result = await controller.Post(toCreate) as ConflictResult;
 
         // Assert
-        Assert.Equal(Response.Conflict, result?.Value);
+        Assert.Equal(409, result?.StatusCode);
     }
 
     [Fact]

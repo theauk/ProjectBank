@@ -45,7 +45,7 @@ public class ProjectController : ControllerBase
     [HttpGet]
     public async Task<IReadOnlyCollection<ProjectDTO>> Get([FromQuery] IList<int> tagIds, [FromQuery] IList<int> supervisorIds)
     {
-        var userEmail = User.FindFirstValue(ClaimTypes.Email);
+        var userEmail = User.FindFirstValue(ClaimTypes.Email); 
         IReadOnlyCollection<ProjectDTO> resp;
         if (!tagIds.Any() && !supervisorIds.Any())
             resp = await _repository.ReadAllByUniversityAsync(userEmail);
