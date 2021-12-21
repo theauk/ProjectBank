@@ -30,7 +30,7 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<IReadOnlyCollection<UserDTO>> Get() 
+    public async Task<IReadOnlyCollection<UserDTO>> Get()
     {
         var users = await _repository.ReadAllByUniversityAsync(User.FindFirstValue(ClaimTypes.Email));
         return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
@@ -46,7 +46,7 @@ public class UserController : ControllerBase
     
     [Authorize]
     [HttpGet("roles")]
-    public async Task<IReadOnlyCollection<UserDTO>> Get([FromQuery] IList<string> roles) 
+    public async Task<IReadOnlyCollection<UserDTO>> Get([FromQuery] IList<string> roles)
     {
         var users = await _repository.ReadAllByRoleAsync(User.FindFirstValue(ClaimTypes.Email), roles);
         return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
