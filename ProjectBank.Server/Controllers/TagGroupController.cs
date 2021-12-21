@@ -20,7 +20,7 @@ public class TagGroupController : ControllerBase
     public async Task<IActionResult> Post(TagGroupCreateDTO tagGroup)
     {
         var response = await _repository.CreateAsync(tagGroup, User.FindFirstValue(ClaimTypes.Email));
-        return CreatedAtAction(nameof(Get), response);
+        return response.ToActionResult(nameof(Get), response);
     }
 
     [Authorize(Roles = SuperAdmin)]
