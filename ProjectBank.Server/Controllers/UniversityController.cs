@@ -34,7 +34,7 @@ public class UniversityController : ControllerBase
     public async Task<IActionResult> Post(UniversityCreateDTO university)
     {
         var response = await _repository.CreateAsync(university);
-        return CreatedAtAction(nameof(Get), response);
+        return response.ToActionResult(nameof(Get), response);
     }
 
     [Authorize(Roles = SuperAdmin)]

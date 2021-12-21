@@ -11,9 +11,9 @@
 
 <h1 style="margin-bottom: 48px">Create Project</h1>
 
-@if (_response is { StatusCode: HttpStatusCode.BadRequest })
+@if (_isError)
 {
-    <h2>Something went wrong, please try again!</h2>
+    <h2 class="missingFieldsText">Something went wrong, please try reloading!</h2>
 }
 
 <RadzenTemplateForm TItem="ProjectCreateDTO" Data="@_project" Submit="@OnSubmit" InvalidSubmit="OnInvalidSubmit"
@@ -133,6 +133,7 @@
 
 
 @code {
+    private bool _isError = false;
     private bool _loaded;
     Dictionary<int, IEnumerable<int>> _selectedPredefinedOnlyTagsId = new();
     private ProjectCreateDTO _project = new();
@@ -213,6 +214,11 @@
             AddTags();
             _response = await _http.PostAsJsonAsync("api/Project", _project);
             if (_response.IsSuccessStatusCode) _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+            else {
+                _isError = true;
+                await _jsRuntime.InvokeVoidAsync("scrollToTop");
+                InvokeAsync(StateHasChanged);
+            }
         }
         else
         {

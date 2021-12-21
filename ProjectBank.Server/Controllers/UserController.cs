@@ -17,7 +17,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> Post(UserCreateDTO user)
     {
         var response = await _repository.CreateAsync(user);
-        return CreatedAtAction(nameof(Get), response);
+        return response.ToActionResult(nameof(Get), response);
     }
 
     [Authorize(Roles = SuperAdmin)]
