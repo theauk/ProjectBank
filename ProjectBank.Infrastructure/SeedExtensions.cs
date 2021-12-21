@@ -35,7 +35,7 @@ public static class SeedExtensions
             var carl = new User { Name = "Carl Vestebryg", Email = "carl@itu.dk", Role = Role.Supervisor };
             var sille = new User { Name = "Sille Mortensen", Email = "sille@itu.dk", Role = Role.Supervisor };
             var josefine = new User { Name = "Josefine Nørgaard", Email = "josf@itu.dk", Role = Role.Supervisor };
-            var paolo = new User { Name = "Paolo Tell", Email = "pate@itu.dk", Role = Role.Admin }; // todo: update
+            var paolo = new User { Name = "Paolo Tell", Email = "pate@itu.dk", Role = Role.Admin }; 
             var rasmus = new User { Name = "Rasmus Lystrøm", Email = "rnie@itu.dk", Role = Role.Admin };
             var soren = new User { Name = "Søren Brostrøm", Email = "soren@itu.dk", Role = Role.Student };
 
