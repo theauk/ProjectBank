@@ -16,13 +16,13 @@ public record ProjectDTO
 
     [Required]
     public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
-
+    
     public virtual bool Equals(ProjectDTO? p)
     {
         if (p == null)
             return false;
         
-        if (Supervisors.Count != p.Supervisors.Count) //Bypassing tests failing when comparings sets
+        if (Supervisors.Count != p.Supervisors.Count) //
             return false;
         if (Supervisors.Any(super => !p.Supervisors.ToList().Contains(super)))
         {
@@ -32,8 +32,7 @@ public record ProjectDTO
             Id.Equals(p.Id) &&
             Name.Equals(p.Name) &&
             Description.Equals(p.Description) &&
-            Tags.SequenceEqual(p.Tags) //&& 
-            // Supervisors.SetEquals(p.Supervisors) //For some reason doesnt work on tests under Integration.Tests
+            Tags.SequenceEqual(p.Tags)
         );
     }
     public override int GetHashCode()

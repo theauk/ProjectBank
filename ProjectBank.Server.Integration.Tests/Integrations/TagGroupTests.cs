@@ -173,14 +173,7 @@ public class TagGroupTests : IClassFixture<CustomWebApplicationFactory>
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
-    
-    [Fact]
-    public async Task Post_with_illegal_contents_returns_BadRequest()
-    {
-        //For futher development - not implemented yet
-        //Mht. hvis RequiredInProject så skal der være mindst 1 tag / eller det skal håndteres i frontend / eller begge
-    }
-    
+
     [Fact]
     public async Task Delete_from_id_deletes_tagGroup()
     {

@@ -25,6 +25,9 @@ Here the user would have the ability to edit and delete their projects.
 
 ##### 3. SuperAdmin interface
 An interface for the SuperAdmin features would have needed been needed to fully utilize the role, even though we have from the Controller level down to database implemented features specifically dedicated to this role. For example the ability to create a new University.  
+##### 4. Taggroup required - "Feature"
+At the current state of the program, an Admin can create a required taggroup with no tags, which leads to a deadlock when creating Projects.
+We should have implemented a check for this in the frontend and checked for it in the TagGroup repository. 
 
 ### Your role
 Paolo and Rasmus have with their ITU email been added to Azure with an "Admin" authorization.
