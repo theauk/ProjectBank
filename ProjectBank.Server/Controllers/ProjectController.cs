@@ -8,10 +8,7 @@ public class ProjectController : ControllerBase
 {
     private readonly IProjectRepository _repository;
 
-    public ProjectController(IProjectRepository repository)
-    {
-        _repository = repository;
-    }
+    public ProjectController(IProjectRepository repository) => _repository = repository;
 
     [Authorize(Roles = $"{Admin}, {Supervisor}")]
     [ProducesResponseType(StatusCodes.Status201Created)]

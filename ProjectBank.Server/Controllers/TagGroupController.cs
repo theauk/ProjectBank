@@ -8,10 +8,7 @@ public class TagGroupController : ControllerBase
 {
     private readonly ITagGroupRepository _repository;
 
-    public TagGroupController(ITagGroupRepository repository)
-    {
-        _repository = repository;
-    }
+    public TagGroupController(ITagGroupRepository repository) => _repository = repository;
 
     [Authorize(Roles = Admin)]
     [ProducesResponseType(StatusCodes.Status201Created)]

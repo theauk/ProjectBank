@@ -8,12 +8,9 @@ public class UniversityController : ControllerBase
 {
     private readonly IUniversityRepository _repository;
 
-    public UniversityController(IUniversityRepository repository)
-    {
-        _repository = repository;
-    }
+    public UniversityController(IUniversityRepository repository) => _repository = repository;
 
-    [Authorize(Roles = SuperAdmin)]
+        [Authorize(Roles = SuperAdmin)]
     [HttpGet("all")]
     public async Task<IReadOnlyCollection<UniversityDTO>> GetAll() 
     {
