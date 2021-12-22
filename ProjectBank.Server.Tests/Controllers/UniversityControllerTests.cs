@@ -53,27 +53,6 @@ public class UniversityControllerTests
     }
 
     [Fact]
-    public async Task Post_given_already_existing_domain_does_not_create_University()
-    {
-        // Arrange
-        var toCreate = new UniversityCreateDTO
-        {
-            DomainName = "itu.dk",
-        };
-        var response = Response.Conflict;
-        var repository = new Mock<IUniversityRepository>();
-        repository.Setup(m => m.CreateAsync(toCreate)).ReturnsAsync(response);
-
-        var controller = new UniversityController(repository.Object);
-
-        // Act
-        var result = await controller.Post(toCreate) as CreatedAtActionResult;
-
-        // Assert
-        Assert.Equal(Response.Conflict, result?.Value);
-    }
-
-    [Fact]
     public async Task Get_given_existing_domain_returns_University()
     {
         // Arrange
