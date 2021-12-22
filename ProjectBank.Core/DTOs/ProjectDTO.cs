@@ -5,6 +5,7 @@ public record ProjectDTO
     public int Id { get; init; }
 
     [Required]
+    [StringLength(100)]
     public string? Name { get; init; }
 
     [Required]
@@ -44,6 +45,7 @@ public record ProjectDTO
 public record ProjectCreateDTO
 {
     [Required]
+    [StringLength(100)]
     public string? Name { get; set; }
 
     [Required]
