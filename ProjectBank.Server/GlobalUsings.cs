@@ -5,6 +5,7 @@ global using Microsoft.Identity.Web;
 global using Microsoft.Identity.Web.Resource;
 global using Microsoft.AspNetCore.Mvc;
 global using System.Security.Claims;
+global using Blazorise.Extensions;
 
 global using ProjectBank.Core;
 global using ProjectBank.Core.DTOs;

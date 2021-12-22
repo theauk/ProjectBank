@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.TestHost;
+using ProjectBank.Core;
 using ProjectBank.Infrastructure;
 using ProjectBank.Infrastructure.Entities;
 
@@ -54,11 +55,14 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         // --- Test data ---
         // Supervisors
-        var marco = new User { Id = 1, Name = "Marco", Email = "marco@itu.dk" };
-        var birgit = new User { Id = 2, Name = "Birgit", Email = "birgit@itu.dk" };
-        var bjorn = new User { Id = 3, Name = "Bjørn", Email = "bjorn@itu.dk" };
-        var paolo = new User { Id = 4, Name = "Paolo", Email = "paolo@itu.dk" };
-        var rasmus = new User { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk" };
+        var marco = new User { Id = 1, Name = "Marco", Email = "marco@itu.dk" , Role = Role.Supervisor};
+        var birgit = new User { Id = 2, Name = "Birgit", Email = "birgit@itu.dk", Role = Role.Supervisor };
+        var bjorn = new User { Id = 3, Name = "Bjørn", Email = "bjorn@itu.dk", Role = Role.Supervisor };
+        var paolo = new User { Id = 4, Name = "Paolo", Email = "paolo@itu.dk", Role = Role.Supervisor };
+        var rasmus = new User { Id = 5, Name = "Rasmus", Email = "rasmus@itu.dk", Role = Role.Supervisor };
+        var dummy1 = new User { Id = 6, Name = "dummy1", Email = "dummy1@itu.dk", Role = Role.Supervisor }; //Dummies are for testing GetActive method/integration in UserController
+        var dummy2 = new User { Id = 7, Name = "dummy2", Email = "dummy2@itu.dk", Role = Role.Student };
+        var dummy3 = new User { Id = 8, Name = "dummy3", Email = "dummy3@itu.dk", Role = Role.Admin };
 
         // TagGroups
         var semesterTG = new TagGroup
@@ -117,7 +121,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             DomainName = "itu.dk",
             Projects = new HashSet<Project>() { mathProject, databaseProject, goProject, secondYearProject },
             TagGroups = new HashSet<TagGroup>() { semesterTG, programmingLanguageTG, mandatoryProjectsTG, topicTG },
-            Users = new HashSet<User>() { marco, birgit, bjorn, paolo, rasmus }
+            Users = new HashSet<User>() { marco, birgit, bjorn, paolo, rasmus, dummy1, dummy2, dummy3 }
         };
 
         context.Universities.Add(ituUni);

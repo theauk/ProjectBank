@@ -5,6 +5,7 @@ public record ProjectDTO
     public int Id { get; init; }
 
     [Required]
+    [StringLength(100)]
     public string? Name { get; init; }
 
     [Required]
@@ -16,23 +17,25 @@ public record ProjectDTO
 
     [Required]
     public ISet<UserDTO> Supervisors { get; init; } = new HashSet<UserDTO>();
-
-    public virtual bool Equals(ProjectDTO? p) // Outcommented to make ProjectPage work - throws Unhandled exception rendering component: Arg_NullReferenceException when accessing the page
+    
+    public virtual bool Equals(ProjectDTO? p)
     {
         if (p == null)
             return false;
-        else
+        
+        if (Supervisors.Count != p.Supervisors.Count) //
+            return false;
+        if (Supervisors.Any(super => !p.Supervisors.ToList().Contains(super)))
         {
-            return (
-                Id.Equals(p.Id) &&
-                Name.Equals(p.Name) &&
-                Description.Equals(p.Description) &&
-                Tags.Equals(p.Tags) &&
-                Supervisors.SetEquals(p.Supervisors)
-            );
+            return false;
         }
+        return (
+            Id.Equals(p.Id) &&
+            Name.Equals(p.Name) &&
+            Description.Equals(p.Description) &&
+            Tags.SequenceEqual(p.Tags)
+        );
     }
-
     public override int GetHashCode()
     {
         return base.GetHashCode();
@@ -42,6 +45,7 @@ public record ProjectDTO
 public record ProjectCreateDTO
 {
     [Required]
+    [StringLength(100)]
     public string? Name { get; set; }
 
     [Required]

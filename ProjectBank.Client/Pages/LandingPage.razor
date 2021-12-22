@@ -65,7 +65,6 @@
                         </ChildContent>
                     </RadzenFieldset>
                 }
-
             </div>
         </div>
         <div class="col">
@@ -120,8 +119,8 @@
     private Dictionary<int, IEnumerable<int>> _selectedTagsOfTagGroup = new();
 
     private HashSet<int> SelectedTags => _selectedTagsOfTagGroup.Aggregate(
-    new HashSet<int>(),
-    (collection, item) => collection.Concat(item.Value).ToHashSet()
+        new HashSet<int>(),
+        (collection, item) => collection.Concat(item.Value).ToHashSet()
     );
 
     private IEnumerable<UserDTO> _supervisors = new List<UserDTO>();
@@ -158,8 +157,8 @@
             parameters.Add(string.Join("&", _selectedSupervisors.Select(s => $"supervisorIds={s.ToString()}")));
 
         _allProjects = await _http.GetFromJsonAsync<IReadOnlyCollection<ProjectDTO>>(
-        "api/Project?" + string.Join("&", parameters)
-        ) ?? new List<ProjectDTO>();
+            "api/Project?" + string.Join("&", parameters)
+            ) ?? new List<ProjectDTO>();
 
         _skip = 0;
         _take = PageSize;

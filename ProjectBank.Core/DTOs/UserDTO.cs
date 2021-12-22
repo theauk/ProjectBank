@@ -13,6 +13,16 @@ public record UserDTO
 
     [Required]
     public Role Role { get; set; }
+    
+    
+    public virtual bool Equals(UserDTO? u)
+    {
+        return u != null && Email.Equals(u.Email);
+    }
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }
 
 public record UserCreateDTO

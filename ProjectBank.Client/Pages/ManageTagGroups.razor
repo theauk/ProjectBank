@@ -1,4 +1,5 @@
 @page "/manageTagGroups"
+@page "/manageTagGroups/{Error:int}"
 @inject HttpClient _http
 @inject NavigationManager _nav
 @using Microsoft.AspNetCore.Authorization
@@ -14,11 +15,20 @@
         <div class="adminPageButtonContainer">
             <RadzenButton class="submitButton" Text="Save" Icon="save" Click="@Save" />
             <RadzenButton class="createTagGroupButton" Text="New Tag Group" Icon="add"
-                Click="@RedirectToCreateTagGroup" />
+                          Click="@RedirectToCreateTagGroup" />
             <RadzenButton class="cancelButton" Text="Cancel" Icon="highlight_off" ButtonStyle="ButtonStyle.Warning"
-                Click="@Cancel" />
+                          Click="@Cancel" />
         </div>
     </div>
+    
+    @if (_missingFields)
+    {
+        <p class="missingFieldsText">@_userErrorMessage</p>    
+    }
+    else if (Error == -1)
+    {
+        <p class="missingFieldsText">Something went wrong while updating a tag group, please try again</p>    
+    }
 
     <div class="row tagGroupContainer" style="margin-bottom: 20px">
         <div class="col">
@@ -46,7 +56,7 @@
                                     else
                                     {
                                         <RadzenTextBox @bind-Value=@tg.Name Change=@(_ => { _editingName[tg.Id] = false;
-                                    _edited[tg.Id] = true; }) />
+                                            _edited[tg.Id] = true; }) />
                                     }
                                 </HeaderTemplate>
                                 <ChildContent>
@@ -55,13 +65,13 @@
                                             <div class="tagGroupChecks">
                                                 <div>
                                                     <RadzenCheckBox class="selectLeftItem" @bind-Value=@tg.RequiredInProject
-                                                    TValue="bool" Change=@(_ => _edited[tg.Id] = true) />
+                                                        TValue="bool" Change=@(_ => _edited[tg.Id] = true) />
                                                     <RadzenLabel Text="Required" />
                                                 </div>
                                                 <div>
                                                     <RadzenCheckBox class="selectLeftItem"
-                                                    @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ =>
-                                                    _edited[tg.Id] = true) />
+                                                        @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ =>
+                                                        _edited[tg.Id] = true) />
                                                     <RadzenLabel Text="Supervisors can add tags" />
                                                 </div>
                                             </div>
@@ -117,6 +127,12 @@
     
     Dictionary<int, int> _selectedExistingTagsInitialSize = new();
     Dictionary<int, int> _allSelectedTagsValuesInitialSize = new();
+    
+    private bool _missingFields;
+    private string _userErrorMessage = "";
+
+    [Parameter]
+    public int Error { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -170,21 +186,47 @@
 
     private async void Save()
     {
+        
+        if (!ValidTagChanges())
+            return;
+        var httpErrors = false;
+
         CheckForTagChange();
         foreach (var tg in TagGroupsUpdateDtos)
         {
-            
-            if (!_edited[tg.Id]) continue;
-            
-            UpdateTagGroup(tg);
+            if (!_edited[tg.Id])
+                continue;
 
-            await _http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
+            UpdateTagGroup(tg);
+            var putResponseMessage = await _http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
+            if (!putResponseMessage.IsSuccessStatusCode)
+                httpErrors = true;
         }
 
         foreach (var id in _deletedTgs)
-            await _http.DeleteAsync($"api/TagGroup/{id}");
+        {
+            var deleteResponseMessage = await _http.DeleteAsync($"api/TagGroup/{id}");
+            if (!deleteResponseMessage.IsSuccessStatusCode) httpErrors = true;
+        }
 
-        _nav.NavigateTo(_nav.Uri, forceLoad: true);
+        _nav.NavigateTo(httpErrors ? $"{_nav.Uri}/-1" : $"{_nav.BaseUri}/manageTagGroups", forceLoad: true);
+    }
+
+    private bool ValidTagChanges()
+    {
+        foreach (var tg in TagGroupsUpdateDtos)
+        {
+            if (tg.Name == "")
+            {
+                _missingFields = true;
+                _userErrorMessage = "Tag group name is required";
+                return false;
+            }
+            if (_selectedExistingTags[tg.Id].Count != _selectedExistingTagsInitialSize[tg.Id] || 
+                _allSelectedTagsValues[tg.Id].Count != _allSelectedTagsValuesInitialSize[tg.Id]) 
+                _edited[tg.Id] = true;
+        }
+        return true;
     }
 
     private void CheckForTagChange()
@@ -199,8 +241,6 @@
 
     private void UpdateTagGroup(TagGroupUpdateDTO tg)
     {
-        
-                                  
         tg.SelectedTagValues = _allSelectedTagsValues[tg.Id].ToHashSet();
     }
 

@@ -6,6 +6,7 @@ public interface IUserRepository
     Task<Option<UserDTO>> ReadAsync(int userId);
     Task<Option<UserDTO>> ReadAsync(string email);
     Task<IReadOnlyCollection<UserDTO>> ReadAllAsync();
-    Task<IReadOnlyCollection<UserDTO>> ReadAllActiveAsync();
-    Task<IReadOnlyCollection<UserDTO>> ReadAllByRoleAsync(ISet<string> roles);
+    Task<IReadOnlyCollection<UserDTO>> ReadAllActiveAsync(string email);
+    Task<IReadOnlyCollection<UserDTO>> ReadAllByRoleAsync(string email, IList<string> roles);
+    Task<IReadOnlyCollection<UserDTO>> ReadAllByUniversityAsync(string email);
 }
