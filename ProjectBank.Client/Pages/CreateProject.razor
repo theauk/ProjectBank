@@ -24,7 +24,7 @@
             <p class="requiredText">Required</p>
         </div>
         <div class="col">
-            <RadzenTextBox style="display: block; width: 50%;" Name="ProjectName" @bind-Value="@_project.Name" />
+            <RadzenTextBox style="display: block; width: 50%;" Name="ProjectName" @bind-Value="@_project.Name" MaxLength="50" />
             <RadzenRequiredValidator Component="ProjectName" Text="Project name is required" />
         </div>
     </div>
@@ -35,7 +35,7 @@
         </div>
         <div class="col">
             <RadzenTextArea style="display: block; width: 50%; height: 100px" Name="ProjectDescription"
-                @bind-Value="@_project.Description"></RadzenTextArea>
+                            @bind-Value="@_project.Description" MaxLength="400" />
             <RadzenRequiredValidator Component="ProjectDescription" Text="Description is required" />
         </div>
     </div>
