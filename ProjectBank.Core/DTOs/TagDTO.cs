@@ -5,6 +5,7 @@ public record TagDTO
     public int Id { get; init; }
 
     [Required]
+    [StringLength(100)]
     public string? Value { get; init; }
     
     public virtual bool Equals(TagDTO? t) 
@@ -25,6 +26,7 @@ public record TagDTO
 public record TagCreateDTO
 {
     [Required]
+    [StringLength(100)]
     public string? Value { get; init; }
 
     [Required]

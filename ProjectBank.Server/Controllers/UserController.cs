@@ -22,22 +22,37 @@ public class UserController : ControllerBase
 
     [Authorize(Roles = SuperAdmin)]
     [HttpGet("all")]
-    public async Task<IReadOnlyCollection<UserDTO>> GetAll() => await _repository.ReadAllAsync();
+    public async Task<IReadOnlyCollection<UserDTO>> GetAll()
+    {
+        var users = await _repository.ReadAllAsync();
+        return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
+    }
 
     [Authorize]
     [HttpGet]
-    public async Task<IReadOnlyCollection<UserDTO>> Get() => await _repository
-        .ReadAllByUniversityAsync(User.FindFirstValue(ClaimTypes.Email));
+    public async Task<IReadOnlyCollection<UserDTO>> Get()
+    {
+        var users = await _repository.ReadAllByUniversityAsync(User.FindFirstValue(ClaimTypes.Email));
+        return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
+    }
 
     [Authorize]
     [HttpGet("filter")]
-    public async Task<IReadOnlyCollection<UserDTO>> GetActive() => await _repository
-        .ReadAllActiveAsync(User.FindFirstValue(ClaimTypes.Email));
-    
+    public async Task<IReadOnlyCollection<UserDTO>> GetActive()
+    {
+        var users=  await _repository
+            .ReadAllActiveAsync(User.FindFirstValue(ClaimTypes.Email));
+        return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
+    }
+
     [Authorize]
     [HttpGet("roles")]
-    public async Task<IReadOnlyCollection<UserDTO>> Get([FromQuery] IList<string> roles) => await _repository
-        .ReadAllByRoleAsync(User.FindFirstValue(ClaimTypes.Email), roles);
+    public async Task<IReadOnlyCollection<UserDTO>> Get([FromQuery] IList<string> roles)
+    {
+        var users =  await _repository
+            .ReadAllByRoleAsync(User.FindFirstValue(ClaimTypes.Email), roles);
+        return users.IsNullOrEmpty() ? new List<UserDTO>().AsReadOnly() : users;
+    }
 
     [Authorize]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
