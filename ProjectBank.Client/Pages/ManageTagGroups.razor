@@ -56,7 +56,7 @@
                                     else
                                     {
                                         <RadzenTextBox @bind-Value=@tg.Name Change=@(_ => { _editingName[tg.Id] = false;
-                                    _edited[tg.Id] = true; }) />
+                                            _edited[tg.Id] = true; }) />
                                     }
                                 </HeaderTemplate>
                                 <ChildContent>
@@ -65,13 +65,13 @@
                                             <div class="tagGroupChecks">
                                                 <div>
                                                     <RadzenCheckBox class="selectLeftItem" @bind-Value=@tg.RequiredInProject
-                                                    TValue="bool" Change=@(_ => _edited[tg.Id] = true) />
+                                                        TValue="bool" Change=@(_ => _edited[tg.Id] = true) />
                                                     <RadzenLabel Text="Required" />
                                                 </div>
                                                 <div>
                                                     <RadzenCheckBox class="selectLeftItem"
-                                                    @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ =>
-                                                    _edited[tg.Id] = true) />
+                                                        @bind-Value=@tg.SupervisorCanAddTag TValue="bool" Change=@(_ =>
+                                                        _edited[tg.Id] = true) />
                                                     <RadzenLabel Text="Supervisors can add tags" />
                                                 </div>
                                             </div>
@@ -187,16 +187,20 @@
     private async void Save()
     {
         
-        if (!ValidTagChanges()) return;
+        if (!ValidTagChanges())
+            return;
         var httpErrors = false;
 
+        CheckForTagChange();
         foreach (var tg in TagGroupsUpdateDtos)
         {
-            if (!_edited[tg.Id]) continue;
+            if (!_edited[tg.Id])
+                continue;
 
             UpdateTagGroup(tg);
             var putResponseMessage = await _http.PutAsJsonAsync($"api/TagGroup/{tg.Id}", tg);
-            if (!putResponseMessage.IsSuccessStatusCode) httpErrors = true;
+            if (!putResponseMessage.IsSuccessStatusCode)
+                httpErrors = true;
         }
 
         foreach (var id in _deletedTgs)
@@ -223,6 +227,16 @@
                 _edited[tg.Id] = true;
         }
         return true;
+    }
+
+    private void CheckForTagChange()
+    {
+        foreach (var tg in _tagGroups)
+        {
+            if (_selectedExistingTags[tg.Id].Count != _selectedExistingTagsInitialSize[tg.Id] || 
+                _allSelectedTagsValues[tg.Id].Count != _allSelectedTagsValuesInitialSize[tg.Id]) 
+                _edited[tg.Id] = true;
+        }
     }
 
     private void UpdateTagGroup(TagGroupUpdateDTO tg)

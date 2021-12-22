@@ -160,8 +160,9 @@
         var parameters = new List<string>();
         parameters.Add(string.Join("&", $"roles={Admin}"));
         parameters.Add(string.Join("&", $"roles={Supervisor}"));
-        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>("api/User/roles?" + string.Join("&", parameters)) ?? new List<UserDTO>();
-        Console.WriteLine(string.Join("&", parameters));
+        Supervisors = await _http.GetFromJsonAsync<IReadOnlyCollection<UserDTO>>
+            ("api/User/roles?" + string.Join("&", parameters)) ?? new List<UserDTO>();
+        
         foreach (var tg in TagGroups)
         {
             if (tg.SupervisorCanAddTag)
@@ -213,8 +214,10 @@
         {
             AddTags();
             _response = await _http.PostAsJsonAsync("api/Project", _project);
-            if (_response.IsSuccessStatusCode) _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
-            else {
+            if (_response.IsSuccessStatusCode)
+                _navigationManager.NavigateTo($"{_navigationManager.BaseUri}");
+            else
+            {
                 _isError = true;
                 await _jsRuntime.InvokeVoidAsync("scrollToTop");
                 InvokeAsync(StateHasChanged);
@@ -247,7 +250,7 @@
                                where tgIdStringTags.Key == tagGroupDto.Id
                                from val in tgIdStringTags.Value
                                select tagGroupDto.TagDTOs.FirstOrDefault(t => t.Value.Equals(val))
-        into tagDto
+                               into tagDto
                                where tagDto != null
                                select tagDto)
         {
