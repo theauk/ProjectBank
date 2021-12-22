@@ -38,7 +38,9 @@ function RunWithDockerCompose {
 }
 
 function RunWithDotnetRun {
-    Write-Host "HOT RELOAD = $hotreload"
+    if ($dev) {
+        Write-Host "HOT RELOAD = $hotreload"
+    }
     Write-Host
     
     $project = "ProjectBank.Server"
@@ -47,7 +49,13 @@ function RunWithDotnetRun {
     $db = "projectbank"
 
     Write-Host "STARTING DATABASE"
-    docker run --name db --rm -d -p 5431:5432 -e "POSTGRES_USER=$user" -e "POSTGRES_PASSWORD=$password" -e "POSTGRES_DB=$db" postgres:latest
+    if ($dev) {
+        # Delete container when stopped
+        docker run --name db --rm -d -p 5431:5432 -e "POSTGRES_USER=$user" -e "POSTGRES_PASSWORD=$password" -e "POSTGRES_DB=$db" postgres:latest
+    } else {
+        docker run --name db -d -p 5431:5432 -e "POSTGRES_USER=$user" -e "POSTGRES_PASSWORD=$password" -e "POSTGRES_DB=$db" postgres:latest
+    }
+    
     Write-Host "DONE."
     Write-Host 
 
